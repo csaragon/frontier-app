@@ -2,24 +2,38 @@
 import { useState } from "react";
 import Dashboard from "./Dashboard.jsx";
 import Scorecard from "./Scorecard.jsx";
-import Catalog, { TEMPLATES } from "./Catalog.jsx";
+import Catalog, { TEMPLATES, CAT_COLORS } from "./Catalog.jsx";
 import TemplateWizard from "./TemplateWizard.jsx";
+import ProgramList from "./ProgramList.jsx";
+import AuditList from "./AuditList.jsx";
+import Settings from "./Settings.jsx";
+import AuditBuilderHome from "./AuditBuilderHome.jsx";
+import TemplateBuilderFlow from "./TemplateBuilderFlow/index.jsx";
 
-// Seed with a deep copy so mutations never touch the const fixture
-const seedTemplates = () => TEMPLATES.map(t => ({ ...t }));
+const seedTemplates   = () => TEMPLATES.map(t => ({ ...t }));
+const seedCategories  = () => Object.entries(CAT_COLORS).map(([name, style], i) => ({
+  id: `builtin-${i}`, name, color: style.color, bg: style.bg, builtIn: true,
+}));
 
 export default function App() {
   const [view, setView]                     = useState("dashboard");
   const [selectedProg, setSelectedProg]     = useState(null);
-  const [wizardTemplateId, setWizardTemplateId] = useState(null);
+  const [wizardTemplateId, setWizardTemplateId]   = useState(null);
   const [wizardSeymourMode, setWizardSeymourMode] = useState(false);
+  const [wizardOrigin, setWizardOrigin]           = useState("catalog");
   const [templates, setTemplates]           = useState(seedTemplates);
   const [isAdmin, setIsAdmin]               = useState(true);
+  const [density, setDensity]               = useState("condensed");
+  const [categories, setCategories]         = useState(seedCategories);
+  const [templateBuilderEntryPoint, setTemplateBuilderEntryPoint] = useState("catalog");
 
   const handleNav = (key, payload) => {
     if (key === "template_wizard") {
       setWizardTemplateId(payload?.templateId ?? null);
       setWizardSeymourMode(payload?.seymourMode ?? false);
+      setWizardOrigin(payload?.origin ?? view);
+    } else if (key === "template_builder") {
+      setTemplateBuilderEntryPoint(payload?.entryPoint ?? "catalog");
     } else {
       setSelectedProg(null);
     }
@@ -50,7 +64,7 @@ export default function App() {
       <TemplateWizard
         templateId={wizardTemplateId}
         seymourMode={wizardSeymourMode}
-        onBack={() => handleNav("catalog")}
+        onBack={() => handleNav(wizardOrigin)}
         onPublish={(publishedData) => {
           // Add or update template in the catalog list on publish
           setTemplates(prev => {
@@ -69,7 +83,44 @@ export default function App() {
     return (
       <Scorecard
         prog={selectedProg}
-        onBack={() => { setView("dashboard"); setSelectedProg(null); }}
+        onBack={() => { setView("programs"); }}
+        onNav={(key, payload) => handleNav(key, payload)}
+      />
+    );
+  }
+
+  if (view === "audits") {
+    return <AuditList onNav={handleNav} density={density} />;
+  }
+
+  if (view === "settings") {
+    return <Settings onNav={handleNav} density={density} onDensityChange={setDensity} categories={categories} onCategoriesChange={setCategories} />;
+  }
+
+  if (view === "programs") {
+    return (
+      <ProgramList
+        onNav={handleNav}
+        density={density}
+        onSelectProgram={(prog) => { setSelectedProg(prog); setView("scorecard"); }}
+      />
+    );
+  }
+
+  if (view === "template_builder") {
+    return (
+      <TemplateBuilderFlow
+        entryPoint={templateBuilderEntryPoint}
+        onExit={() => handleNav(templateBuilderEntryPoint || "catalog")}
+      />
+    );
+  }
+
+  if (view === "audit_builder") {
+    return (
+      <AuditBuilderHome
+        onNav={(key, payload) => handleNav(key, { ...payload, origin: "audit_builder" })}
+        templates={templates}
       />
     );
   }

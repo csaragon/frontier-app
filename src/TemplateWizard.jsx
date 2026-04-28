@@ -1,5 +1,6 @@
 // Implements: TLP-8 (shell, step indicator, draft state, back-navigation), TLP-19 (Seymour overlay), TLP-80/81 (Translate tab)
 import { useReducer, useState, useRef, useMemo, useEffect } from "react";
+import AppSidebar from "./AppSidebar.jsx";
 import { useFocusTrap } from "./TemplateWizard/a11yUtils.js";
 import Step1Basics from "./TemplateWizard/Step1Basics.jsx";
 import SeymourUpload from "./TemplateWizard/SeymourUpload.jsx";
@@ -573,7 +574,9 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: C.bgApp, fontFamily: F, overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "row", height: "100vh", background: C.bgApp, fontFamily: F, overflow: "hidden" }}>
+      <AppSidebar activeId="audit_builder" onNav={onBack} />
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden", minWidth: 0 }}>
 
       {/* ── Skip link */}
       <a
@@ -823,6 +826,8 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
             basics={state.fields.basics}
             onChange={(field, value) => dispatch({ type: "SET_BASICS_FIELD", field, value })}
             onSeymourApply={handleSeymourApply}
+            scoring={state.fields.scoring}
+            dispatch={dispatch}
           />
         )}
         {state.currentStep === 2 && (
@@ -981,6 +986,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
           onCancel={() => setReviewOrigin(null)}
         />
       )}
+      </div>
     </div>
   );
 }

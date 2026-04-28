@@ -26,29 +26,6 @@ const C = {
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
-const SCORING_MODELS = [
-  {
-    key:   "informational",
-    label: "Informational",
-    help:  "Questions collect data only. No pass/fail determination is made — results are not scored.",
-  },
-  {
-    key:   "weighted",
-    label: "Weighted",
-    help:  "Each question carries a weight (must total 100% per section). A weighted passing score is calculated.",
-  },
-  {
-    key:   "passfail",
-    label: "Pass/Fail",
-    help:  "Each question is assessed as pass or fail individually. All critical questions must pass.",
-  },
-  {
-    key:   "points",
-    label: "Points-Based",
-    help:  "Each answer earns a defined number of points. The audit passes if section totals meet the threshold.",
-  },
-];
-
 // ── Validation ────────────────────────────────────────────────────────────────
 
 function computeErrors(sections, scoring) {
@@ -191,43 +168,6 @@ const Step3Scoring = forwardRef(function Step3Scoring({ structure, scoring, disp
             ))}
           </div>
         )}
-      </div>
-
-      {/* ── Scoring model selector — ABOVE question setup per TLP-87 */}
-      <div style={{ background: C.bgSurface, borderRadius: 10, border: `1px solid ${C.borderSubtle}`, padding: "16px 20px", marginBottom: 20 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: C.navyDeep, fontFamily: F, marginBottom: 14 }}>Scoring model</div>
-        <div
-          role="radiogroup"
-          aria-label="Scoring model"
-          style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}
-        >
-          {SCORING_MODELS.map(m => (
-            <label
-              key={m.key}
-              style={{
-                display: "flex", gap: 10, padding: "10px 14px", borderRadius: 8,
-                border: `1px solid ${model === m.key ? C.primary : C.borderSubtle}`,
-                background: model === m.key ? C.primaryBg : C.bgSurface,
-                cursor: "pointer", transition: "all 0.1s",
-              }}
-            >
-              <input
-                type="radio"
-                name="scoringModel"
-                value={m.key}
-                checked={model === m.key}
-                onChange={() => dispatch({ type: "SET_SCORING_MODEL", model: m.key })}
-                style={{ marginTop: 2, accentColor: C.primary, flexShrink: 0 }}
-                onFocus={e => (e.currentTarget.closest("label").style.boxShadow = FOCUS_RING)}
-                onBlur={e => (e.currentTarget.closest("label").style.boxShadow = "none")}
-              />
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: C.navyDeep, fontFamily: F }}>{m.label}</div>
-                <div style={{ fontSize: 11, color: C.textSec, fontFamily: F, marginTop: 2, lineHeight: "15px" }}>{m.help}</div>
-              </div>
-            </label>
-          ))}
-        </div>
       </div>
 
       {/* Validation banner */}

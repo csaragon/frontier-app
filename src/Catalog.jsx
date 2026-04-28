@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppSidebar from "./AppSidebar.jsx";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
@@ -1010,49 +1011,6 @@ function NewQuestionModal({ onClose }) {
 
 // ── Sidebar (local, nav-aware) ────────────────────────────────────────────────
 
-function Sidebar({ active, onNav }) {
-  const navItems = [
-    { label:"Dashboard", key:"dashboard" },
-    { label:"Programs", key:"programs" },
-    { label:"Audits", key:"audits" },
-    { label:"Escalations", key:"escalations" },
-    { label:"Action Plans", key:"action_plans" },
-  ];
-  const manageItems = [
-    { label:"Catalog", key:"catalog" },
-    { label:"Users", key:"users" },
-  ];
-
-  const F_ = F;
-  return (
-    <aside style={{ width:192, minWidth:192, background:"#ffffff", borderRight:`1px solid ${C.borderSubtle}`, display:"flex", flexDirection:"column", height:"100vh", flexShrink:0 }}>
-      <div style={{ height:52, display:"flex", alignItems:"center", gap:8, padding:"0 12px", borderBottom:`1px solid ${C.borderSubtle}`, flexShrink:0 }}>
-        <div style={{ width:24, height:24, borderRadius:6, background:C.navy, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        </div>
-        <span style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F_ }}>Frontier</span>
-      </div>
-      <nav style={{ flex:1, padding:"6px 8px", display:"flex", flexDirection:"column", gap:1 }}>
-        {navItems.map(item => {
-          const isActive = active === item.key;
-          return <button key={item.key} onClick={() => onNav(item.key)}
-            style={{ width:"100%", height:34, display:"flex", alignItems:"center", gap:8, padding:"0 10px", borderRadius:4, border:"none", cursor:"pointer", background:isActive?C.primary:"transparent", color:isActive?"#fff":C.navy, fontSize:12, fontFamily:F_, textAlign:"left" }}>
-            {item.label}
-          </button>;
-        })}
-        <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", padding:"10px 10px 3px", fontFamily:F_ }}>Manage</div>
-        {manageItems.map(item => {
-          const isActive = active === item.key;
-          return <button key={item.key} onClick={() => onNav(item.key)}
-            style={{ width:"100%", height:34, display:"flex", alignItems:"center", gap:8, padding:"0 10px", borderRadius:4, border:"none", cursor:"pointer", background:isActive?C.primary:"transparent", color:isActive?"#fff":C.navy, fontSize:12, fontFamily:F_, textAlign:"left" }}>
-            {item.label}
-          </button>;
-        })}
-      </nav>
-    </aside>
-  );
-}
-
 // ── Catalog page ──────────────────────────────────────────────────────────────
 
 export default function Catalog({ onNav, templates, onTemplateAction, isAdmin, onToggleRole }) {
@@ -1066,7 +1024,7 @@ export default function Catalog({ onNav, templates, onTemplateAction, isAdmin, o
 
   return (
     <div style={{ display:"flex", height:"100vh", fontFamily:F, background:C.bgApp, overflow:"hidden" }}>
-      <Sidebar active="catalog" onNav={onNav} />
+      <AppSidebar activeId="catalog" onNav={onNav} />
 
       <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", minWidth:0 }}>
         {/* Page header */}

@@ -1,4 +1,5 @@
 import { useState, createContext, useContext, useRef, useEffect } from "react";
+import AppSidebar from "./AppSidebar.jsx";
 
 // Insights App style guide — font + color tokens
 const F = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
@@ -1390,6 +1391,7 @@ function contactFor(name) {
 export default function Scorecard({
   prog = { id: "P001", name: "Safety Compliance" },
   onBack = () => {},
+  onNav = () => {},
 }) {
   const data = SCORECARD_DATA[prog.id] || DEFAULT_DATA;
   const [tab, setTab] = useState("scorecard");
@@ -1506,7 +1508,7 @@ export default function Scorecard({
 
   return (
     <div style={{ display:"flex", height:"100vh", "--f": F }}>
-      <AuditSidebar activeNav="scorecard" onNavClick={(id) => { if (id === "dashboard") onBack(); }} />
+      <AppSidebar activeId="programs" onNav={(id) => { if (id === "dashboard") onBack(); }} />
       <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
         <AuditTopHeader prog={prog} data={data} compTone={compTone} />
         {/* ── Tab sub-header ─────────────────────────────────────────────── */}
@@ -1539,7 +1541,117 @@ export default function Scorecard({
         </div>
 
         {/* ── Content ────────────────────────────────────────────────────── */}
-        <main style={{ flex:1, overflowY:"auto", padding:"14px 18px", display:"flex", flexDirection:"column", gap:12 }}>
+
+        {/* Details placeholder */}
+        {tab === "details" && (
+          <main style={{ flex:1, overflowY:"auto", padding:"40px 32px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+            <div style={{ fontSize:32, marginBottom:16 }}>📋</div>
+            <div style={{ fontSize:16, fontWeight:700, color:C.g6, fontFamily:F, marginBottom:6 }}>Program Details</div>
+            <div style={{ fontSize:13, color:C.g4, fontFamily:F }}>Program configuration, contacts, and settings — coming soon.</div>
+          </main>
+        )}
+
+        {/* Templates tab */}
+        {tab === "templates" && (
+          <main style={{ flex:1, overflowY:"auto", padding:"20px 24px" }}>
+            {/* Header row */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
+              <div>
+                <div style={{ fontSize:14, fontWeight:700, color:C.g6, fontFamily:F }}>Audit templates</div>
+                <div style={{ fontSize:11, color:C.g4, fontFamily:F, marginTop:2 }}>Templates assigned to this program</div>
+              </div>
+              <button
+                onClick={() => onNav("template_wizard", {})}
+                style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px", borderRadius:7, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+                onMouseEnter={e => (e.currentTarget.style.background = C.ocean2)}
+                onMouseLeave={e => (e.currentTarget.style.background = C.ocean)}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New template
+              </button>
+            </div>
+
+            {/* Template list */}
+            {(() => {
+              const PROG_TEMPLATES = {
+                "Retail Store Safety — Southeast":   [
+                  { id:"t1", name:"Fire Safety Audit v3",    sections:6, questions:42, lastUsed:"Apr 12, 2025", status:"active" },
+                  { id:"t2", name:"Slip Trip & Fall v1",     sections:4, questions:28, lastUsed:"Mar 30, 2025", status:"active" },
+                  { id:"t3", name:"PPE Compliance v2",       sections:3, questions:19, lastUsed:"Apr 1, 2025",  status:"active" },
+                ],
+                "LP Compliance Program — Northeast": [
+                  { id:"t4", name:"LP Standard Audit v4",    sections:8, questions:55, lastUsed:"Apr 10, 2025", status:"active" },
+                  { id:"t5", name:"Cash Handling Review v1", sections:3, questions:22, lastUsed:"Apr 5, 2025",  status:"active" },
+                ],
+                "Operations Standards — Midwest":    [
+                  { id:"t6", name:"Ops Standards v2",        sections:5, questions:36, lastUsed:"Apr 8, 2025",  status:"active" },
+                ],
+                "PPE Compliance — West Region":      [
+                  { id:"t7", name:"PPE Compliance Check v2", sections:4, questions:24, lastUsed:"Apr 3, 2025",  status:"active" },
+                ],
+                "Fire Safety — National":            [
+                  { id:"t8", name:"Fire Safety National v1", sections:7, questions:48, lastUsed:"Apr 11, 2025", status:"active" },
+                ],
+                "Shrink Prevention — Southeast":     [
+                  { id:"t9", name:"LP Shrinkage v2",         sections:5, questions:31, lastUsed:"Apr 7, 2025",  status:"active" },
+                ],
+                "OSHA Compliance — All Regions":     [
+                  { id:"t10", name:"OSHA Standard v2",       sections:9, questions:62, lastUsed:"Apr 9, 2025",  status:"active" },
+                ],
+              };
+              const templates = PROG_TEMPLATES[prog.name] || [];
+              if (templates.length === 0) {
+                return (
+                  <div style={{ textAlign:"center", padding:"60px 0", color:C.g4, fontFamily:F }}>
+                    <div style={{ fontSize:28, marginBottom:12 }}>📝</div>
+                    <div style={{ fontSize:13, fontWeight:600, color:C.g5, marginBottom:6 }}>No templates yet</div>
+                    <div style={{ fontSize:12, color:C.g4, marginBottom:20 }}>Create a template to start running audits for this program.</div>
+                    <button
+                      onClick={() => onNav("template_wizard", {})}
+                      style={{ padding:"9px 20px", borderRadius:7, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+                      onMouseEnter={e => (e.currentTarget.style.background = C.ocean2)}
+                      onMouseLeave={e => (e.currentTarget.style.background = C.ocean)}
+                    >
+                      Build first template
+                    </button>
+                  </div>
+                );
+              }
+              return (
+                <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                  {templates.map(t => (
+                    <div key={t.id} style={{ display:"flex", alignItems:"center", gap:16, background:C.white, border:`1px solid ${C.g2}`, borderRadius:10, padding:"14px 18px" }}>
+                      {/* Icon */}
+                      <div style={{ width:38, height:38, borderRadius:9, background:"#f0f2ff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.ocean} strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                      </div>
+                      {/* Info */}
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontSize:13, fontWeight:600, color:C.g6, fontFamily:F, marginBottom:3 }}>{t.name}</div>
+                        <div style={{ fontSize:11, color:C.g4, fontFamily:F }}>{t.sections} sections · {t.questions} questions · Last used {t.lastUsed}</div>
+                      </div>
+                      {/* Status */}
+                      <span style={{ padding:"3px 10px", borderRadius:999, background:"#ecfdf5", border:"1px solid #86efac", fontSize:11, fontWeight:600, color:"#15803d", fontFamily:F, flexShrink:0 }}>
+                        Active
+                      </span>
+                      {/* Edit button */}
+                      <button
+                        onClick={() => onNav("template_wizard", { templateId: t.id })}
+                        style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${C.g2}`, background:C.white, color:C.ocean, fontSize:11, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0 }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "#f0f2ff")}
+                        onMouseLeave={e => (e.currentTarget.style.background = C.white)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </main>
+        )}
+
+        {tab === "scorecard" && <main style={{ flex:1, overflowY:"auto", padding:"14px 18px", display:"flex", flexDirection:"column", gap:12 }}>
 
         {/* 0. GLOBAL FILTERS — applies to all cards on this page */}
         <FilterBar />
@@ -2045,7 +2157,7 @@ export default function Scorecard({
         </Card>
 
         <div style={{ height:8 }} />
-        </main>
+        </main>}
       </div>
     </div>
   );

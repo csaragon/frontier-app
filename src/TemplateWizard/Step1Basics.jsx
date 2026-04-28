@@ -29,6 +29,13 @@ const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 const MODULES    = ["Loss Prevention","Health & Safety","Fire Safety","Operations","OSHA","PPE"];
 const AUDIT_TYPES = ["Location","Asset","Case"];
 const FREQUENCIES = ["Daily","Weekly","Monthly","Quarterly","Ad-hoc"];
+
+const SCORING_MODELS = [
+  { key:"informational", label:"Informational", help:"Questions collect data only. No pass/fail — results are not scored." },
+  { key:"weighted",      label:"Weighted",      help:"Each question carries a weight (must total 100%). A weighted score is calculated." },
+  { key:"passfail",      label:"Pass / Fail",   help:"Each question is assessed individually. All critical questions must pass." },
+  { key:"points",        label:"Points-Based",  help:"Each answer earns points. The audit passes if totals meet the threshold." },
+];
 const AUDIT_TYPE_HELP = {
   Location: "Used for store walk-throughs and site inspections.",
   Asset:    "Targets a specific piece of equipment or inventory.",
@@ -112,7 +119,7 @@ function inputStyle(hasError) {
 
 // ── Step 1 component ──────────────────────────────────────────────────────────
 
-const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymourApply }, ref) {
+const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymourApply, scoring, dispatch }, ref) {
   const [errors, setErrors] = useState({});
 
   useImperativeHandle(ref, () => ({
@@ -284,6 +291,39 @@ const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymou
           </div>
         </div>
       </div>
+
+      {/* Scoring model */}
+      {scoring && dispatch && (
+        <>
+          <div style={{ height:1, background:C.borderSubtle, margin:"28px 0 24px" }} />
+          <div style={{ marginBottom:8 }}>
+            <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:3 }}>Scoring model</div>
+            <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+              Controls how question responses contribute to the audit result.
+            </div>
+          </div>
+          <div role="radiogroup" aria-label="Scoring model" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
+            {SCORING_MODELS.map(m => (
+              <label key={m.key}
+                style={{ display:"flex", gap:10, padding:"10px 14px", borderRadius:8, border:`1px solid ${scoring.model === m.key ? C.primary : C.borderSubtle}`, background:scoring.model === m.key ? C.primaryBg : C.bgSurface, cursor:"pointer", transition:"all 0.1s" }}
+              >
+                <input
+                  type="radio" name="scoringModel" value={m.key}
+                  checked={scoring.model === m.key}
+                  onChange={() => dispatch({ type:"SET_SCORING_MODEL", model:m.key })}
+                  style={{ marginTop:2, accentColor:C.primary, flexShrink:0 }}
+                  onFocus={e => (e.currentTarget.closest("label").style.boxShadow = FOCUS_RING)}
+                  onBlur={e => (e.currentTarget.closest("label").style.boxShadow = "none")}
+                />
+                <div>
+                  <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>{m.label}</div>
+                  <div style={{ fontSize:11, color:C.textSec, fontFamily:F, marginTop:2, lineHeight:"15px" }}>{m.help}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Seymour card — Start from Excel */}
       {onSeymourApply && (

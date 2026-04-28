@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppSidebar from "./AppSidebar.jsx";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
@@ -165,7 +166,7 @@ const PTRENDS = [
   { key:"P003", label:"Ops Standards — MW",  cat:"ops",  color:"#0d9488", data:[85,86,87,88,87,88,89,88,88,89,88,89,88,88,89,90] },
   { key:"P005", label:"Fire Safety — Natl",  cat:"fire", color:"#7c3aed", data:[88,89,90,91,90,91,92,91,91,92,91,92,91,91,92,92] },
 ];
-const PROGS = [
+export const PROGS = [
   { id:"P001", name:"Retail Store Safety — Southeast",   type:"Health & Safety", score:61, done:34, total:48, ov:4, tk:"hs" },
   { id:"P002", name:"LP Compliance Program — Northeast", type:"Loss Prevention",  score:74, done:28, total:32, ov:2, tk:"lp" },
   { id:"P003", name:"Operations Standards — Midwest",    type:"Operations",       score:88, done:26, total:26, ov:0, tk:"ops" },
@@ -313,24 +314,6 @@ function DrillPanel({ prog, onCollapse, onViewScorecard }) {
   );
 }
 
-// ── Sidebar ───────────────────────────────────────────────────────────────────
-function Sidebar({ onNav }) {
-  const navItems = ["Dashboard","Programs","Audits","Escalations","Action Plans"];
-  const manageItems = ["Catalog","Users"];
-  return <aside style={{ width:192, minWidth:192, background:C.white, borderRight:`1px solid ${C.g2}`, display:"flex", flexDirection:"column", height:"100vh", flexShrink:0 }}>
-    <div style={{ height:52, display:"flex", alignItems:"center", gap:8, padding:"0 12px", borderBottom:`1px solid ${C.g2}`, flexShrink:0 }}>
-      <div style={{ width:24, height:24, borderRadius:6, background:C.navy, display:"flex", alignItems:"center", justifyContent:"center" }}>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      </div>
-      <span style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Frontier</span>
-    </div>
-    <nav style={{ flex:1, padding:"6px 8px", display:"flex", flexDirection:"column", gap:1 }}>
-      {navItems.map((l,i) => <button key={l} onClick={() => onNav && onNav(l.toLowerCase().replace(/ /g,"_"))} style={{ width:"100%", height:34, display:"flex", alignItems:"center", gap:8, padding:"0 10px", borderRadius:4, border:"none", cursor:"pointer", background:i===0?C.ocean:"transparent", color:i===0?C.white:C.navy, fontSize:12, fontFamily:F, textAlign:"left" }}>{l}</button>)}
-      <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.06em", padding:"10px 10px 3px", fontFamily:F }}>Manage</div>
-      {manageItems.map(l => <button key={l} onClick={() => onNav && onNav(l.toLowerCase())} style={{ width:"100%", height:34, display:"flex", alignItems:"center", gap:8, padding:"0 10px", borderRadius:4, border:"none", cursor:"pointer", background:"transparent", color:C.navy, fontSize:12, fontFamily:F }}>{l}</button>)}
-    </nav>
-  </aside>;
-}
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
 export default function Dashboard({ onViewScorecard, onNav }) {
@@ -371,7 +354,7 @@ export default function Dashboard({ onViewScorecard, onNav }) {
   const cSeries = tcat === "all" ? CATS : PTRENDS.filter(p => p.cat === tcat);
 
   return <div style={{ display:"flex", height:"100vh", fontFamily:F, background:C.g1, overflow:"hidden" }}>
-    <Sidebar onNav={onNav} />
+    <AppSidebar activeId="dashboard" onNav={onNav} />
 
     {/* KPI side panel */}
     {kpi && <div style={{ position:"fixed", inset:0, zIndex:500, display:"flex", alignItems:"stretch", justifyContent:"flex-end", pointerEvents:"none" }}>
