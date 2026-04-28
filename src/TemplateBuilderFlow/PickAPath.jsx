@@ -112,7 +112,7 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
 
   return (
     <div style={{
-      height: "100vh",
+      height: "100%",
       background: C.g1,
       display: "flex",
       flexDirection: "column",

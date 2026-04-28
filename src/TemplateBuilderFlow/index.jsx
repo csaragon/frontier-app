@@ -5,6 +5,7 @@ import RouteA from "./RouteA.jsx";
 import RouteB from "./RouteB.jsx";
 import WizardShell from "./WizardShell.jsx";
 import { DiscardModal } from "./modals.jsx";
+import AppSidebar from "../AppSidebar.jsx";
 
 function formatRelativeTime(date) {
   if (!date) return null;
@@ -16,7 +17,7 @@ function formatRelativeTime(date) {
   return `Saved ${diffMin}m ago`;
 }
 
-export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTemplateId = null, onExit }) {
+export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTemplateId = null, onExit, onNav }) {
   const [screen, setScreen] = useState("pick"); // 'pick' | 'routeA' | 'routeB' | 'wizard'
   const [routeOrigin, setRouteOrigin] = useState(null); // 'template' | 'upload' | 'scratch' | null
   const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId);
@@ -106,46 +107,49 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
   };
 
   return (
-    <>
-      {screen === "pick" && (
-        <PickAPath
-          onPickRoute={handlePickRoute}
-          onCancel={onExit}
-          entryPoint={entryPoint}
-        />
-      )}
-      {screen === "routeA" && (
-        <RouteA
-          onUseTemplate={handleUseTemplate}
-          onBack={handleBackToPick}
-          onCancel={onExit}
-          hasData={hasRouteData}
-          userLangs={USER_PREFS.requiredLanguages}
-        />
-      )}
-      {screen === "routeB" && (
-        <RouteB
-          onComplete={handleUploadComplete}
-          onBack={handleBackToPick}
-          onCancel={onExit}
-        />
-      )}
-      {screen === "wizard" && (
-        <WizardShell
-          routeOrigin={routeOrigin}
-          templateId={selectedTemplateId}
-          entryPoint={entryPoint}
-          onBackToPick={() => setScreen("pick")}
-          onExit={onExit}
-        />
-      )}
-      {showDiscardModal && (
-        <DiscardModal
-          onSaveAndExit={handleSaveAndExit}
-          onExitWithout={onExit}
-          onCancel={() => setShowDiscardModal(false)}
-        />
-      )}
-    </>
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      <AppSidebar activeId="template_builder" onNav={onNav} />
+      <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+        {screen === "pick" && (
+          <PickAPath
+            onPickRoute={handlePickRoute}
+            onCancel={onExit}
+            entryPoint={entryPoint}
+          />
+        )}
+        {screen === "routeA" && (
+          <RouteA
+            onUseTemplate={handleUseTemplate}
+            onBack={handleBackToPick}
+            onCancel={onExit}
+            hasData={hasRouteData}
+            userLangs={USER_PREFS.requiredLanguages}
+          />
+        )}
+        {screen === "routeB" && (
+          <RouteB
+            onComplete={handleUploadComplete}
+            onBack={handleBackToPick}
+            onCancel={onExit}
+          />
+        )}
+        {screen === "wizard" && (
+          <WizardShell
+            routeOrigin={routeOrigin}
+            templateId={selectedTemplateId}
+            entryPoint={entryPoint}
+            onBackToPick={() => setScreen("pick")}
+            onExit={onExit}
+          />
+        )}
+        {showDiscardModal && (
+          <DiscardModal
+            onSaveAndExit={handleSaveAndExit}
+            onExitWithout={onExit}
+            onCancel={() => setShowDiscardModal(false)}
+          />
+        )}
+      </div>
+    </div>
   );
 }

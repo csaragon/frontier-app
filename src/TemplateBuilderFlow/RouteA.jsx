@@ -305,7 +305,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: C.g1, flexDirection: "column", fontFamily: F }}>
+    <div style={{ display: "flex", height: "100%", background: C.g1, flexDirection: "column", fontFamily: F }}>
       {/* Top bar */}
       <div style={{
         height: 52,

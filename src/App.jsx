@@ -112,6 +112,7 @@ export default function App() {
       <TemplateBuilderFlow
         entryPoint={templateBuilderEntryPoint}
         onExit={() => handleNav(templateBuilderEntryPoint || "catalog")}
+        onNav={handleNav}
       />
     );
   }

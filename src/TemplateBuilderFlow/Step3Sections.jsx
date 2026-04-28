@@ -9,6 +9,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { featureFlags } from "./shared.js";
+import QuestionEditor from "./QuestionEditor.jsx";
+import BanksPanel from "./BanksPanel.jsx";
+import GridSection from "./GridSection.jsx";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
@@ -25,35 +28,38 @@ const ANSWER_TYPES = [
   { value: "Yes/No/NA",       bg: "#ecfdf5", color: "#065f46" },
   { value: "Yes/No",          bg: "#eff6ff", color: "#1d4ed8" },
   { value: "Pass/Fail",       bg: "#fff7ed", color: "#9a3412" },
-  { value: "1–5 Rating",      bg: "#faf5ff", color: "#6d28d9" },
+  { value: "Rating Scale",    bg: "#faf5ff", color: "#6d28d9" },
+  { value: "Free Text",       bg: "#f9fafb", color: "#374151" },
   { value: "Number",          bg: "#f0fdfa", color: "#0f766e" },
-  { value: "Text",            bg: "#f9fafb", color: "#374151" },
   { value: "Multiple Choice", bg: "#fefce8", color: "#92400e" },
+  { value: "Grid",            bg: "#f0f2ff", color: "#1e40af" },
+  { value: "Asset",           bg: "#fff1f2", color: "#9f1239" },
+  { value: "Photo Required",  bg: "#ecfeff", color: "#0e7490" },
 ];
 
 const DEFAULT_SECTIONS = [
   {
-    id: "sec-1", name: "Fire Safety", weight: 40, collapsed: false,
+    id: "sec-1", name: "Fire Safety", weight: 40, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-1", title: "Are all fire extinguishers properly mounted and accessible?", answerType: "Yes/No/NA", required: true,  informational: false },
-      { id: "q-2", title: "When was the last fire drill conducted?",                    answerType: "Text",      required: false, informational: true  },
-      { id: "q-3", title: "How many exits are marked with illuminated signage?",        answerType: "Number",    required: true,  informational: false },
-      { id: "q-4", title: "Describe any fire safety concerns observed during this visit.", answerType: "Text",   required: false, informational: false },
+      { id: "q-1", title: "Are all fire extinguishers properly mounted and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-2", title: "When was the last fire drill conducted?",                    answerType: "Free Text",   required: false, informational: true,  critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-3", title: "How many exits are marked with illuminated signage?",        answerType: "Number",      required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-4", title: "Describe any fire safety concerns observed during this visit.", answerType: "Free Text", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
     ],
   },
   {
-    id: "sec-2", name: "Emergency Exits", weight: 35, collapsed: false,
+    id: "sec-2", name: "Emergency Exits", weight: 35, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-5", title: "Are all emergency exits unobstructed and accessible?", answerType: "Yes/No/NA",  required: true,  informational: false },
-      { id: "q-6", title: "Do emergency exit doors open outward?",                answerType: "Pass/Fail",  required: true,  informational: false },
-      { id: "q-7", title: "Rate the overall emergency exit compliance.",           answerType: "1–5 Rating", required: false, informational: false },
+      { id: "q-5", title: "Are all emergency exits unobstructed and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-6", title: "Do emergency exit doors open outward?",                answerType: "Pass/Fail",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-7", title: "Rate the overall emergency exit compliance.",           answerType: "Rating Scale", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
     ],
   },
   {
-    id: "sec-3", name: "Chemical Storage", weight: 25, collapsed: false,
+    id: "sec-3", name: "Chemical Storage", weight: 25, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-8", title: "Are all chemicals stored in approved containers with proper labeling?", answerType: "Yes/No/NA", required: true, informational: false },
-      { id: "q-9", title: "Is the MSDS / SDS binder current and accessible to all employees?",    answerType: "Yes/No",     required: true, informational: false },
+      { id: "q-8", title: "Are all chemicals stored in approved containers with proper labeling?", answerType: "Yes/No/NA", required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-9", title: "Is the MSDS / SDS binder current and accessible to all employees?",    answerType: "Yes/No",    required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
     ],
   },
 ];
@@ -146,79 +152,7 @@ function Toggle({ checked, onChange }) {
   );
 }
 
-// ── Question Editor Modal ─────────────────────────────────────────────────────
-
-function QuestionEditorModal({ question, isNew, onSave, onClose }) {
-  const [title, setTitle]               = useState(question.title ?? "");
-  const [answerType, setAnswerType]     = useState(question.answerType ?? "Yes/No/NA");
-  const [required, setRequired]         = useState(question.required ?? false);
-  const [informational, setInformational] = useState(question.informational ?? false);
-
-  function handleSave() {
-    if (!title.trim()) return;
-    onSave({ title: title.trim(), answerType, required, informational });
-  }
-  function toggleRequired()     { setRequired(r => !r); if (!required) setInformational(false); }
-  function toggleInformational(){ setInformational(i => !i); if (!informational) setRequired(false); }
-
-  return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div style={{ background: C.white, borderRadius: 12, width: 520, maxWidth: "calc(100vw - 32px)", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <div style={{ padding: "16px 20px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: C.g6 }}>{isNew ? "Add Question" : "Edit Question"}</span>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, padding: 4, borderRadius: 6, display: "flex", alignItems: "center" }}
-            onMouseEnter={e => e.currentTarget.style.color = C.g6} onMouseLeave={e => e.currentTarget.style.color = C.g4}
-          ><IconClose /></button>
-        </div>
-
-        <div style={{ padding: "16px 20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
-          <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: C.g5, display: "block", marginBottom: 5 }}>
-              Question <span style={{ color: C.red }}>*</span>
-            </label>
-            <textarea value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter question text…" rows={3} autoFocus
-              style={{ width: "100%", resize: "vertical", fontFamily: F, fontSize: 13, color: C.g6, background: C.white, border: `1px solid ${C.g2}`, borderRadius: 7, padding: "8px 10px", boxSizing: "border-box", outline: "none" }}
-              onFocus={e => e.currentTarget.style.borderColor = C.navy}
-              onBlur={e => e.currentTarget.style.borderColor = C.g2}
-            />
-          </div>
-
-          <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: C.g5, display: "block", marginBottom: 5 }}>Answer type</label>
-            <select value={answerType} onChange={e => setAnswerType(e.target.value)}
-              style={{ width: "100%", fontFamily: F, fontSize: 13, color: C.g6, background: C.white, border: `1px solid ${C.g2}`, borderRadius: 7, padding: "8px 10px", outline: "none", cursor: "pointer" }}
-            >
-              {ANSWER_TYPES.map(t => <option key={t.value} value={t.value}>{t.value}</option>)}
-            </select>
-          </div>
-
-          <div style={{ display: "flex", gap: 20 }}>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: C.g5, fontFamily: F }}>
-              <Toggle checked={required} onChange={toggleRequired} /> Required
-            </label>
-            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: C.g5, fontFamily: F }}>
-              <Toggle checked={informational} onChange={toggleInformational} /> Informational only
-            </label>
-          </div>
-        </div>
-
-        <div style={{ padding: "12px 20px", borderTop: `1px solid ${C.g2}`, display: "flex", justifyContent: "flex-end", gap: 8 }}>
-          <button onClick={onClose}
-            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
-            onMouseEnter={e => e.currentTarget.style.background = C.g1} onMouseLeave={e => e.currentTarget.style.background = "none"}
-          >Cancel</button>
-          <button onClick={handleSave} disabled={!title.trim()}
-            style={{ background: title.trim() ? C.navy : C.g2, color: title.trim() ? C.white : C.g4, border: "none", borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: title.trim() ? "pointer" : "not-allowed" }}
-            onMouseEnter={e => { if (title.trim()) e.currentTarget.style.background = C.navy2; }}
-            onMouseLeave={e => { if (title.trim()) e.currentTarget.style.background = C.navy; }}
-          >{isNew ? "Add question" : "Save changes"}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
+// QuestionEditorModal replaced by QuestionEditor imported from ./QuestionEditor.jsx
 
 // ── Fix Math Modal ────────────────────────────────────────────────────────────
 
@@ -301,6 +235,33 @@ function SortableQuestionRow({ question, isSelected, onSelect, onClick, viewMode
   );
 }
 
+function QuestionIndicatorIcons({ question }) {
+  return (
+    <>
+      {question.action?.type && question.action.type !== "none" && (
+        <span title="Has action" style={{ display: "flex", color: "#b45309" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </span>
+      )}
+      {(question.conditional?.items?.length ?? 0) > 0 && (
+        <span title="Has conditional logic" style={{ display: "flex", color: "#7c3aed" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+        </span>
+      )}
+      {(question.escalation?.rules?.length ?? 0) > 0 && (
+        <span title="Has escalation" style={{ display: "flex", color: "#b6143a" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </span>
+      )}
+      {question.media?.requireOnFail && (
+        <span title="Photo required on fail" style={{ display: "flex", color: "#0369a1" }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </span>
+      )}
+    </>
+  );
+}
+
 function QuestionRow({ question, isSelected, onSelect, onClick, viewMode, dragProps = {} }) {
   const [hover, setHover] = useState(false);
 
@@ -313,10 +274,11 @@ function QuestionRow({ question, isSelected, onSelect, onClick, viewMode, dragPr
           <div onClick={e => { e.stopPropagation(); onSelect(); }} style={{ flexShrink: 0, marginTop: 1 }}><Checkbox checked={isSelected} /></div>
           <span style={{ fontSize: 12, color: C.g6, fontFamily: F, lineHeight: "17px", flex: 1 }}>{question.title}</span>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingLeft: 20 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingLeft: 20, alignItems: "center" }}>
           <AnswerBadge value={question.answerType} />
           {question.required      && <SmallBadge label="Required"   bg="#fef2f2" color={C.red} />}
           {question.informational && <SmallBadge label="Info only"  bg="#f0f9ff" color="#0369a1" />}
+          <QuestionIndicatorIcons question={question} />
         </div>
       </div>
     );
@@ -335,6 +297,7 @@ function QuestionRow({ question, isSelected, onSelect, onClick, viewMode, dragPr
         <AnswerBadge value={question.answerType} />
         {question.required      && <SmallBadge label="Required"  bg="#fef2f2" color={C.red} />}
         {question.informational && <SmallBadge label="Info only" bg="#f0f9ff" color="#0369a1" />}
+        <QuestionIndicatorIcons question={question} />
       </div>
     </div>
   );
@@ -351,7 +314,19 @@ function SortableSectionCard(props) {
   );
 }
 
-function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAddQ, viewMode, onToggleCollapse, onWeightChange, onRename, onDuplicate, onDelete, dragProps = {} }) {
+// Grid toggle button icon (4 squares)
+function IconGrid4() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <rect x="3" y="3" width="7" height="7"/>
+      <rect x="14" y="3" width="7" height="7"/>
+      <rect x="3" y="14" width="7" height="7"/>
+      <rect x="14" y="14" width="7" height="7"/>
+    </svg>
+  );
+}
+
+function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAddQ, viewMode, onToggleCollapse, onWeightChange, onRename, onDuplicate, onDelete, onToggleGrid, onUpdateGrid, methodology, dragProps = {} }) {
   const [showKebab, setShowKebab]       = useState(false);
   const [editingName, setEditingName]   = useState(false);
   const [nameVal, setNameVal]           = useState(section.name);
@@ -366,7 +341,8 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
     setEditingName(false);
   }
 
-  const qCount = section.questions.length;
+  const qCount = section.isGrid ? 1 : section.questions.length;
+  const qLabel = section.isGrid ? "1 question (grid)" : `${qCount} ${qCount === 1 ? "question" : "questions"}`;
 
   return (
     <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 10, marginBottom: 10, overflow: "visible" }}>
@@ -391,9 +367,36 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
           >{section.name}</span>
         )}
 
+        {/* Question count badge */}
         <span style={{ fontSize: 11, fontWeight: 600, color: C.g4, fontFamily: F, background: C.g1, borderRadius: 10, padding: "2px 8px", flexShrink: 0 }}>
-          {qCount} {qCount === 1 ? "question" : "questions"}
+          {qLabel}
         </span>
+
+        {/* Grid badge when active */}
+        {section.isGrid && (
+          <span style={{ fontSize: 10, fontWeight: 700, fontFamily: F, color: "#1e40af", background: "#f0f2ff", borderRadius: 4, padding: "2px 6px", flexShrink: 0 }}>
+            Grid
+          </span>
+        )}
+
+        {/* Grid toggle button */}
+        <button
+          onClick={() => onToggleGrid(section.id)}
+          title={section.isGrid ? "Switch to question list" : "Switch to grid section"}
+          style={{
+            display: "flex", alignItems: "center", gap: 4,
+            fontSize: 11, fontWeight: 600, fontFamily: F,
+            color: section.isGrid ? C.navy : C.g4,
+            background: section.isGrid ? "#eef1ff" : "none",
+            border: section.isGrid ? `1px solid #c7cff7` : `1px dashed ${C.g3}`,
+            borderRadius: 5, padding: "2px 8px", cursor: "pointer", flexShrink: 0,
+          }}
+          onMouseEnter={e => { if (!section.isGrid) { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; } }}
+          onMouseLeave={e => { if (!section.isGrid) { e.currentTarget.style.borderColor = C.g3; e.currentTarget.style.color = C.g4; } }}
+        >
+          <IconGrid4 />
+          Grid
+        </button>
 
         {isWeighted && (
           <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
@@ -429,62 +432,50 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
         </div>
       </div>
 
-      {/* Questions */}
+      {/* Body */}
       {!section.collapsed && (
         <div style={{ padding: "8px 12px 8px" }}>
-          <SortableContext items={section.questions.map(q => q.id)} strategy={verticalListSortingStrategy}>
-            {viewMode === "grid" ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: section.questions.length > 0 ? 8 : 0 }}>
-                {section.questions.map(q => (
-                  <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} viewMode="grid" />
-                ))}
-              </div>
-            ) : (
-              <div style={{ marginBottom: section.questions.length > 0 ? 6 : 0 }}>
-                {section.questions.map(q => (
-                  <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} viewMode="row" />
-                ))}
-              </div>
-            )}
-          </SortableContext>
+          {section.isGrid ? (
+            /* Grid editor */
+            <GridSection
+              section={section}
+              methodology={methodology}
+              onUpdate={(gridData) => onUpdateGrid(section.id, gridData)}
+              onToggleOff={() => onToggleGrid(section.id)}
+            />
+          ) : (
+            /* Normal question list */
+            <>
+              <SortableContext items={section.questions.map(q => q.id)} strategy={verticalListSortingStrategy}>
+                {viewMode === "grid" ? (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: section.questions.length > 0 ? 8 : 0 }}>
+                    {section.questions.map(q => (
+                      <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} viewMode="grid" />
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ marginBottom: section.questions.length > 0 ? 6 : 0 }}>
+                    {section.questions.map(q => (
+                      <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} viewMode="row" />
+                    ))}
+                  </div>
+                )}
+              </SortableContext>
 
-          <button onClick={() => onAddQ(section.id)}
-            style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "6px 12px", width: "100%", fontSize: 12, fontWeight: 500, color: C.g4, fontFamily: F, cursor: "pointer", transition: "color 0.1s, border-color 0.1s" }}
-            onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
-            onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
-          ><IconPlus size={12} /> Add question</button>
+              <button onClick={() => onAddQ(section.id)}
+                style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "6px 12px", width: "100%", fontSize: 12, fontWeight: 500, color: C.g4, fontFamily: F, cursor: "pointer", transition: "color 0.1s, border-color 0.1s" }}
+                onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
+                onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
+              ><IconPlus size={12} /> Add question</button>
+            </>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-// ── Left Rail ─────────────────────────────────────────────────────────────────
-
-function LeftRail({ open, onToggle, sections }) {
-  return (
-    <div style={{ width: open ? 240 : 52, flexShrink: 0, background: C.white, borderRight: `1px solid ${C.g2}`, display: "flex", flexDirection: "column", transition: "width 0.2s ease", overflow: "hidden" }}>
-      <div style={{ padding: "12px 8px 8px", display: "flex", justifyContent: open ? "space-between" : "center", alignItems: "center", flexShrink: 0 }}>
-        {open && <span style={{ fontSize: 11, fontWeight: 700, color: C.g4, fontFamily: F, textTransform: "uppercase", letterSpacing: "0.06em", paddingLeft: 6 }}>Structure</span>}
-        <button onClick={onToggle}
-          style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, display: "flex", padding: 6, borderRadius: 6 }}
-          onMouseEnter={e => { e.currentTarget.style.background = C.g1; e.currentTarget.style.color = C.g6; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = C.g4; }}
-        ><IconSidebar /></button>
-      </div>
-      {open && (
-        <div style={{ padding: "0 8px", overflowY: "auto", flex: 1 }}>
-          {sections.map(s => (
-            <div key={s.id} style={{ padding: "5px 8px", borderRadius: 5, marginBottom: 2 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.g6, fontFamily: F, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</div>
-              <div style={{ fontSize: 11, color: C.g4, fontFamily: F }}>{s.questions.length}q</div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+// ── LeftRail replaced by BanksPanel (imported from ./BanksPanel.jsx) ──────────
 
 // ── Add Section Inline ────────────────────────────────────────────────────────
 
@@ -505,6 +496,151 @@ function AddSectionInline({ value, onChange, onConfirm, onCancel }) {
   );
 }
 
+// ── Toast ─────────────────────────────────────────────────────────────────────
+
+function Toast({ message, onDismiss }) {
+  useEffect(() => { const t = setTimeout(onDismiss, 3000); return () => clearTimeout(t); }, [onDismiss]);
+  return (
+    <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", background: "#16191d", color: "#fff", padding: "10px 22px", borderRadius: 8, fontSize: 13, fontWeight: 500, fontFamily: F, zIndex: 9999, boxShadow: "0 4px 16px rgba(0,0,0,0.20)", pointerEvents: "none" }}>
+      {message}
+    </div>
+  );
+}
+
+// ── Bank Reuse Modal ──────────────────────────────────────────────────────────
+
+function BankReuseModal({ bankSection, onConfirm, onClose }) {
+  const [selectedQIds, setSelectedQIds] = useState(new Set(bankSection.questions.map(q => q.id)));
+
+  function toggle(id) {
+    setSelectedQIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  }
+  function selectAll() { setSelectedQIds(new Set(bankSection.questions.map(q => q.id))); }
+  function deselectAll() { setSelectedQIds(new Set()); }
+
+  const selectedQuestions = bankSection.questions.filter(q => selectedQIds.has(q.id));
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{ background: C.white, borderRadius: 12, width: 480, maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
+        {/* Header */}
+        <div style={{ padding: "16px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.g6 }}>Add section from bank</div>
+            <div style={{ fontSize: 12, color: C.g4, marginTop: 2 }}>
+              <strong style={{ color: C.g6 }}>{bankSection.name}</strong> — choose which questions to include
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, padding: 4, display: "flex", alignItems: "center" }}>
+            <IconClose />
+          </button>
+        </div>
+        {/* Select all / deselect all */}
+        <div style={{ padding: "10px 20px 0", display: "flex", gap: 12, flexShrink: 0 }}>
+          <button onClick={selectAll} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: C.navy, fontFamily: F, fontWeight: 500, padding: 0 }}>Select all</button>
+          <button onClick={deselectAll} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: C.g4, fontFamily: F, fontWeight: 500, padding: 0 }}>Deselect all</button>
+          <span style={{ marginLeft: "auto", fontSize: 12, color: C.g4, fontFamily: F }}>{selectedQIds.size} of {bankSection.questions.length} selected</span>
+        </div>
+        {/* Question list */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "10px 20px" }}>
+          {bankSection.questions.map(q => {
+            const checked = selectedQIds.has(q.id);
+            return (
+              <label key={q.id}
+                style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "9px 0", borderBottom: `1px solid ${C.g1}`, cursor: "pointer" }}
+              >
+                <div
+                  onClick={() => toggle(q.id)}
+                  style={{
+                    width: 15, height: 15, borderRadius: 4, flexShrink: 0, marginTop: 2,
+                    border: `1.5px solid ${checked ? C.navy : C.g3}`,
+                    background: checked ? C.navy : C.white,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  {checked && <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>}
+                </div>
+                <div onClick={() => toggle(q.id)} style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px" }}>{q.title}</div>
+                  <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: C.g4, background: C.g1, borderRadius: 4, padding: "1px 5px" }}>{q.answerType}</span>
+                    {q.required && <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: "#b6143a", background: "#fef2f2", borderRadius: 4, padding: "1px 5px" }}>Required</span>}
+                  </div>
+                </div>
+              </label>
+            );
+          })}
+        </div>
+        {/* Footer */}
+        <div style={{ padding: "12px 20px", borderTop: `1px solid ${C.g2}`, display: "flex", gap: 8, justifyContent: "flex-end", flexShrink: 0 }}>
+          <button onClick={onClose}
+            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
+          >Cancel</button>
+          <button
+            onClick={() => { if (selectedQuestions.length > 0) onConfirm(selectedQuestions); }}
+            disabled={selectedQuestions.length === 0}
+            style={{
+              background: selectedQuestions.length > 0 ? C.navy : C.g2,
+              color: selectedQuestions.length > 0 ? C.white : C.g4,
+              border: "none", borderRadius: 7, padding: "7px 16px",
+              fontSize: 13, fontWeight: 600, fontFamily: F,
+              cursor: selectedQuestions.length > 0 ? "pointer" : "not-allowed",
+            }}
+            onMouseEnter={e => { if (selectedQuestions.length > 0) e.currentTarget.style.background = C.navy2; }}
+            onMouseLeave={e => { if (selectedQuestions.length > 0) e.currentTarget.style.background = C.navy; }}
+          >
+            Add {selectedQuestions.length} question{selectedQuestions.length !== 1 ? "s" : ""}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Grid Confirm Modal ────────────────────────────────────────────────────────
+
+function GridConfirmModal({ direction, qCount, onConfirm, onCancel }) {
+  const isOn = direction === "on";
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
+      onClick={e => { if (e.target === e.currentTarget) onCancel(); }}
+    >
+      <div style={{ background: C.white, borderRadius: 12, width: 380, boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
+        <div style={{ padding: "18px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: C.g6 }}>
+            {isOn ? "Switch to Grid Section?" : "Switch back to question list?"}
+          </span>
+          <button onClick={onCancel} style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, padding: 4, display: "flex", alignItems: "center" }}>
+            <IconClose />
+          </button>
+        </div>
+        <div style={{ padding: "10px 20px 20px" }}>
+          <p style={{ margin: 0, fontSize: 13, color: C.g5, lineHeight: "19px" }}>
+            {isOn
+              ? `The ${qCount} question${qCount !== 1 ? "s" : ""} in this section will be removed and replaced with a grid structure.`
+              : "The grid structure will be removed. You can add individual questions afterwards."}
+          </p>
+        </div>
+        <div style={{ padding: "12px 20px", borderTop: `1px solid ${C.g2}`, display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <button onClick={onCancel}
+            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
+          >Cancel</button>
+          <button onClick={onConfirm}
+            style={{ background: C.navy, color: C.white, border: "none", borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer" }}
+            onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+            onMouseLeave={e => e.currentTarget.style.background = C.navy}
+          >{isOn ? "Switch to Grid" : "Switch to Questions"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Step 3 Main ───────────────────────────────────────────────────────────────
 
 export default function Step3Sections({ formData, onChange, onNext, onBack, methodology }) {
@@ -519,6 +655,9 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   const [activeId, setActiveId]       = useState(null);
   const [addingSection, setAddingSection] = useState(false);
   const [newSectionName, setNewSectionName] = useState("");
+  const [toastMsg, setToastMsg]       = useState(null);
+  const [bankReuseModal, setBankReuseModal] = useState(null); // { bankSection }
+  const [gridConfirmModal, setGridConfirmModal] = useState(null); // { sectionId, direction: "on"|"off" }
 
   const sectionsRef = useRef(sections);
   useEffect(() => { sectionsRef.current = sections; }, [sections]);
@@ -534,6 +673,8 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   function emit(secs, vm) {
     onChange({ sections: secs, viewMode: vm ?? viewMode });
   }
+
+  function showToast(msg) { setToastMsg(msg); }
 
   function handleSelectQ(id) {
     setSelectedQs(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
@@ -572,22 +713,22 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   function handleAddSection() {
     const name = newSectionName.trim();
     if (!name) return;
-    const newSec = { id: genId("sec"), name, weight: 0, collapsed: false, questions: [] };
+    const newSec = { id: genId("sec"), name, weight: 0, collapsed: false, isGrid: false, gridData: null, questions: [] };
     const next = [...sections, newSec];
     setSections(next); emit(next);
     setNewSectionName(""); setAddingSection(false);
   }
 
-  function handleSaveQ({ title, answerType, required, informational }) {
+  function handleSaveQ(patch) {
     if (!editingQ) return;
     const { q, sectionId, isNew } = editingQ;
     let next;
     if (isNew) {
-      const newQ = { id: genId("q"), title, answerType, required, informational };
+      const newQ = { id: genId("q"), ...patch };
       next = sections.map(s => s.id === sectionId ? { ...s, questions: [...s.questions, newQ] } : s);
     } else {
       next = sections.map(s => s.id !== sectionId ? s : {
-        ...s, questions: s.questions.map(item => item.id === q.id ? { ...item, title, answerType, required, informational } : item),
+        ...s, questions: s.questions.map(item => item.id === q.id ? { ...item, ...patch } : item),
       });
     }
     setSections(next); emit(next); setEditingQ(null);
@@ -607,7 +748,98 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
     setSections(next); emit(next); setSelectedQs(new Set());
   }
 
-  // DnD
+  // ── Bank handlers ────────────────────────────────────────────────────────────
+
+  function handleAddSectionFromBank(bankSection) {
+    setBankReuseModal({ bankSection });
+  }
+
+  function handleAddQuestionFromBank(bankQuestion) {
+    if (sections.length === 0) {
+      showToast("Add a section first, then use question bank items.");
+      return;
+    }
+    const targetSection = sections[sections.length - 1];
+    const newQ = {
+      id: genId("q"),
+      title: bankQuestion.title,
+      answerType: bankQuestion.answerType,
+      required: bankQuestion.required ?? false,
+      critical: false, informational: false, instructions: "",
+      typeConfig: {}, inBank: true, scoring: {}, media: {},
+      action: { type: "none" }, escalation: { rules: [] },
+      conditional: { operator: "AND", items: [] },
+    };
+    const next = sections.map(s => s.id === targetSection.id ? { ...s, questions: [...s.questions, newQ] } : s);
+    setSections(next); emit(next);
+    showToast(`Added "${bankQuestion.title.slice(0, 30)}${bankQuestion.title.length > 30 ? "..." : ""}" to ${targetSection.name}`);
+  }
+
+  function handleBankReuseConfirm(selectedQuestions) {
+    const { bankSection } = bankReuseModal;
+    const newSec = {
+      id: genId("sec"),
+      name: bankSection.name,
+      weight: 0,
+      collapsed: false,
+      isGrid: false,
+      gridData: null,
+      questions: selectedQuestions.map(q => ({
+        id: genId("q"),
+        title: q.title,
+        answerType: q.answerType,
+        required: q.required ?? false,
+        critical: false, informational: false, instructions: "",
+        typeConfig: {}, inBank: true, scoring: {}, media: {},
+        action: { type: "none" }, escalation: { rules: [] },
+        conditional: { operator: "AND", items: [] },
+      })),
+    };
+    const next = [...sections, newSec];
+    setSections(next); emit(next);
+    setBankReuseModal(null);
+    showToast(`Added section "${bankSection.name}" with ${selectedQuestions.length} question${selectedQuestions.length !== 1 ? "s" : ""}`);
+  }
+
+  // ── Grid handlers ────────────────────────────────────────────────────────────
+
+  function handleToggleGrid(sectionId) {
+    const sec = sections.find(s => s.id === sectionId);
+    if (!sec) return;
+    if (!sec.isGrid) {
+      if (sec.questions.length > 0) {
+        setGridConfirmModal({ sectionId, direction: "on" });
+      } else {
+        applyGridToggle(sectionId, true);
+      }
+    } else {
+      setGridConfirmModal({ sectionId, direction: "off" });
+    }
+  }
+
+  function applyGridToggle(sectionId, on) {
+    const next = sections.map(s => s.id !== sectionId ? s : {
+      ...s,
+      isGrid: on,
+      questions: on ? [] : s.questions,
+      gridData: on ? {
+        cellAnswerType: "Yes/No/NA",
+        columns: [{ id: "c1", label: "Column 1" }, { id: "c2", label: "Column 2" }, { id: "c3", label: "Column 3" }],
+        rows: [{ id: "r1", label: "Row 1" }, { id: "r2", label: "Row 2" }],
+        cells: {}, scoring: {},
+      } : null,
+    });
+    setSections(next); emit(next);
+    setGridConfirmModal(null);
+  }
+
+  function handleUpdateGrid(sectionId, gridData) {
+    const next = sections.map(s => s.id !== sectionId ? s : { ...s, gridData });
+    setSections(next); emit(next);
+  }
+
+  // ── DnD ──────────────────────────────────────────────────────────────────────
+
   function handleDragStart({ active }) { setActiveId(active.id); }
 
   function handleDragOver({ active, over }) {
@@ -672,7 +904,14 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
 
   return (
     <div style={{ display: "flex", height: "100%", fontFamily: F, overflow: "hidden" }}>
-      <LeftRail open={railOpen} onToggle={() => setRailOpen(r => !r)} sections={sections} />
+      <BanksPanel
+        open={railOpen}
+        onToggle={() => setRailOpen(r => !r)}
+        sections={sections}
+        onAddSectionFromBank={handleAddSectionFromBank}
+        onAddQuestionFromBank={handleAddQuestionFromBank}
+        onToast={showToast}
+      />
 
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px 80px" }}>
@@ -763,13 +1002,16 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
                     selectedQs={selectedQs}
                     onSelectQ={handleSelectQ}
                     onEditQ={q => setEditingQ({ q, sectionId: section.id, isNew: false })}
-                    onAddQ={sectionId => setEditingQ({ q: { title: "", answerType: "Yes/No/NA", required: false, informational: false }, sectionId, isNew: true })}
+                    onAddQ={sectionId => setEditingQ({ q: { title: "", answerType: "Yes/No/NA", required: false, critical: false, informational: false, instructions: "", typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } }, sectionId, isNew: true })}
                     viewMode={viewMode}
                     onToggleCollapse={() => handleToggleCollapse(section.id)}
                     onWeightChange={v => handleWeightChange(section.id, v)}
                     onRename={name => handleRename(section.id, name)}
                     onDuplicate={() => handleDuplicate(section.id)}
                     onDelete={() => handleDeleteSection(section.id)}
+                    onToggleGrid={handleToggleGrid}
+                    onUpdateGrid={handleUpdateGrid}
+                    methodology={methodology}
                   />
                 ))}
               </SortableContext>
@@ -815,19 +1057,48 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
               style={{ background: C.navy, color: C.white, border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
               onMouseEnter={e => e.currentTarget.style.background = C.navy2} onMouseLeave={e => e.currentTarget.style.background = C.navy}
             >
-              Next: Schedule &amp; Assign
+              Next: Schedule
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
           </div>
         </div>
       </div>
 
-      {editingQ && (
-        <QuestionEditorModal question={editingQ.q} isNew={editingQ.isNew} onSave={handleSaveQ} onClose={() => setEditingQ(null)} />
-      )}
+      {editingQ && (() => {
+        const allQuestionsFlat = sections.flatMap(s => s.questions);
+        const priorQuestions = editingQ.isNew
+          ? allQuestionsFlat
+          : allQuestionsFlat.slice(0, allQuestionsFlat.findIndex(q => q.id === editingQ.q.id));
+        return (
+          <QuestionEditor
+            question={editingQ.q}
+            isNew={editingQ.isNew}
+            methodology={methodology}
+            priorQuestions={priorQuestions}
+            onSave={handleSaveQ}
+            onClose={() => setEditingQ(null)}
+          />
+        );
+      })()}
       {showFixMath && (
         <FixMathModal sections={sections} onAutoBalance={handleAutoBalance} onClose={() => setShowFixMath(false)} />
       )}
+      {bankReuseModal && (
+        <BankReuseModal
+          bankSection={bankReuseModal.bankSection}
+          onConfirm={handleBankReuseConfirm}
+          onClose={() => setBankReuseModal(null)}
+        />
+      )}
+      {gridConfirmModal && (
+        <GridConfirmModal
+          direction={gridConfirmModal.direction}
+          qCount={sections.find(s => s.id === gridConfirmModal.sectionId)?.questions.length ?? 0}
+          onConfirm={() => applyGridToggle(gridConfirmModal.sectionId, gridConfirmModal.direction === "on")}
+          onCancel={() => setGridConfirmModal(null)}
+        />
+      )}
+      {toastMsg && <Toast message={toastMsg} onDismiss={() => setToastMsg(null)} />}
     </div>
   );
 }

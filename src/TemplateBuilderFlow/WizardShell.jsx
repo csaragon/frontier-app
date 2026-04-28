@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import Step1Details from "./Step1Details.jsx";
 import Step2Scoring from "./Step2Scoring.jsx";
 import Step3Sections from "./Step3Sections.jsx";
-import Step4ScheduleStub from "./Step4ScheduleStub.jsx";
+import Step4Schedule from "./Step4Schedule.jsx";
+import Step5EscalationStub from "./Step5EscalationStub.jsx";
 import { DiscardModal } from "./modals.jsx";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
@@ -20,7 +21,8 @@ const STEPS = [
   { num: 1, label: "Details" },
   { num: 2, label: "Scoring" },
   { num: 3, label: "Questions" },
-  { num: 4, label: "Schedule & Assign" },
+  { num: 4, label: "Schedule" },
+  { num: 5, label: "Escalation" },
 ];
 
 function isStep1Complete(data) {
@@ -62,7 +64,14 @@ function isStepComplete(stepNum, formData) {
     const secs = formData[3]?.sections;
     return Array.isArray(secs) && secs.length > 0 && secs.some(s => s.questions.length > 0);
   }
-  return false; // step 4 still stubbed
+  if (stepNum === 4) {
+    const s4 = formData[4] || {};
+    const a = s4.assignees || {};
+    return !!s4.scheduleType
+      && (s4.locations || []).length > 0
+      && ((a.users||[]).length > 0 || (a.roles||[]).length > 0 || (a.groups||[]).length > 0);
+  }
+  return false;
 }
 
 function formatRelativeTime(date) {
@@ -263,7 +272,7 @@ export default function WizardShell({
   const [visitedSteps, setVisitedSteps] = useState({});
   // Amber warning: visited step still has incomplete required fields
   const [stepIncomplete, setStepIncomplete] = useState({});
-  const [formData, setFormData] = useState({ 1: {}, 2: {}, 3: {}, 4: {} });
+  const [formData, setFormData] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {} });
 
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
@@ -360,7 +369,7 @@ export default function WizardShell({
   const nameIsPlaceholder = templateName === "Untitled template";
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column", fontFamily: F, background: C.g1 }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", fontFamily: F, background: C.g1 }}>
 
       {/* ── Header ── */}
       <div style={{
@@ -458,8 +467,16 @@ export default function WizardShell({
           />
         )}
         {step === 4 && (
-          <Step4ScheduleStub
+          <Step4Schedule
+            formData={formData[4]}
+            onChange={(patch) => handleStepDataChange(4, patch)}
+            onNext={() => navigateToStep(5)}
             onBack={() => navigateToStep(3)}
+          />
+        )}
+        {step === 5 && (
+          <Step5EscalationStub
+            onBack={() => navigateToStep(4)}
           />
         )}
       </div>

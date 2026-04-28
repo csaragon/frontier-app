@@ -246,7 +246,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
         }
       `}</style>
 
-      <div style={{ height: "100vh", background: C.g1, display: "flex", flexDirection: "column", fontFamily: F }}>
+      <div style={{ height: "100%", background: C.g1, display: "flex", flexDirection: "column", fontFamily: F }}>
         {/* Top bar */}
         <div style={{
           height: 52,
