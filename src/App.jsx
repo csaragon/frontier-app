@@ -6,6 +6,12 @@ import Catalog, { TEMPLATES, CAT_COLORS } from "./Catalog.jsx";
 import TemplateWizard from "./TemplateWizard.jsx";
 import ProgramList from "./ProgramList.jsx";
 import AuditList from "./AuditList.jsx";
+import AuditsListPage from "./records/AuditsListPage.jsx";
+import AuditRecordPage from "./records/AuditRecordPage.jsx";
+import LocationsListPage from "./records/LocationsListPage.jsx";
+import LocationRecordPage from "./records/LocationRecordPage.jsx";
+import EmployeesListPage from "./records/EmployeesListPage.jsx";
+import EmployeeRecordPage from "./records/EmployeeRecordPage.jsx";
 import Settings from "./Settings.jsx";
 import AuditBuilderHome from "./AuditBuilderHome.jsx";
 import TemplateBuilderFlow from "./TemplateBuilderFlow/index.jsx";
@@ -18,6 +24,12 @@ const seedCategories  = () => Object.entries(CAT_COLORS).map(([name, style], i) 
 export default function App() {
   const [view, setView]                     = useState("dashboard");
   const [selectedProg, setSelectedProg]     = useState(null);
+  const [selectedAuditId, setSelectedAuditId]   = useState(null);
+  const [selectedLocationId, setSelectedLocationId] = useState(null);
+  const [selectedLocationName, setSelectedLocationName] = useState(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
+  const [recordFromAudit, setRecordFromAudit]   = useState(null);
   const [wizardTemplateId, setWizardTemplateId]   = useState(null);
   const [wizardSeymourMode, setWizardSeymourMode] = useState(false);
   const [wizardOrigin, setWizardOrigin]           = useState("catalog");
@@ -34,6 +46,16 @@ export default function App() {
       setWizardOrigin(payload?.origin ?? view);
     } else if (key === "template_builder") {
       setTemplateBuilderEntryPoint(payload?.entryPoint ?? "catalog");
+    } else if (key === "audit_record") {
+      setSelectedAuditId(payload?.auditId ?? null);
+    } else if (key === "location_record") {
+      setSelectedLocationId(payload?.locationId ?? null);
+      setSelectedLocationName(payload?.locationName ?? null);
+      setRecordFromAudit(payload?.fromAudit ?? null);
+    } else if (key === "employee_record") {
+      setSelectedEmployeeId(payload?.employeeId ?? null);
+      setSelectedEmployeeName(payload?.employeeName ?? null);
+      setRecordFromAudit(payload?.fromAudit ?? null);
     } else {
       setSelectedProg(null);
     }
@@ -90,7 +112,27 @@ export default function App() {
   }
 
   if (view === "audits") {
-    return <AuditList onNav={handleNav} density={density} />;
+    return <AuditsListPage onNav={handleNav} density={density} />;
+  }
+
+  if (view === "audit_record" && selectedAuditId) {
+    return <AuditRecordPage auditId={selectedAuditId} onNav={handleNav} density={density} />;
+  }
+
+  if (view === "locations") {
+    return <LocationsListPage onNav={handleNav} density={density} />;
+  }
+
+  if (view === "location_record") {
+    return <LocationRecordPage locationId={selectedLocationId} onNav={handleNav} />;
+  }
+
+  if (view === "employees") {
+    return <EmployeesListPage onNav={handleNav} density={density} />;
+  }
+
+  if (view === "employee_record") {
+    return <EmployeeRecordPage employeeId={selectedEmployeeId} onNav={handleNav} />;
   }
 
   if (view === "settings") {
