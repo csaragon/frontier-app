@@ -3,7 +3,7 @@ import Step1Details from "./Step1Details.jsx";
 import Step2Scoring from "./Step2Scoring.jsx";
 import Step3Sections from "./Step3Sections.jsx";
 import Step4Schedule from "./Step4Schedule.jsx";
-import Step5EscalationStub from "./Step5EscalationStub.jsx";
+import Step5Escalation from "./Step5Escalation.jsx";
 import { DiscardModal } from "./modals.jsx";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
@@ -279,6 +279,11 @@ export default function WizardShell({
   const [savedLabel, setSavedLabel] = useState(null);
   const [toastMsg, setToastMsg] = useState(null);
   const [showDiscard, setShowDiscard] = useState(false);
+  const [cantActivateModal, setCantActivateModal] = useState(null); // null | { issues }
+  const [activateConfirmModal, setActivateConfirmModal] = useState(false);
+
+  // Approval required stub — set to true to demo the approval flow
+  const REQUIRE_APPROVAL = false;
 
   const toastTimer = useRef(null);
   const autoSaveTimer = useRef(null);
@@ -339,6 +344,52 @@ export default function WizardShell({
     } else {
       onExit();
     }
+  }
+
+  function handleActivateClick() {
+    const issues = [];
+    const s1 = formData[1]; const s2 = formData[2]; const s3 = formData[3]; const s4 = formData[4];
+    if (!isStep1Complete(s1)) issues.push({ step: 1, label: "Details", reason: "Template name, category, and at least one language are required." });
+    if (!isStep2Complete(s2)) issues.push({ step: 2, label: "Scoring", reason: "Scoring methodology must be selected and fully configured." });
+    const secs = s3?.sections;
+    if (!Array.isArray(secs) || secs.length === 0 || !secs.some(s => s.questions.length > 0))
+      issues.push({ step: 3, label: "Sections & Questions", reason: "At least one section with at least one question is required." });
+    const a = s4?.assignees || {};
+    if (!s4?.scheduleType) issues.push({ step: 4, label: "Schedule", reason: "Schedule type is required." });
+    else if (!(s4.locations || []).length) issues.push({ step: 4, label: "Schedule", reason: "At least one location must be selected." });
+    else if (!((a.users||[]).length || (a.roles||[]).length || (a.groups||[]).length)) issues.push({ step: 4, label: "Schedule", reason: "At least one assignee is required." });
+
+    if (issues.length > 0) { setCantActivateModal({ issues }); }
+    else { setActivateConfirmModal(true); }
+  }
+
+  function handleConfirmActivate() {
+    setActivateConfirmModal(false);
+    doSave();
+    const msg = REQUIRE_APPROVAL ? `${templateName} submitted for approval` : `${templateName} activated`;
+    showToast(msg);
+    setTimeout(() => onExit(), 1800);
+  }
+
+  function handleSaveDraft() {
+    doSave();
+    showToast("Draft saved");
+    setTimeout(() => onExit(), 1500);
+  }
+
+  function buildActivationSummary() {
+    const s4 = formData[4] || {};
+    const s5 = formData[5] || {};
+    const schedType = s4.scheduleType === "one_time" ? "one-time" : s4.scheduleType === "recurring" ? "recurring" : s4.scheduleType === "event" ? "event-based" : s4.scheduleType || "scheduled";
+    const locCount = (s4.locations || []).length;
+    const a = s4.assignees || {};
+    const assigneeParts = [];
+    if ((a.roles||[]).length) assigneeParts.push(a.roles.join(", "));
+    if ((a.users||[]).length) assigneeParts.push(`${a.users.length} specific user${a.users.length !== 1 ? "s" : ""}`);
+    if ((a.groups||[]).length) assigneeParts.push(`${a.groups.length} group${a.groups.length !== 1 ? "s" : ""}`);
+    const ruleCount = (s5.rules || []).length;
+    const programs = (s4.programs || []);
+    return { schedType, locCount, assigneeSummary: assigneeParts.join(", ") || "assignees", ruleCount, programs };
   }
 
   function handleStepDataChange(stepNum, patch) {
@@ -475,8 +526,13 @@ export default function WizardShell({
           />
         )}
         {step === 5 && (
-          <Step5EscalationStub
+          <Step5Escalation
+            formData={formData[5]}
+            onChange={(patch) => handleStepDataChange(5, patch)}
             onBack={() => navigateToStep(4)}
+            onActivate={handleActivateClick}
+            onSaveDraft={handleSaveDraft}
+            onNavigateToStep={navigateToStep}
           />
         )}
       </div>
@@ -489,6 +545,93 @@ export default function WizardShell({
           onCancel={() => setShowDiscard(false)}
         />
       )}
+
+      {/* ── Can't activate modal ── */}
+      {cantActivateModal && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, fontFamily:F }}
+          onClick={e => { if (e.target === e.currentTarget) setCantActivateModal(null); }}>
+          <div style={{ background:C.white, borderRadius:14, width:480, maxHeight:"80vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
+            <div style={{ padding:"18px 24px 0", flexShrink:0 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.amber} strokeWidth="2.5" strokeLinecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span style={{ fontSize:16, fontWeight:700, color:C.g6, fontFamily:F }}>Can't activate yet</span>
+              </div>
+              <p style={{ margin:"0 0 14px", fontSize:13, color:C.g5, lineHeight:"19px" }}>Some required fields are missing. Fix these to activate:</p>
+            </div>
+            <div style={{ flex:1, overflowY:"auto", padding:"0 24px" }}>
+              {cantActivateModal.issues.map((issue, i) => (
+                <button key={i}
+                  onClick={() => { setCantActivateModal(null); navigateToStep(issue.step); }}
+                  style={{ display:"flex", alignItems:"flex-start", gap:10, width:"100%", textAlign:"left", background:"none", border:"none", padding:"10px 0", borderBottom:`1px solid ${C.g1}`, cursor:"pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.background = C.g1}
+                  onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                  <div style={{ width:20, height:20, borderRadius:"50%", background:C.amberBg, border:`1px solid #fcd34d`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
+                    <span style={{ fontSize:10, fontWeight:700, color:C.amber, fontFamily:F }}>{issue.step}</span>
+                  </div>
+                  <div>
+                    <div style={{ fontSize:13, fontWeight:600, color:C.g6, fontFamily:F }}>Step {issue.step}: {issue.label}</div>
+                    <div style={{ fontSize:12, color:C.g5, fontFamily:F, marginTop:2 }}>{issue.reason}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div style={{ padding:"14px 24px", borderTop:`1px solid ${C.g2}`, display:"flex", gap:8, justifyContent:"space-between", alignItems:"center", flexShrink:0, marginTop:12 }}>
+              <button onClick={() => setCantActivateModal(null)}
+                style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:C.g5, fontFamily:F, fontWeight:500 }}>Cancel</button>
+              <button onClick={() => { const first = cantActivateModal.issues[0]; setCantActivateModal(null); navigateToStep(first.step); }}
+                style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 22px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+                onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+                onMouseLeave={e => e.currentTarget.style.background = C.navy}>
+                Go fix it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Activate confirmation modal ── */}
+      {activateConfirmModal && (() => {
+        const { schedType, locCount, assigneeSummary, ruleCount, programs } = buildActivationSummary();
+        const startDate = formData[4]?.startDate;
+        return (
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, fontFamily:F }}
+            onClick={e => { if (e.target === e.currentTarget) setActivateConfirmModal(false); }}>
+            <div style={{ background:C.white, borderRadius:14, width:500, boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
+              <div style={{ padding:"20px 24px 0" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.teal} strokeWidth="2.5" strokeLinecap="round"><polyline points="9 12 11 14 15 10"/><circle cx="12" cy="12" r="10"/></svg>
+                  <span style={{ fontSize:16, fontWeight:700, color:C.g6, fontFamily:F }}>
+                    {REQUIRE_APPROVAL ? "Submit for approval?" : "Activate this template?"}
+                  </span>
+                </div>
+                <div style={{ fontSize:13, color:C.g5, lineHeight:"21px", marginBottom:14 }}>
+                  This template will run on a <strong>{schedType}</strong> schedule
+                  {startDate ? <> starting <strong>{startDate}</strong></> : null},
+                  applied to <strong>{locCount} location{locCount !== 1 ? "s" : ""}</strong>.
+                  Audits will be assigned to <strong>{assigneeSummary}</strong>.
+                  {programs.length > 0 && <><br />It will be added to <strong>{programs.length} program{programs.length !== 1 ? "s" : ""}</strong>: {programs.join(", ")}.</>}
+                  {ruleCount > 0 && <><br /><strong>{ruleCount} escalation rule{ruleCount !== 1 ? "s" : ""}</strong> configured to fire on audit outcomes.</>}
+                </div>
+                {REQUIRE_APPROVAL && (
+                  <div style={{ background:C.amberBg, border:"1px solid #fcd34d", borderRadius:8, padding:"10px 14px", fontSize:12, color:C.amber, lineHeight:"17px", marginBottom:14 }}>
+                    This template will be sent for approval before going live. You'll be notified when it's reviewed.
+                  </div>
+                )}
+              </div>
+              <div style={{ padding:"12px 24px 20px", display:"flex", gap:8, justifyContent:"flex-end", borderTop:`1px solid ${C.g2}`, marginTop:4 }}>
+                <button onClick={() => setActivateConfirmModal(false)}
+                  style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
+                <button onClick={handleConfirmActivate}
+                  style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 22px", fontSize:13, fontWeight:700, fontFamily:F, cursor:"pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+                  onMouseLeave={e => e.currentTarget.style.background = C.navy}>
+                  {REQUIRE_APPROVAL ? "Submit for approval" : "Activate"}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Toast notification ── */}
       {toastMsg && <Toast message={toastMsg} />}
