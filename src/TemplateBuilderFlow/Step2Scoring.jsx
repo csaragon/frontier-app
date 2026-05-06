@@ -6,9 +6,9 @@ const C = {
   ocean: "#2226f7",
   white: "#ffffff",
   g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  red: "#dc2626", redBg: "#fef2f2",
-  green: "#059669", greenBg: "#f0fdf4",
-  amber: "#b45309",
+  red: "#b6143a", redBg: "#fae5e6",
+  green: "#115e59", greenBg: "#f0fdf4",
+  amber: "#854d0e",
   purpleBg: "#f5f3ff", purpleBorder: "#ddd6fe",
 };
 
@@ -84,11 +84,11 @@ function getAffectedItems(from, to) {
 }
 
 const GRADE_COLORS = {
-  A: { color: "#059669", bg: "#dcfce7" },
+  A: { color: "#115e59", bg: "#dcfce7" },
   B: { color: "#0891b2", bg: "#e0f2fe" },
   C: { color: "#d97706", bg: "#fef3c7" },
-  D: { color: "#b45309", bg: "#fff7ed" },
-  F: { color: "#dc2626", bg: "#fee2e2" },
+  D: { color: "#854d0e", bg: "#fff7ed" },
+  F: { color: "#b6143a", bg: "#fee2e2" },
 };
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@ function InfoTooltip({ text }) {
           color: C.white,
           padding: "8px 12px",
           borderRadius: 6,
-          fontSize: 11,
+          fontSize: 12,
           lineHeight: "16px",
           fontFamily: F,
           width: 250,
@@ -206,6 +206,58 @@ function SectionHead({ title, helper, tooltip }) {
   );
 }
 
+function SectionCard({ title, helper, tooltip, extra, children }) {
+  return (
+    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12, marginBottom: 20, overflow: "hidden" }}>
+      <div style={{ padding: "14px 20px 12px", borderBottom: `1px solid ${C.g2}` }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: C.g6, fontFamily: F }}>{title}</span>
+          {tooltip && <InfoTooltip text={tooltip} />}
+          {extra}
+        </div>
+        {helper && <p style={{ margin: "3px 0 0", fontSize: 12, color: C.g4, fontFamily: F, lineHeight: "17px" }}>{helper}</p>}
+      </div>
+      <div style={{ padding: "16px 20px" }}>{children}</div>
+    </div>
+  );
+}
+
+const SCORING_MATH = {
+  weighted:      "Each section contributes proportionally based on its weight. Final score = Σ(section score × section weight). Section weights must total 100%.",
+  points:        "Final score = earned points ÷ total available points × 100. Each question is assigned a point value; auditors earn those points for correct answers.",
+  passfail:      "The audit passes or fails based on critical questions and thresholds you configure. There is no numeric score — the outcome is binary.",
+  informational: "No score is calculated. Responses are recorded as-is for review and reporting. Useful for intake forms or observation checklists.",
+};
+
+function ScoringMathBox({ methodology }) {
+  const [show, setShow] = useState(false);
+  const body = SCORING_MATH[methodology];
+  if (!body) return null;
+  return (
+    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 6 }}>
+      <button
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", color: C.g4, lineHeight: 1 }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </button>
+      {show && (
+        <div style={{
+          position: "absolute", bottom: "calc(100% + 8px)", left: "50%", transform: "translateX(-50%)",
+          background: C.g6, color: C.white, padding: "9px 13px", borderRadius: 7,
+          fontSize: 12, fontFamily: F, lineHeight: "18px", width: 260, zIndex: 999,
+          boxShadow: "0 4px 14px rgba(0,0,0,0.22)", whiteSpace: "normal", pointerEvents: "none",
+        }}>
+          {body}
+        </div>
+      )}
+    </span>
+  );
+}
+
 function Divider() {
   return <div style={{ height: 1, background: C.g2 }} />;
 }
@@ -221,7 +273,7 @@ function Toggle({ checked, onChange }) {
       style={{
         width: 36, height: 20,
         background: checked ? C.navy : C.g3,
-        borderRadius: 10,
+        borderRadius: 12,
         border: "none",
         cursor: "pointer",
         position: "relative",
@@ -253,7 +305,7 @@ function ToggleRow({ checked, onChange, label, helper, tooltip }) {
           <span style={{ fontSize: 13, fontWeight: 500, color: C.g6, fontFamily: F }}>{label}</span>
           {tooltip && <InfoTooltip text={tooltip} />}
         </div>
-        <p style={{ margin: "3px 0 0", fontSize: 11, color: C.g4, fontFamily: F, lineHeight: "16px" }}>{helper}</p>
+        <p style={{ margin: "3px 0 0", fontSize: 12, color: C.g4, fontFamily: F, lineHeight: "16px" }}>{helper}</p>
       </div>
     </div>
   );
@@ -273,7 +325,7 @@ function CheckboxRow({ checked, onChange, label, helper, tooltip }) {
           <span style={{ fontSize: 13, fontWeight: 500, color: C.g6, fontFamily: F }}>{label}</span>
           {tooltip && <InfoTooltip text={tooltip} />}
         </div>
-        <p style={{ margin: "3px 0 0", fontSize: 11, color: C.g4, fontFamily: F, lineHeight: "16px" }}>{helper}</p>
+        <p style={{ margin: "3px 0 0", fontSize: 12, color: C.g4, fontFamily: F, lineHeight: "16px" }}>{helper}</p>
       </div>
     </label>
   );
@@ -295,7 +347,7 @@ function MethodCard({ method, selected, onClick }) {
         flex: "1 1 180px",
         padding: "20px 18px",
         border: `2px solid ${active ? C.navy : hover ? C.g3 : C.g2}`,
-        borderRadius: 10,
+        borderRadius: 12,
         cursor: "pointer",
         background: active ? C.navyBg : C.white,
         display: "flex",
@@ -315,7 +367,7 @@ function MethodCard({ method, selected, onClick }) {
         <div style={{ fontSize: 13, fontWeight: 600, color: active ? C.navy : C.g6, fontFamily: F, marginBottom: 4 }}>
           {method.label}
         </div>
-        <div style={{ fontSize: 11, color: C.g5, fontFamily: F, lineHeight: "16px" }}>
+        <div style={{ fontSize: 12, color: C.g5, fontFamily: F, lineHeight: "16px" }}>
           {method.desc}
         </div>
       </div>
@@ -338,7 +390,7 @@ function FormatCard({ format, selected, onClick }) {
         flex: "1 1 130px",
         padding: "16px 12px",
         border: `2px solid ${active ? C.navy : hover ? C.g3 : C.g2}`,
-        borderRadius: 10,
+        borderRadius: 12,
         cursor: "pointer",
         background: active ? C.navyBg : C.white,
         display: "flex",
@@ -375,7 +427,7 @@ function GradeThresholdsCard({ thresholds, onChange }) {
     <div style={{
       background: C.white,
       border: `1px solid ${C.g2}`,
-      borderRadius: 10,
+      borderRadius: 12,
       padding: "20px 24px",
       marginTop: 14,
     }}>
@@ -420,7 +472,7 @@ function GradeThresholdsCard({ thresholds, onChange }) {
               />
               <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>% → {grade}</span>
               {err && (
-                <span style={{ fontSize: 11, color: C.red, fontFamily: F }}>{err}</span>
+                <span style={{ fontSize: 12, color: C.red, fontFamily: F }}>{err}</span>
               )}
             </div>
           );
@@ -433,7 +485,7 @@ function GradeThresholdsCard({ thresholds, onChange }) {
           <span style={{ fontSize: 12, color: C.g4, fontFamily: F }}>
             Below D — &lt; {t.D}% → F
           </span>
-          <span style={{ fontSize: 11, color: C.g4, fontFamily: F, fontStyle: "italic" }}>
+          <span style={{ fontSize: 12, color: C.g4, fontFamily: F, fontStyle: "italic" }}>
             (derived from Grade D threshold)
           </span>
         </div>
@@ -449,11 +501,11 @@ function SectionWeightsTable({ weights, onChange }) {
   const balanced = Math.round(total) === 100;
 
   return (
-    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 10, overflow: "hidden" }}>
+    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12, overflow: "hidden" }}>
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", padding: "10px 20px", background: C.g1, borderBottom: `1px solid ${C.g2}` }}>
-        <span style={{ flex: 1, fontSize: 11, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: F }}>Section</span>
-        <span style={{ fontSize: 11, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: F, width: 90, textAlign: "right" }}>Weight</span>
+        <span style={{ flex: 1, fontSize: 12, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: F }}>Section</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: F, width: 90, textAlign: "right" }}>Weight</span>
       </div>
 
       {/* Section rows */}
@@ -525,7 +577,7 @@ function MethodologyModal({ currentMethod, pendingMethod, onConfirm, onCancel })
       style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.48)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
     >
-      <div style={{ background: C.white, borderRadius: 10, width: 440, maxWidth: "calc(100vw - 32px)", padding: "28px 28px 24px", boxShadow: "0 20px 60px rgba(0,0,0,0.18)", fontFamily: F }}>
+      <div style={{ background: C.white, borderRadius: 12, width: 440, maxWidth: "calc(100vw - 32px)", padding: "28px 28px 24px", boxShadow: "0 20px 60px rgba(0,0,0,0.18)", fontFamily: F }}>
         <h3 style={{ margin: "0 0 10px", fontSize: 16, fontWeight: 700, color: C.g6 }}>
           Change scoring methodology?
         </h3>
@@ -563,7 +615,7 @@ function MethodologyModal({ currentMethod, pendingMethod, onConfirm, onCancel })
 
 // ── Step 2: Scoring ───────────────────────────────────────────────────────────
 
-export default function Step2Scoring({ formData, onChange, onNext, onBack }) {
+export default function Step2Scoring({ formData, onChange, onNext, onBack, hasQuestions = false }) {
   // Merge user data over defaults — defaults do not trigger onChange on mount
   const d = {
     methodology:      null,
@@ -584,7 +636,7 @@ export default function Step2Scoring({ formData, onChange, onNext, onBack }) {
 
   function handleMethodologyClick(key) {
     if (key === d.methodology) return;
-    if (d.methodology !== null) {
+    if (d.methodology !== null && hasQuestions) {
       setPendingMethodology(key);
     } else {
       onChange({ methodology: key });
@@ -602,44 +654,33 @@ export default function Step2Scoring({ formData, onChange, onNext, onBack }) {
     <div style={{ padding: "40px 24px 80px", display: "flex", justifyContent: "center", fontFamily: F }}>
       <div style={{ width: "100%", maxWidth: 1080 }}>
 
-        {/* Intro card */}
-        <div style={{
-          background: C.purpleBg,
-          border: `1px solid ${C.purpleBorder}`,
-          borderRadius: 10,
-          padding: "16px 22px",
-          marginBottom: 32,
-        }}>
-          <h2 style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 700, color: C.g6, fontFamily: F }}>
-            Scoring Configuration
-          </h2>
-          <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>
-            Choose how this template is scored and how auditors see the result.
-          </p>
+        {/* Page title */}
+        <div style={{ marginBottom: 28 }}>
+          <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Scoring</h2>
+          <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Define how audits are scored — methodology, display format, and score visibility.</p>
         </div>
 
         {/* ── Section 1: Methodology ── */}
-        <div style={{ marginBottom: 36 }}>
-          <SectionHead
-            title="Scoring methodology"
-            helper="How the final score is calculated from individual question responses"
-            tooltip={TOOLTIPS.methodology}
-          />
+        <SectionCard
+          title="Scoring methodology"
+          helper="How the final score is calculated from individual question responses"
+          tooltip={TOOLTIPS.methodology}
+          extra={<ScoringMathBox key={d.methodology} methodology={d.methodology} />}
+        >
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             {METHODOLOGIES.map((m) => (
               <MethodCard key={m.key} method={m} selected={d.methodology} onClick={handleMethodologyClick} />
             ))}
           </div>
-        </div>
+        </SectionCard>
 
         {/* ── Section 2: Display format (hidden for informational) ── */}
         {!isInfoOnly && (
-          <div style={{ marginBottom: 36 }}>
-            <SectionHead
-              title="Display format"
-              helper="How the final score is presented to auditors and reviewers"
-              tooltip={TOOLTIPS.displayFormat}
-            />
+          <SectionCard
+            title="Display format"
+            helper="How the final score is presented to auditors and reviewers"
+            tooltip={TOOLTIPS.displayFormat}
+          >
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {DISPLAY_FORMATS.map((fmt) => (
                 <FormatCard
@@ -658,90 +699,46 @@ export default function Step2Scoring({ formData, onChange, onNext, onBack }) {
                 onChange={(updated) => onChange({ gradeThresholds: updated })}
               />
             )}
-          </div>
+          </SectionCard>
         )}
 
         {/* ── Section 3: Section weights (weighted only) ── */}
         {showWeights && (
-          <div style={{ marginBottom: 36 }}>
-            <SectionHead
-              title="Section weights"
-              helper="Set how much each section contributes to the overall score. Weights must total exactly 100%."
-              tooltip={TOOLTIPS.sectionWeights}
-            />
+          <SectionCard
+            title="Section weights"
+            helper="Set how much each section contributes to the overall score. Weights must total exactly 100%."
+            tooltip={TOOLTIPS.sectionWeights}
+          >
             <SectionWeightsTable
               weights={d.sectionWeights}
               onChange={(updated) => onChange({ sectionWeights: updated })}
             />
-          </div>
+          </SectionCard>
         )}
 
-        {/* ── Sections 4–6: Score visibility (hidden for informational) ── */}
+        {/* ── Score visibility (hidden for informational) ── */}
         {!isInfoOnly && (
-          <div style={{ marginBottom: 36 }}>
-            <SectionHead title="Score visibility" />
-            <div style={{
-              background: C.white,
-              border: `1px solid ${C.g2}`,
-              borderRadius: 10,
-              padding: "22px 26px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 20,
-            }}>
+          <SectionCard title="Score visibility" helper="Control what auditors see during and after completing the audit">
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <CheckboxRow
                 checked={d.showRunningScore}
                 onChange={(val) => onChange({ showRunningScore: val })}
-                label="Show Running Score"
-                helper="Let auditors see their score update live while completing the audit. If off, the score is hidden until submit."
+                label="Show running score"
+                helper="Let auditors see their score update live while completing the audit."
                 tooltip={TOOLTIPS.showRunningScore}
-              />
-              <Divider />
-              <ToggleRow
-                checked={d.showScoringMath}
-                onChange={(val) => onChange({ showScoringMath: val })}
-                label="Show scoring math to auditor"
-                helper="When on, auditors can see how their score is calculated as they complete the audit."
-                tooltip={TOOLTIPS.showScoringMath}
               />
               <Divider />
               <ToggleRow
                 checked={d.showFinalScore}
                 onChange={(val) => onChange({ showFinalScore: val })}
-                label="Show final score to auditor at submit"
-                helper="If off, the auditor completes the audit but doesn't see the resulting score. Useful for blind audits or when manager review comes first."
+                label="Show final score at submit"
+                helper="If off, the auditor completes the audit but doesn't see the resulting score. Useful for blind audits."
                 tooltip={TOOLTIPS.showFinalScore}
               />
             </div>
-          </div>
+          </SectionCard>
         )}
 
-        {/* ── Footer ── */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <button
-            onClick={onBack}
-            style={{ background: "none", border: "none", color: C.g5, fontSize: 13, fontWeight: 500, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, padding: "8px 0" }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = C.g6; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = C.g5; }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            Back: Details
-          </button>
-
-          <button
-            onClick={onNext}
-            style={{ background: C.navy, color: C.white, border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = C.navy2; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = C.navy; }}
-          >
-            Next: Sections &amp; Questions
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        </div>
       </div>
 
       {/* Methodology change confirmation modal */}

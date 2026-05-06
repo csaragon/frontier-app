@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
+import { T, F } from "./aegis-tokens.js";
 
 const ICONS = {
   waffle:      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="1" y="1" width="4" height="4" rx="1"/><rect x="7" y="1" width="4" height="4" rx="1"/><rect x="13" y="1" width="4" height="4" rx="1"/><rect x="1" y="7" width="4" height="4" rx="1"/><rect x="7" y="7" width="4" height="4" rx="1"/><rect x="13" y="7" width="4" height="4" rx="1"/><rect x="1" y="13" width="4" height="4" rx="1"/><rect x="7" y="13" width="4" height="4" rx="1"/><rect x="13" y="13" width="4" height="4" rx="1"/></svg>,
@@ -16,7 +15,7 @@ const ICONS = {
   locations:   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
   users:       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   settings:      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
-  audit_builder: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="16" width="20" height="4" rx="1"/><rect x="2" y="10" width="20" height="4" rx="1"/><rect x="2" y="4"  width="20" height="4" rx="1"/><line x1="18" y1="4"  x2="18" y2="20" strokeWidth="1" stroke="currentColor" strokeDasharray="2 1.5"/></svg>,
+  //audit_builder: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="16" width="20" height="4" rx="1"/><rect x="2" y="10" width="20" height="4" rx="1"/><rect x="2" y="4"  width="20" height="4" rx="1"/><line x1="18" y1="4"  x2="18" y2="20" strokeWidth="1" stroke="currentColor" strokeDasharray="2 1.5"/></svg>,
   template_builder: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/><path d="M3 17h10"/><path d="M17 17l2 2 4-4"/></svg>,
 };
 
@@ -31,8 +30,8 @@ const NAV_ITEMS = [
 ];
 
 const MANAGE_ITEMS = [
-  { id: "template_builder", label: "Template Builder", icon: "template_builder" },
-  { id: "audit_builder",    label: "Audit Builder",    icon: "audit_builder"    },
+  //{ id: "audit_builder", label: "Audit Builder",    icon: "audit_builder"    },
+  { id: "template_builder",    label: "Audit Builder", icon: "template_builder" },
   { id: "catalog",          label: "Catalog",          icon: "catalog"          },
   { id: "users",            label: "Users",            icon: "users"            },
 ];
@@ -45,7 +44,7 @@ const THINKLP_MODULES = [
   { id:"safety",         label:"Safety",        color:"#c97040" },
   { id:"audit",          label:"Audit",         color:"#5c8a5c", active: true },
   { id:"hr",             label:"HR",            color:"#8a7060" },
-  { id:"insights",       label:"Insights",      color:"#2226f7" },
+  { id:"insights",       label:"Insights",      color:T.actionContainer1 },
   { id:"crime-linking",  label:"Crime Linking", color:"#8b5e8b" },
   { id:"admin",          label:"Admin",         color:"#6b6b6b" },
 ];
@@ -60,23 +59,23 @@ function AppLauncher({ open, onClose }) {
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div ref={ref} style={{ position:"fixed", top:69, left:52, zIndex:200, width:300, background:"#fff", borderRadius:10, border:"1px solid #e2e5e9", padding:16, boxShadow:"0 8px 30px rgba(0,0,0,0.12)" }}>
+    <div ref={ref} style={{ position:"fixed", top:69, left:52, zIndex:200, width:300, background:T.onAction1, borderRadius:12, border:"1px solid #e2e5e9", padding:16, boxShadow:"0 8px 30px rgba(0,0,0,0.12)" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
         <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-          <span style={{ fontSize:13, fontWeight:800, color:"#16191d", fontFamily:F, letterSpacing:"-0.5px" }}>think</span>
-          <span style={{ background:"#2226f7", color:"#fff", fontSize:9, fontWeight:700, padding:"2px 4px", borderRadius:3 }}>LP</span>
+          <span style={{ fontSize:13, fontWeight:800, color:T.onSurface2, fontFamily:F, letterSpacing:"-0.5px" }}>think</span>
+          <span style={{ background:T.actionContainer1, color:T.onAction1, fontSize:10, fontWeight:700, padding:"2px 4px", borderRadius:4 }}>LP</span>
         </div>
-        <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:"#8692a2", display:"flex", padding:4, borderRadius:4 }}>
+        <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:T.disabled1, display:"flex", padding:4, borderRadius:4 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:6 }}>
         {THINKLP_MODULES.map(m => (
-          <button key={m.id} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5, padding:"10px 4px", borderRadius:8, border:`1px solid ${m.active ? m.color+"40" : "#e2e5e9"}`, background: m.active ? m.color+"10" : "#fff", cursor:"pointer" }}>
-            <div style={{ width:28, height:28, borderRadius:7, background: m.color, display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <span style={{ fontSize:10, fontWeight:800, color:"#fff", fontFamily:F }}>{m.label.slice(0,2).toUpperCase()}</span>
+          <button key={m.id} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5, padding:"10px 4px", borderRadius:8, border:`1px solid ${m.active ? m.color+"40" : T.border1}`, background: m.active ? m.color+"10" : T.onAction1, cursor:"pointer" }}>
+            <div style={{ width:28, height:28, borderRadius:8, background: m.color, display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <span style={{ fontSize:10, fontWeight:800, color:T.onAction1, fontFamily:F }}>{m.label.slice(0,2).toUpperCase()}</span>
             </div>
-            <span style={{ fontSize:9, fontWeight: m.active ? 700 : 400, color: m.active ? m.color : "#555f6d", fontFamily:F, textAlign:"center", lineHeight:"12px" }}>{m.label}</span>
+            <span style={{ fontSize:10, fontWeight: m.active ? 700 : 400, color: m.active ? m.color : T.onSurface1, fontFamily:F, textAlign:"center", lineHeight:"12px" }}>{m.label}</span>
           </button>
         ))}
       </div>
@@ -95,8 +94,8 @@ export default function AppSidebar({ activeId = "dashboard", onNav }) {
     if (collapsed) {
       return (
         <button onClick={() => onNav?.(item.id)} title={item.label}
-          style={{ width:"100%", height:36, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:6, border:"none", cursor:"pointer", background: isActive ? "#2226f7" : "transparent", color: isActive ? "#fff" : "#001e76", transition:"all 0.12s" }}
-          onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#f4f4f6"; }}
+          style={{ width:"100%", height:36, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:6, border:"none", cursor:"pointer", background: isActive ? T.actionContainer1 : "transparent", color: isActive ? T.onAction1 : T.action1, transition:"all 0.12s" }}
+          onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = T.surface2; }}
           onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
           <span style={{ display:"flex", width:16, height:16 }}>{icon}</span>
         </button>
@@ -104,9 +103,9 @@ export default function AppSidebar({ activeId = "dashboard", onNav }) {
     }
     return (
       <button onClick={() => onNav?.(item.id)}
-        style={{ width:"100%", height:40, display:"flex", alignItems:"center", gap:8, padding:"0 12px", borderRadius:6, border:"none", cursor:"pointer", background: isActive ? "#2226f7" : "transparent", color: isActive ? "#fff" : "#001e76", fontSize:12, fontFamily:F, fontWeight: isActive ? 600 : 400, letterSpacing:"-0.13px", transition:"all 0.12s", textAlign:"left",
+        style={{ width:"100%", height:40, display:"flex", alignItems:"center", gap:8, padding:"0 12px", borderRadius:6, border:"none", cursor:"pointer", background: isActive ? T.actionContainer1 : "transparent", color: isActive ? T.onAction1 : T.action1, fontSize:12, fontFamily:F, fontWeight: isActive ? 600 : 400, letterSpacing:"-0.13px", transition:"all 0.12s", textAlign:"left",
           boxShadow: isActive ? "0px 2px 8px rgba(34,38,247,0.18)" : "none" }}
-        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#f4f4f6"; }}
+        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = T.surface2; }}
         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
         <span style={{ flexShrink:0, display:"flex", width:16, height:16 }}>{icon}</span>
         <span style={{ whiteSpace:"nowrap" }}>{item.label}</span>
@@ -117,7 +116,7 @@ export default function AppSidebar({ activeId = "dashboard", onNav }) {
   return (
     <aside style={{
       width: collapsed ? 52 : 220, minWidth: collapsed ? 52 : 220,
-      height:"100vh", background:"#fff", borderRight:"1px solid #e2e5e9",
+      height:"100vh", background:T.onAction1, borderRight:"1px solid #e2e5e9",
       display:"flex", flexDirection:"column", position:"relative", zIndex:20,
       transition:"width 0.2s ease, min-width 0.2s ease", overflow:"hidden", flexShrink:0,
     }}>
@@ -129,24 +128,24 @@ export default function AppSidebar({ activeId = "dashboard", onNav }) {
               onClick={() => setLauncherOpen(o => !o)}
               onMouseEnter={() => setWaffleH(true)}
               onMouseLeave={() => setWaffleH(false)}
-              style={{ background: waffleH ? "#f0f0f0" : "none", border:"none", cursor:"pointer", color:"#555f6d", display:"flex", padding:5, borderRadius:6, flexShrink:0 }}>
+              style={{ background: waffleH ? T.surface2 : "none", border:"none", cursor:"pointer", color:T.onSurface1, display:"flex", padding:5, borderRadius:6, flexShrink:0 }}>
               {ICONS.waffle}
             </button>
             <svg width="22" height="22" viewBox="0 0 100 100" fill="none" style={{ flexShrink:0 }}>
-              <defs><linearGradient id="appSideGrad" x1="0" y1="100" x2="100" y2="0"><stop offset="0%" stopColor="#5c8a5c"/><stop offset="100%" stopColor="#2226f7"/></linearGradient></defs>
+              <defs><linearGradient id="appSideGrad" x1="0" y1="100" x2="100" y2="0"><stop offset="0%" stopColor="#5c8a5c"/><stop offset="100%" stopColor={T.actionContainer1}/></linearGradient></defs>
               <circle cx="50" cy="50" r="44" stroke="url(#appSideGrad)" strokeWidth="7" fill="none"/>
               <circle cx="50" cy="50" r="28" stroke="url(#appSideGrad)" strokeWidth="5" fill="none"/>
               <circle cx="50" cy="38" r="8" fill="url(#appSideGrad)"/>
               <rect x="44" y="46" width="12" height="20" rx="4" fill="url(#appSideGrad)"/>
             </svg>
-            <span style={{ fontWeight:700, fontSize:13, color:"#16191d", fontFamily:F, letterSpacing:"-0.3px", flex:1, whiteSpace:"nowrap" }}>Audit</span>
+            <span style={{ fontWeight:700, fontSize:13, color:T.onSurface2, fontFamily:F, letterSpacing:"-0.3px", flex:1, whiteSpace:"nowrap" }}>Audit</span>
           </>
         )}
         <button
           onClick={() => { setCollapsed(c => !c); setLauncherOpen(false); }}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          style={{ background:"none", border:"none", cursor:"pointer", color:"#8692a2", display:"flex", padding:5, borderRadius:6, flexShrink:0, marginLeft: collapsed ? 0 : "auto" }}
-          onMouseEnter={e => e.currentTarget.style.background = "#e2e5e9"}
+          style={{ background:"none", border:"none", cursor:"pointer", color:T.disabled1, display:"flex", padding:5, borderRadius:6, flexShrink:0, marginLeft: collapsed ? 0 : "auto" }}
+          onMouseEnter={e => e.currentTarget.style.background = T.border1}
           onMouseLeave={e => e.currentTarget.style.background = "none"}>
           {collapsed ? ICONS.chevronRight : ICONS.chevronLeft}
         </button>
@@ -160,18 +159,18 @@ export default function AppSidebar({ activeId = "dashboard", onNav }) {
 
         {/* Manage section */}
         {!collapsed && (
-          <div style={{ fontSize:9, fontWeight:700, color:"#8692a2", textTransform:"uppercase", letterSpacing:"0.06em", padding:"12px 12px 4px", fontFamily:F }}>
+          <div style={{ fontSize:10, fontWeight:700, color:T.disabled1, textTransform:"uppercase", letterSpacing:"0.06em", padding:"12px 12px 4px", fontFamily:F }}>
             Manage
           </div>
         )}
-        {collapsed && <div style={{ height:1, background:"#e2e5e9", margin:"8px 4px" }} />}
+        {collapsed && <div style={{ height:1, background:T.border1, margin:"8px 4px" }} />}
         {MANAGE_ITEMS.map(item => <NavBtn key={item.id} item={item} />)}
 
         {/* Settings pinned to bottom */}
         <div style={{ flex:1 }} />
-        {collapsed && <div style={{ height:1, background:"#e2e5e9", margin:"8px 4px" }} />}
+        {collapsed && <div style={{ height:1, background:T.border1, margin:"8px 4px" }} />}
         {!collapsed && (
-          <div style={{ fontSize:9, fontWeight:700, color:"#8692a2", textTransform:"uppercase", letterSpacing:"0.06em", padding:"12px 12px 4px", fontFamily:F }}>
+          <div style={{ fontSize:10, fontWeight:700, color:T.disabled1, textTransform:"uppercase", letterSpacing:"0.06em", padding:"12px 12px 4px", fontFamily:F }}>
             Portal
           </div>
         )}

@@ -7,7 +7,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -17,12 +17,12 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  warning:      "#854d0e",
+  warningBg:    "#fef9c3",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 const ROW_H = 44;
@@ -125,9 +125,9 @@ function Modal({ onClose, children, width = 420, labelId }) {
 function ModalBtns({ onCancel, onConfirm, confirmLabel, confirmDisabled, danger }) {
   return (
     <div style={{ display:"flex", gap:8, justifyContent:"flex-end", marginTop:20 }}>
-      <button type="button" onClick={onCancel} style={{ padding:"7px 14px", borderRadius:7, border:`1px solid ${C.borderDef}`, background:C.bgSurface, color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>Cancel</button>
+      <button type="button" onClick={onCancel} style={{ padding:"7px 14px", borderRadius:8, border:`1px solid ${C.borderDef}`, background:C.bgSurface, color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>Cancel</button>
       <button type="button" onClick={confirmDisabled ? undefined : onConfirm} disabled={confirmDisabled}
-        style={{ padding:"7px 14px", borderRadius:7, border:"none", background:confirmDisabled ? C.borderDef : danger ? C.error : C.primary, color:confirmDisabled ? C.textMuted : "#fff", fontSize:12, fontFamily:F, fontWeight:600, cursor:confirmDisabled?"not-allowed":"pointer" }}>
+        style={{ padding:"7px 14px", borderRadius:8, border:"none", background:confirmDisabled ? C.borderDef : danger ? C.error : C.primary, color:confirmDisabled ? C.textMuted : "#fff", fontSize:12, fontFamily:F, fontWeight:600, cursor:confirmDisabled?"not-allowed":"pointer" }}>
         {confirmLabel}
       </button>
     </div>
@@ -143,7 +143,7 @@ function TypeChangeModal({ newType, count = 1, onConfirm, onClose }) {
       <div style={{ fontSize:12, color:C.textSec, fontFamily:F, lineHeight:"18px", marginBottom:4 }}>
         Changing {count > 1 ? `${count} questions` : "this question"} to <strong>{newType}</strong> will clear {count > 1 ? "their" : "its"} existing scoring configuration.
       </div>
-      <div style={{ fontSize:11, color:C.warning, fontFamily:F, background:C.warningBg, borderRadius:6, padding:"8px 10px" }}>
+      <div style={{ fontSize:12, color:C.warning, fontFamily:F, background:C.warningBg, borderRadius:6, padding:"8px 10px" }}>
         This cannot be undone — scoring settings will reset to defaults for the new type.
       </div>
       <ModalBtns onCancel={onClose} onConfirm={onConfirm} confirmLabel="Change type and reset" />
@@ -155,7 +155,7 @@ function TypeChangeModal({ newType, count = 1, onConfirm, onClose }) {
 
 function BulkEditModal({ field, count, sections, onConfirm, onClose }) {
   const [val, setVal] = useState("");
-  const iStyle = { padding:"7px 10px", borderRadius:7, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:"100%" };
+  const iStyle = { padding:"7px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:"100%" };
 
   const fieldLabel = field === "type" ? "Question type" : field === "required" ? "Required" : "Weight %";
 
@@ -203,11 +203,11 @@ function BulkDeleteModal({ count, onConfirm, onClose }) {
       <div style={{ fontSize:12, color:C.textSec, fontFamily:F, lineHeight:"18px", marginBottom:16 }}>
         This will permanently remove <strong>{count} question{count !== 1 ? "s" : ""}</strong> from the template. This cannot be undone.
       </div>
-      <label htmlFor="bulk-delete-confirm" style={{ fontSize:11, fontWeight:600, color:C.error, fontFamily:F, display:"block", marginBottom:4 }}>
+      <label htmlFor="bulk-delete-confirm" style={{ fontSize:12, fontWeight:600, color:C.error, fontFamily:F, display:"block", marginBottom:4 }}>
         Type <em style={{ fontFamily:"monospace" }}>{expected}</em> to confirm
       </label>
       <input id="bulk-delete-confirm" value={typed} onChange={e => setTyped(e.target.value)} placeholder={expected}
-        style={{ width:"100%", padding:"7px 10px", borderRadius:7, border:`1px solid ${confirmed ? C.error : C.borderDef}`, fontSize:11, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box", letterSpacing:0.5 }}
+        style={{ width:"100%", padding:"7px 10px", borderRadius:8, border:`1px solid ${confirmed ? C.error : C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box", letterSpacing:0.5 }}
         onFocus={e => e.target.style.borderColor = C.error} onBlur={e => e.target.style.borderColor = confirmed ? C.error : C.borderDef}
       />
       <ModalBtns onCancel={onClose} onConfirm={onConfirm} confirmLabel="Delete permanently" confirmDisabled={!confirmed} danger />
@@ -220,7 +220,7 @@ function BulkDeleteModal({ count, onConfirm, onClose }) {
 function Chip({ label, active, onClick }) {
   return (
     <button type="button" onClick={onClick}
-      style={{ padding:"3px 10px", borderRadius:999, border:`1px solid ${active ? C.primary : C.borderDef}`, background:active ? C.primaryBg : C.bgSurface, color:active ? C.primary : C.textSec, fontSize:11, fontWeight:active?600:400, fontFamily:F, cursor:"pointer", whiteSpace:"nowrap" }}>
+      style={{ padding:"3px 10px", borderRadius:999, border:`1px solid ${active ? C.primary : C.borderDef}`, background:active ? C.primaryBg : C.bgSurface, color:active ? C.primary : C.textSec, fontSize:12, fontWeight:active?600:400, fontFamily:F, cursor:"pointer", whiteSpace:"nowrap" }}>
       {label}
     </button>
   );
@@ -242,7 +242,7 @@ function FilterBar({ sections, sectionFilter, setSectionFilter, typeFilter, setT
       </div>
       {anyActive > 0 && (
         <button type="button" onClick={() => { setSectionFilter(new Set()); setTypeFilter(new Set()); setScoreFilter(new Set()); }}
-          style={{ fontSize:11, color:C.primary, background:"none", border:"none", cursor:"pointer", fontFamily:F, padding:"0 4px", textDecoration:"underline" }}>
+          style={{ fontSize:12, color:C.primary, background:"none", border:"none", cursor:"pointer", fontFamily:F, padding:"0 4px", textDecoration:"underline" }}>
           Clear all
         </button>
       )}
@@ -290,7 +290,7 @@ function CellInput({ value, onSave, onCancel, type = "text", options }) {
     if (e.key === "Escape") onCancel();
   };
 
-  const iStyle = { padding:"3px 6px", borderRadius:5, border:`1px solid ${C.primary}`, fontSize:11, fontFamily:F, color:C.navyDeep, background:C.bgSurface, outline:"none", width:"100%", boxSizing:"border-box", boxShadow:FOCUS_RING };
+  const iStyle = { padding:"3px 6px", borderRadius:4, border:`1px solid ${C.primary}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, outline:"none", width:"100%", boxSizing:"border-box", boxShadow:FOCUS_RING };
 
   if (options) return (
     <select ref={ref} value={v} onChange={e => setV(e.target.value)} onBlur={commit} onKeyDown={keyDown} style={{ ...iStyle, cursor:"pointer" }}>
@@ -504,12 +504,12 @@ export default function ScoringGrid({ sections, scoring, dispatch, model, condit
 
       {/* Error banner */}
       {errors.length > 0 && (
-        <div role="alert" style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 14px", background:C.errorBg, border:`1px solid #fca5a5`, borderRadius:8, margin:"10px 0 0", fontSize:11, color:C.error, fontFamily:F }}>
+        <div role="alert" style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 14px", background:C.errorBg, border:`1px solid #fca5a5`, borderRadius:8, margin:"10px 0 0", fontSize:12, color:C.error, fontFamily:F }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink:0 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
           <span><strong>{errors.length}</strong> validation error{errors.length !== 1 ? "s" : ""}</span>
           {firstErrorId && (
             <button type="button" onClick={() => document.getElementById(`gr-${firstErrorId}`)?.scrollIntoView({ behavior:"smooth", block:"center" })}
-              style={{ fontSize:11, color:C.primary, background:"none", border:"none", cursor:"pointer", fontFamily:F, textDecoration:"underline", padding:0 }}>
+              style={{ fontSize:12, color:C.primary, background:"none", border:"none", cursor:"pointer", fontFamily:F, textDecoration:"underline", padding:0 }}>
               Jump to first error
             </button>
           )}
@@ -521,13 +521,13 @@ export default function ScoringGrid({ sections, scoring, dispatch, model, condit
         <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 14px", background:C.navy, borderRadius:8, margin:"10px 0 0", color:"#fff", fontFamily:F, fontSize:12 }}>
           <span style={{ fontWeight:600 }}>{selection.size} selected</span>
           <span style={{ width:1, height:16, background:"rgba(255,255,255,0.3)" }} />
-          <button type="button" onClick={() => setBulkEditModal("type")}     style={{ padding:"4px 10px", borderRadius:5, border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff", fontSize:11, fontFamily:F, cursor:"pointer" }}>Edit type...</button>
+          <button type="button" onClick={() => setBulkEditModal("type")}     style={{ padding:"4px 10px", borderRadius:4, border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff", fontSize:12, fontFamily:F, cursor:"pointer" }}>Edit type...</button>
           {model === "weighted" && (
-            <button type="button" onClick={() => setBulkEditModal("weight")}   style={{ padding:"4px 10px", borderRadius:5, border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff", fontSize:11, fontFamily:F, cursor:"pointer" }}>Edit weight...</button>
+            <button type="button" onClick={() => setBulkEditModal("weight")}   style={{ padding:"4px 10px", borderRadius:4, border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff", fontSize:12, fontFamily:F, cursor:"pointer" }}>Edit weight...</button>
           )}
-          <button type="button" onClick={() => setBulkEditModal("required")}  style={{ padding:"4px 10px", borderRadius:5, border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff", fontSize:11, fontFamily:F, cursor:"pointer" }}>Edit required...</button>
-          <button type="button" onClick={() => setBulkDeleteModal(true)}      style={{ padding:"4px 10px", borderRadius:5, border:"1px solid rgba(255,0,0,0.4)", background:"rgba(220,38,38,0.15)", color:"#fca5a5", fontSize:11, fontFamily:F, cursor:"pointer" }}>Delete selected</button>
-          <button type="button" onClick={() => setSelection(new Set())} aria-label="Clear selection" style={{ marginLeft:"auto", background:"none", border:"none", color:"rgba(255,255,255,0.6)", cursor:"pointer", fontSize:18, lineHeight:1, padding:"0 2px", outline:"none" }} onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)} onBlur={e => (e.currentTarget.style.boxShadow = "none")}>&times;</button>
+          <button type="button" onClick={() => setBulkEditModal("required")}  style={{ padding:"4px 10px", borderRadius:4, border:"1px solid rgba(255,255,255,0.3)", background:"transparent", color:"#fff", fontSize:12, fontFamily:F, cursor:"pointer" }}>Edit required...</button>
+          <button type="button" onClick={() => setBulkDeleteModal(true)}      style={{ padding:"4px 10px", borderRadius:4, border:"1px solid rgba(255,0,0,0.4)", background:"rgba(220,38,38,0.15)", color:"#fca5a5", fontSize:12, fontFamily:F, cursor:"pointer" }}>Delete selected</button>
+          <button type="button" onClick={() => setSelection(new Set())} aria-label="Clear selection" style={{ marginLeft:"auto", background:"none", border:"none", color:"rgba(255,255,255,0.6)", cursor:"pointer", fontSize:20, lineHeight:1, padding:"0 2px", outline:"none" }} onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)} onBlur={e => (e.currentTarget.style.boxShadow = "none")}>&times;</button>
         </div>
       )}
 
@@ -579,7 +579,7 @@ export default function ScoringGrid({ sections, scoring, dispatch, model, condit
               const isSelected = selection.has(q.id);
 
               const cellStyle = (col) => ({
-                padding: "0 10px", height: ROW_H, fontSize: 11, fontFamily: F,
+                padding: "0 10px", height: ROW_H, fontSize: 12, fontFamily: F,
                 color: C.navyDeep, borderBottom: `1px solid ${C.borderSubtle}`,
                 background: isSelected ? C.primaryBg : hasErr ? C.errorBg : "transparent",
                 verticalAlign: "middle",
@@ -617,7 +617,7 @@ export default function ScoringGrid({ sections, scoring, dispatch, model, condit
                       <div style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer" }}>
                         {editing("section") ? null : (
                           <select value={sectionId} onChange={e => moveToSection(q.id, e.target.value)}
-                            style={{ border:"none", background:"transparent", fontSize:11, fontFamily:F, color:C.textSec, cursor:"pointer", outline:"none", maxWidth:"100%" }}
+                            style={{ border:"none", background:"transparent", fontSize:12, fontFamily:F, color:C.textSec, cursor:"pointer", outline:"none", maxWidth:"100%" }}
                             onClick={e => e.stopPropagation()}>
                             {sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                           </select>
@@ -646,7 +646,7 @@ export default function ScoringGrid({ sections, scoring, dispatch, model, condit
                   <td style={cellStyle("type")}>
                     <select value={q.type}
                       onChange={e => { if (e.target.value !== q.type) requestTypeChange(q.id, e.target.value); }}
-                      style={{ border:`1px solid ${C.borderSubtle}`, borderRadius:5, background:C.bgApp, fontSize:11, fontFamily:F, color:C.navyDeep, cursor:"pointer", outline:"none", padding:"3px 6px", width:"100%" }}
+                      style={{ border:`1px solid ${C.borderSubtle}`, borderRadius:4, background:C.bgApp, fontSize:12, fontFamily:F, color:C.navyDeep, cursor:"pointer", outline:"none", padding:"3px 6px", width:"100%" }}
                       onFocus={e => e.target.style.borderColor = C.primary}
                       onBlur={e => e.target.style.borderColor = C.borderSubtle}>
                       {QUESTION_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -697,7 +697,7 @@ export default function ScoringGrid({ sections, scoring, dispatch, model, condit
                   {/* Logic indicator */}
                   <td style={{ ...cellStyle("logic"), textAlign:"center" }}>
                     {isConditional ? (
-                      <span style={{ padding:"2px 7px", borderRadius:3, background:C.warningBg, border:`1px solid #fde68a`, fontSize:9, fontWeight:700, color:C.warning, fontFamily:F }}>
+                      <span style={{ padding:"2px 7px", borderRadius:4, background:C.warningBg, border:`1px solid #fde68a`, fontSize:10, fontWeight:700, color:C.warning, fontFamily:F }}>
                         Conditional
                       </span>
                     ) : (

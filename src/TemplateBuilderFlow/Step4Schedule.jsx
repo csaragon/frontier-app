@@ -6,7 +6,7 @@ const C = {
   ocean: "#2226f7",
   white: "#ffffff",
   g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  red: "#dc2626",
+  red: "#b6143a",
   purpleBg: "#f5f3ff", purpleBorder: "#ddd6fe",
 };
 
@@ -169,11 +169,11 @@ function FieldLabel({ required, children }) {
 
 function FieldError({ msg }) {
   if (!msg) return null;
-  return <p style={{ margin:"6px 0 0", fontSize:11, color:C.red, fontFamily:F }}>{msg}</p>;
+  return <p style={{ margin:"6px 0 0", fontSize:12, color:C.red, fontFamily:F }}>{msg}</p>;
 }
 
 function HelperText({ children }) {
-  return <p style={{ margin:"6px 0 0", fontSize:11, color:C.g4, fontFamily:F, lineHeight:"16px" }}>{children}</p>;
+  return <p style={{ margin:"6px 0 0", fontSize:12, color:C.g4, fontFamily:F, lineHeight:"16px" }}>{children}</p>;
 }
 
 function inputCss() {
@@ -207,7 +207,7 @@ function Toggle({ checked, onChange, label, helper }) {
       </button>
       <div>
         <div style={{ fontSize:13, fontWeight:500, color:C.g6, fontFamily:F }}>{label}</div>
-        {helper && <p style={{ margin:"2px 0 0", fontSize:11, color:C.g4, fontFamily:F, lineHeight:"16px" }}>{helper}</p>}
+        {helper && <p style={{ margin:"2px 0 0", fontSize:12, color:C.g4, fontFamily:F, lineHeight:"16px" }}>{helper}</p>}
       </div>
     </div>
   );
@@ -241,7 +241,7 @@ function InfoTip({ text }) {
       </button>
       {show && (
         <div style={{ position:"absolute", top:"calc(100% + 6px)", left:"50%", transform:"translateX(-50%)",
-          background:C.g6, color:C.white, padding:"8px 12px", borderRadius:6, fontSize:11,
+          background:C.g6, color:C.white, padding:"8px 12px", borderRadius:6, fontSize:12,
           fontFamily:F, lineHeight:"16px", width:240, zIndex:999, boxShadow:"0 4px 14px rgba(0,0,0,0.2)",
           whiteSpace:"normal" }}>
           {text}
@@ -320,7 +320,7 @@ function MultiPicker({ options, selected, onToggle, placeholder, getId, getLabel
                   <input type="checkbox" readOnly checked={isSel} style={{ width:14, height:14, accentColor:C.ocean }} />
                   <div>
                     <div style={{ fontSize:13, color:C.g6, fontFamily:F, fontWeight: isSel ? 500 : 400 }}>{getLabel(o)}</div>
-                    {getSubLabel && <div style={{ fontSize:11, color:C.g4, fontFamily:F }}>{getSubLabel(o)}</div>}
+                    {getSubLabel && <div style={{ fontSize:12, color:C.g4, fontFamily:F }}>{getSubLabel(o)}</div>}
                   </div>
                 </div>
               );
@@ -406,8 +406,8 @@ function LocationTree({ selected, onChange }) {
             placeholder="Search regions, districts, or locations..."
             style={{ ...inputCss(), paddingLeft:32, fontSize:12 }} />
         </div>
-        <button onClick={expandAll}  style={{ fontSize:11, color:C.g5, background:"none", border:"none", cursor:"pointer", padding:"4px 8px", fontFamily:F, whiteSpace:"nowrap" }}>Expand all</button>
-        <button onClick={collapseAll} style={{ fontSize:11, color:C.g5, background:"none", border:"none", cursor:"pointer", padding:"4px 8px", fontFamily:F, whiteSpace:"nowrap" }}>Collapse all</button>
+        <button onClick={expandAll}  style={{ fontSize:12, color:C.g5, background:"none", border:"none", cursor:"pointer", padding:"4px 8px", fontFamily:F, whiteSpace:"nowrap" }}>Expand all</button>
+        <button onClick={collapseAll} style={{ fontSize:12, color:C.g5, background:"none", border:"none", cursor:"pointer", padding:"4px 8px", fontFamily:F, whiteSpace:"nowrap" }}>Collapse all</button>
       </div>
 
       <div style={{ fontSize:12, color:C.navy, fontWeight:500, fontFamily:F, marginBottom:10, padding:"6px 10px", background:"#eef1ff", borderRadius:6 }}>
@@ -430,7 +430,7 @@ function LocationTree({ selected, onChange }) {
                   <IndetermCheckbox checked={rSt === "all"} indeterminate={rSt === "some"} onChange={() => toggleRegion(region)} />
                 </span>
                 <span style={{ fontSize:13, fontWeight:600, color:C.g6, fontFamily:F }}>{region.name}</span>
-                <span style={{ fontSize:11, color:C.g4, fontFamily:F, marginLeft:"auto" }}>
+                <span style={{ fontSize:12, color:C.g4, fontFamily:F, marginLeft:"auto" }}>
                   {region.districts.flatMap(d => d.locations).filter(l => selected.includes(l.id)).length} / {region.districts.flatMap(d => d.locations).length}
                 </span>
               </div>
@@ -450,7 +450,7 @@ function LocationTree({ selected, onChange }) {
                         <IndetermCheckbox checked={dSt === "all"} indeterminate={dSt === "some"} onChange={() => toggleDistrict(district)} />
                       </span>
                       <span style={{ fontSize:12, fontWeight:500, color:C.g6, fontFamily:F }}>{region.name} → {district.name}</span>
-                      <span style={{ fontSize:11, color:C.g4, fontFamily:F, marginLeft:"auto" }}>
+                      <span style={{ fontSize:12, color:C.g4, fontFamily:F, marginLeft:"auto" }}>
                         {locCount(district.locations)} / {district.locations.length}
                       </span>
                     </div>
@@ -665,10 +665,10 @@ function TypeChangeModal({ onConfirm, onCancel }) {
           Changing the schedule type will reset the timing details. Continue?
         </p>
         <div style={{ display:"flex", gap:10, justifyContent:"flex-end" }}>
-          <button onClick={onCancel} style={{ background:C.white, border:`1px solid ${C.g3}`, borderRadius:7, padding:"8px 18px", fontSize:13, fontWeight:500, fontFamily:F, cursor:"pointer" }}>
+          <button onClick={onCancel} style={{ background:C.white, border:`1px solid ${C.g3}`, borderRadius:8, padding:"8px 18px", fontSize:13, fontWeight:500, fontFamily:F, cursor:"pointer" }}>
             Cancel
           </button>
-          <button onClick={onConfirm} style={{ background:C.navy, color:C.white, border:"none", borderRadius:7, padding:"8px 18px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>
+          <button onClick={onConfirm} style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"8px 18px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>
             Change type
           </button>
         </div>
@@ -721,10 +721,10 @@ export default function Step4Schedule({ formData, onChange, onNext, onBack }) {
     <div style={{ padding:"40px 24px 80px", display:"flex", justifyContent:"center", fontFamily:F, overflowY:"auto", flex:1 }}>
       <div style={{ width:"100%", maxWidth:1080 }}>
 
-        {/* Intro card */}
-        <div style={{ background:C.purpleBg, border:`1px solid ${C.purpleBorder}`, borderRadius:10, padding:"16px 22px", marginBottom:32 }}>
-          <h2 style={{ margin:"0 0 4px", fontSize:15, fontWeight:700, color:C.g6, fontFamily:F }}>Schedule &amp; Assignment</h2>
-          <p style={{ margin:0, fontSize:13, color:C.g5, fontFamily:F }}>Set when audits run, where they happen, and who completes them.</p>
+        {/* Page title */}
+        <div style={{ marginBottom: 28 }}>
+          <h2 style={{ margin:"0 0 6px", fontSize:24, fontWeight:700, color:"#16191d", fontFamily:F }}>Schedule &amp; Assignment</h2>
+          <p style={{ margin:0, fontSize:13, color:"#16191d", fontFamily:F }}>Set when audits run, where they happen, and who completes them.</p>
         </div>
 
         {/* ── Section 1: Schedule type ── */}
@@ -735,7 +735,7 @@ export default function Step4Schedule({ formData, onChange, onNext, onBack }) {
               return (
                 <button key={st.key} onClick={() => handleTypeSelect(st.key)}
                   style={{ flex:"1 1 190px", minWidth:170, display:"flex", flexDirection:"column", alignItems:"flex-start",
-                    gap:10, padding:"18px 20px", borderRadius:10, cursor:"pointer", textAlign:"left",
+                    gap:10, padding:"18px 20px", borderRadius:12, cursor:"pointer", textAlign:"left",
                     border:`2px solid ${sel ? C.navy : C.g2}`, background: sel ? "#eef1ff" : C.white,
                     transition:"border-color 0.15s, background 0.15s",
                     boxShadow: sel ? "0 2px 10px rgba(0,30,118,0.10)" : "none" }}
@@ -869,27 +869,6 @@ export default function Step4Schedule({ formData, onChange, onNext, onBack }) {
           )}
         </SectionCard>
 
-        {/* ── Footer ── */}
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <button onClick={onBack}
-            style={{ background:"none", border:"none", color:C.g5, fontSize:13, fontWeight:500, fontFamily:F, cursor:"pointer", display:"flex", alignItems:"center", gap:5, padding:"8px 0" }}
-            onMouseEnter={e => { e.currentTarget.style.color = C.g6; }}
-            onMouseLeave={e => { e.currentTarget.style.color = C.g5; }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            Back: Sections &amp; Questions
-          </button>
-          <button onClick={handleNext}
-            style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"10px 24px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.navy2; }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.navy; }}>
-            Next: Escalation
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </button>
-        </div>
       </div>
 
       {pendingType && (

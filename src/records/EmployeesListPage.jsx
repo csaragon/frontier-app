@@ -2,15 +2,22 @@ import { useState, useMemo } from "react";
 import AppSidebar from "../AppSidebar.jsx";
 import { EMPLOYEES_25, AVATAR_COLORS, avatarColor } from "./employeeStubData.js";
 import { LOCATIONS_ALL } from "./auditStubData.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9", border2:"#c3c8d0",
-  primary:"#2226f7", primaryBg:"#f0f2ff",
-  success:"#15803d", successBg:"#f0fdf4",
-  warning:"#a16207", warningBg:"#fef9c3",
-  error:"#dc2626",   errorBg:"#fef2f2",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  border2:   T.border2,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   "#15803d", successBg: "#f0fdf4",
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
 };
 
 // Enrich employee with location name and manager name
@@ -89,7 +96,7 @@ function MultiDrop({ label, selected, onToggle, opts }) {
                   fontSize:12, fontFamily:F, cursor:"pointer" }}
                 onMouseEnter={e => { if (!ck) e.currentTarget.style.background = C.bgApp; }}
                 onMouseLeave={e => { if (!ck) e.currentTarget.style.background = "transparent"; }}>
-                <div style={{ width:13, height:13, borderRadius:3,
+                <div style={{ width:13, height:13, borderRadius:4,
                   border:`1.5px solid ${ck ? C.primary : C.border2}`,
                   background: ck ? C.primary : "white", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   {ck && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>}
@@ -107,14 +114,14 @@ function MultiDrop({ label, selected, onToggle, opts }) {
 function EmployeeCard({ emp, onClick }) {
   return (
     <div onClick={onClick}
-      style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, padding:16, cursor:"pointer" }}
+      style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, padding:16, cursor:"pointer" }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.07)"; e.currentTarget.style.borderColor = C.border2; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = C.border; }}>
       <div style={{ display:"flex", gap:12, alignItems:"center", marginBottom:12 }}>
         <Avatar emp={emp} size={40} />
         <div style={{ minWidth:0 }}>
           <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{emp.name}</div>
-          <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>{emp.role}</div>
+          <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>{emp.role}</div>
         </div>
         <div style={{ marginLeft:"auto" }}>
           <Pill label={emp.status === "active" ? "Active" : "Inactive"}
@@ -123,7 +130,7 @@ function EmployeeCard({ emp, onClick }) {
         </div>
       </div>
       {[["Location", emp.locationName], ["Audits Q2", emp.auditsQ > 0 ? emp.auditsQ : "—"], ["Last active", emp.lastActivity]].map(([k,v]) => (
-        <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:11, fontFamily:F, marginBottom:3 }}>
+        <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:12, fontFamily:F, marginBottom:3 }}>
           <span style={{ color:C.textMuted }}>{k}</span>
           <span style={{ color:C.navyDeep, fontWeight:500 }}>{v}</span>
         </div>
@@ -168,20 +175,20 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
         <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center" }}>
           <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, padding:40, width:420, textAlign:"center" }}>
             <Avatar emp={ALL_EMP.find(e => e.id === "E002") || { initials:"?", avatarColor:C.primary }} size={52} />
-            <div style={{ fontSize:18, fontWeight:700, color:C.navyDeep, fontFamily:F, marginTop:14, marginBottom:6 }}>
+            <div style={{ fontSize:20, fontWeight:700, color:C.navyDeep, fontFamily:F, marginTop:14, marginBottom:6 }}>
               You're viewing as Employee
             </div>
             <div style={{ fontSize:13, color:C.textSec, fontFamily:F, lineHeight:1.6, marginBottom:20 }}>
               Employees are routed directly to their own record rather than the full directory.
             </div>
             <button onClick={() => onNav("employee_record", { employeeId:"E002" })}
-              style={{ padding:"9px 20px", borderRadius:7, border:"none", background:C.primary,
+              style={{ padding:"9px 20px", borderRadius:8, border:"none", background:C.primary,
                 color:"white", fontSize:13, fontFamily:F, fontWeight:600, cursor:"pointer" }}>
               View My Record →
             </button>
             <div style={{ marginTop:12 }}>
               <select value={viewerRole} onChange={e => setViewerRole(e.target.value)}
-                style={{ fontSize:11, color:C.textMuted, border:"none", background:"transparent", cursor:"pointer", fontFamily:F }}>
+                style={{ fontSize:12, color:C.textMuted, border:"none", background:"transparent", cursor:"pointer", fontFamily:F }}>
                 {ROLES_DEMO.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -269,7 +276,7 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
               background:C.primaryBg, borderRadius:6, border:`1px solid ${C.primary}30` }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <select value={viewerRole} onChange={e => { setViewerRole(e.target.value); setPage(1); }}
-                style={{ border:"none", background:"transparent", color:C.primary, fontSize:11, fontFamily:F, fontWeight:600, cursor:"pointer", outline:"none" }}>
+                style={{ border:"none", background:"transparent", color:C.primary, fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer", outline:"none" }}>
                 {ROLES_DEMO.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -289,7 +296,7 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
               </svg>
               <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                 placeholder="Search employees…"
-                style={{ padding:"6px 10px 6px 28px", borderRadius:7, border:`1px solid ${C.border}`,
+                style={{ padding:"6px 10px 6px 28px", borderRadius:8, border:`1px solid ${C.border}`,
                   fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:200, background:C.bgSurf }}
                 onFocus={e => e.target.style.borderColor = C.primary}
                 onBlur={e => e.target.style.borderColor = C.border} />
@@ -347,10 +354,10 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
             </button>
           )}
           <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:6 }}>
-            <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>{sorted.length} employees</span>
+            <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>{sorted.length} employees</span>
             {["row","grid"].map(v => (
               <button key={v} onClick={() => setViewMode(v)}
-                style={{ width:28, height:28, borderRadius:5,
+                style={{ width:28, height:28, borderRadius:4,
                   border:`1px solid ${viewMode === v ? C.primary : C.border}`,
                   background: viewMode === v ? C.primaryBg : C.bgSurf, cursor:"pointer",
                   display:"flex", alignItems:"center", justifyContent:"center",
@@ -414,7 +421,7 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
                   onMouseLeave={ev => ev.currentTarget.style.background = C.bgSurf}>
 
                   <div onClick={ev => ev.stopPropagation()}
-                    style={{ width:15, height:15, borderRadius:3, border:`1.5px solid ${C.border2}`, background:"white" }} />
+                    style={{ width:15, height:15, borderRadius:4, border:`1.5px solid ${C.border2}`, background:"white" }} />
 
                   {/* Name + email */}
                   <div style={{ display:"flex", alignItems:"center", gap:8, minWidth:0 }}>
@@ -427,12 +434,12 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
                     </div>
                   </div>
 
-                  <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>{e.empId}</div>
-                  <div style={{ fontSize:11, color:C.navyDeep, fontFamily:F, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{e.role}</div>
-                  <div style={{ fontSize:11, color:C.navyDeep, fontFamily:F, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{e.locationName}</div>
+                  <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>{e.empId}</div>
+                  <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{e.role}</div>
+                  <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{e.locationName}</div>
 
                   {/* Manager (clickable) */}
-                  <div style={{ fontSize:11, color: e.managerId ? C.primary : C.textMuted, fontFamily:F,
+                  <div style={{ fontSize:12, color: e.managerId ? C.primary : C.textMuted, fontFamily:F,
                     whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
                     cursor: e.managerId ? "pointer" : "default" }}
                     onClick={ev => { if (e.managerId) { ev.stopPropagation(); onNav("employee_record", { employeeId: e.managerId }); } }}>
@@ -450,7 +457,7 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
                     {e.auditsQ > 0 ? e.auditsQ : "—"}
                   </div>
 
-                  <div style={{ fontSize:11, color:C.textSec, fontFamily:F,
+                  <div style={{ fontSize:12, color:C.textSec, fontFamily:F,
                     whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
                     {e.lastActivity}
                   </div>
@@ -458,7 +465,7 @@ export default function EmployeesListPage({ onNav, density = "condensed" }) {
                   {/* Kebab */}
                   <div onClick={ev => ev.stopPropagation()}>
                     <button
-                      style={{ width:28, height:28, borderRadius:5, border:"none", background:"transparent",
+                      style={{ width:28, height:28, borderRadius:4, border:"none", background:"transparent",
                         cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:C.textMuted }}
                       onMouseEnter={ev => ev.currentTarget.style.background = C.bgApp}
                       onMouseLeave={ev => ev.currentTarget.style.background = "transparent"}

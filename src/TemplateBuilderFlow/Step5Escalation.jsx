@@ -1,14 +1,24 @@
 import { useState, useRef, useEffect } from "react";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy: "#001e76", navy2: "#001356",
-  white: "#ffffff",
-  g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  red: "#b6143a", redBg: "#fef2f2",
-  amber: "#b45309", amberBg: "#fffbeb",
-  teal: "#0f766e",
-  purple: "#7c3aed", purpleLt: "#f5f3ff", purpleMd: "#ede9fe",
+  navy:     T.action1,
+  navy2:    T.action2,
+  white:    T.surface1,
+  g1:       T.surface2,
+  g2:       T.border1,
+  g3:       T.border2,
+  g4:       T.disabled1,
+  g5:       T.onSurface1,
+  g6:       T.onSurface2,
+  red:      T.onError1,
+  redBg:    T.errorContainer1,
+  amber:    T.warning1,
+  amberBg:  T.warningContainer1,
+  teal:     "#0f766e",
+  purple:   "#7c3aed",
+  purpleLt: "#f5f3ff",
+  purpleMd: "#ede9fe",
 };
 
 const TRIGGER_TYPES = [
@@ -119,7 +129,7 @@ function InfoTip({ text }) {
       onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
       <IconInfo />
       {show && (
-        <div style={{ position:"absolute", bottom:"calc(100% + 6px)", left:"50%", transform:"translateX(-50%)", background:C.g6, color:C.white, fontSize:11, fontFamily:F, lineHeight:"16px", padding:"7px 10px", borderRadius:6, whiteSpace:"pre-line", width:240, zIndex:500, boxShadow:"0 4px 12px rgba(0,0,0,0.2)", pointerEvents:"none" }}>
+        <div style={{ position:"absolute", bottom:"calc(100% + 6px)", left:"50%", transform:"translateX(-50%)", background:C.g6, color:C.white, fontSize:12, fontFamily:F, lineHeight:"16px", padding:"7px 10px", borderRadius:6, whiteSpace:"pre-line", width:240, zIndex:500, boxShadow:"0 4px 12px rgba(0,0,0,0.2)", pointerEvents:"none" }}>
           {text}
         </div>
       )}
@@ -158,7 +168,7 @@ function RecipientPicker({ recipientType, recipientValue, onTypeChange, onValueC
     onValueChange(has ? selectedUsers.filter(u => u.id !== user.id) : [...selectedUsers, user]);
   }
 
-  const sel = { fontSize:13, fontFamily:F, color:C.g6, border:`1px solid ${C.g3}`, borderRadius:7, padding:"8px 12px", outline:"none", background:C.white, width:"100%", boxSizing:"border-box" };
+  const sel = { fontSize:13, fontFamily:F, color:C.g6, border:`1px solid ${C.g3}`, borderRadius:8, padding:"8px 12px", outline:"none", background:C.white, width:"100%", boxSizing:"border-box" };
 
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
@@ -193,7 +203,7 @@ function RecipientPicker({ recipientType, recipientValue, onTypeChange, onValueC
 
       {recipientType === "user" && (
         <div ref={dropRef} style={{ position:"relative" }}>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:4, border:`1px solid ${dropOpen ? C.navy : C.g3}`, borderRadius:7, padding:"6px 10px", minHeight:38, cursor:"text", background:C.white }}
+          <div style={{ display:"flex", flexWrap:"wrap", gap:4, border:`1px solid ${dropOpen ? C.navy : C.g3}`, borderRadius:8, padding:"6px 10px", minHeight:38, cursor:"text", background:C.white }}
             onClick={() => setDropOpen(true)}>
             {selectedUsers.map(u => (
               <span key={u.id} style={{ display:"inline-flex", alignItems:"center", gap:4, background:C.g1, borderRadius:4, padding:"2px 7px", fontSize:12, fontFamily:F, color:C.g6 }}>
@@ -217,7 +227,7 @@ function RecipientPicker({ recipientType, recipientValue, onTypeChange, onValueC
                     {sel2 && <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke={C.navy} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>}
                     <div>
                       <div style={{ fontSize:13, color:C.g6, fontFamily:F }}>{u.name}</div>
-                      <div style={{ fontSize:11, color:C.g4, fontFamily:F }}>{u.email}</div>
+                      <div style={{ fontSize:12, color:C.g4, fontFamily:F }}>{u.email}</div>
                     </div>
                   </button>
                 );
@@ -253,7 +263,7 @@ function ChannelPicker({ channels, onChange, error }) {
           const on = channels[key] && !disabled;
           return (
             <button key={key} onClick={() => !disabled && toggle(key)} disabled={disabled}
-              style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 14px", borderRadius:7, border:`1.5px solid ${on ? C.navy : C.g3}`, background: on ? "#eef1ff" : disabled ? C.g1 : C.white, fontSize:12, fontWeight:600, fontFamily:F, color: disabled ? C.g4 : on ? C.navy : C.g5, cursor: disabled ? "not-allowed" : "pointer" }}
+              style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 14px", borderRadius:8, border:`1.5px solid ${on ? C.navy : C.g3}`, background: on ? "#eef1ff" : disabled ? C.g1 : C.white, fontSize:12, fontWeight:600, fontFamily:F, color: disabled ? C.g4 : on ? C.navy : C.g5, cursor: disabled ? "not-allowed" : "pointer" }}
               title={helper}>
               {icon && <span style={{ color: on ? C.navy : C.g4 }}>{icon}</span>}
               {label}
@@ -262,7 +272,7 @@ function ChannelPicker({ channels, onChange, error }) {
           );
         })}
       </div>
-      {error && <div style={{ fontSize:11, color:C.red, fontFamily:F, marginTop:2 }}>{error}</div>}
+      {error && <div style={{ fontSize:12, color:C.red, fontFamily:F, marginTop:2 }}>{error}</div>}
     </div>
   );
 }
@@ -306,7 +316,7 @@ function RuleModal({ rule, onSave, onClose }) {
     onSave({ ...draft, id: draft.id || genId("esc") });
   }
 
-  const inp = { fontFamily:F, fontSize:13, color:C.g6, border:`1px solid ${C.g3}`, borderRadius:7, padding:"8px 12px", outline:"none", background:C.white };
+  const inp = { fontFamily:F, fontSize:13, color:C.g6, border:`1px solid ${C.g3}`, borderRadius:8, padding:"8px 12px", outline:"none", background:C.white };
 
   function Panel({ id, title, status, children }) {
     const open = openPanels.has(id);
@@ -319,7 +329,7 @@ function RuleModal({ rule, onSave, onClose }) {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.red} strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             ) : null}
             <span style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>{title}</span>
-            {status && !open && <span style={{ fontSize:11, color:C.g4, fontFamily:F }}>{status}</span>}
+            {status && !open && <span style={{ fontSize:12, color:C.g4, fontFamily:F }}>{status}</span>}
           </div>
           <span style={{ color:C.g4 }}>{open ? <IconChevDown /> : <IconChevRight />}</span>
         </button>
@@ -334,7 +344,7 @@ function RuleModal({ rule, onSave, onClose }) {
       <div style={{ background:C.white, borderRadius:14, width:560, maxHeight:"90vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
         {/* Header */}
         <div style={{ padding:"18px 24px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <span style={{ fontSize:15, fontWeight:700, color:C.g6 }}>{rule?.id ? "Edit escalation rule" : "Add escalation rule"}</span>
+          <span style={{ fontSize:16, fontWeight:700, color:C.g6 }}>{rule?.id ? "Edit escalation rule" : "Add escalation rule"}</span>
           <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex" }}><IconClose /></button>
         </div>
 
@@ -361,7 +371,7 @@ function RuleModal({ rule, onSave, onClose }) {
             {triggerDef && (
               <div style={{ fontSize:12, color:C.g4, fontFamily:F, lineHeight:"17px" }}>{triggerDef.helper}</div>
             )}
-            {submitted && errors.trigger && <div style={{ fontSize:11, color:C.red, fontFamily:F, marginTop:6 }}>{errors.trigger}</div>}
+            {submitted && errors.trigger && <div style={{ fontSize:12, color:C.red, fontFamily:F, marginTop:6 }}>{errors.trigger}</div>}
           </Panel>
 
           {/* Panel 2: Recipient */}
@@ -372,7 +382,7 @@ function RuleModal({ rule, onSave, onClose }) {
               onTypeChange={v => patch("recipientType", v)}
               onValueChange={v => patch("recipientValue", v)}
             />
-            {submitted && errors.recipient && <div style={{ fontSize:11, color:C.red, fontFamily:F, marginTop:8 }}>{errors.recipient}</div>}
+            {submitted && errors.recipient && <div style={{ fontSize:12, color:C.red, fontFamily:F, marginTop:8 }}>{errors.recipient}</div>}
           </Panel>
 
           {/* Panel 3: Channel */}
@@ -402,7 +412,7 @@ function RuleModal({ rule, onSave, onClose }) {
                   onBlur={e => e.currentTarget.style.borderColor = C.g3}
                 />
                 {/* Available message variables to be finalized with backend team — flagged in assumptions */}
-                <div style={{ fontSize:11, color:C.g4, fontFamily:F, marginTop:4 }}>Available variables subject to change — confirm with backend team.</div>
+                <div style={{ fontSize:12, color:C.g4, fontFamily:F, marginTop:4 }}>Available variables subject to change — confirm with backend team.</div>
               </div>
             )}
           </Panel>
@@ -432,7 +442,7 @@ function RuleCard({ rule, onEdit, onDelete }) {
   const hasInApp = rule.channels?.inApp;
 
   return (
-    <div style={{ background:C.white, border:`1px solid ${C.g2}`, borderRadius:10, padding:"14px 16px", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12, marginBottom:8 }}>
+    <div style={{ background:C.white, border:`1px solid ${C.g2}`, borderRadius:12, padding:"14px 16px", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:12, marginBottom:8 }}>
       <div style={{ flex:1 }}>
         <div style={{ fontSize:13, fontWeight:600, color:C.g6, fontFamily:F, marginBottom:3 }}>When: {tSummary}</div>
         <div style={{ fontSize:12, color:C.g4, fontFamily:F }}>{rSummary}</div>
@@ -443,13 +453,13 @@ function RuleCard({ rule, onEdit, onDelete }) {
           {hasInApp && <span title="In-app"><IconBell /></span>}
         </div>
         <button onClick={onEdit}
-          style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex", borderRadius:5 }}
+          style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex", borderRadius:4 }}
           onMouseEnter={e => { e.currentTarget.style.background = C.g1; e.currentTarget.style.color = C.g6; }}
           onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = C.g4; }}>
           <IconEdit />
         </button>
         <button onClick={onDelete}
-          style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex", borderRadius:5 }}
+          style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex", borderRadius:4 }}
           onMouseEnter={e => { e.currentTarget.style.background = C.redBg; e.currentTarget.style.color = C.red; }}
           onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = C.g4; }}>
           <IconTrash />
@@ -486,21 +496,14 @@ export default function Step5Escalation({ formData, onChange, onBack, onActivate
     <div style={{ overflowY:"auto", height:"100%", fontFamily:F }}>
       <div style={{ maxWidth:1080, margin:"0 auto", padding:"28px 24px 100px" }}>
 
-        {/* Intro card */}
-        <div style={{ background:C.purpleLt, border:`1px solid ${C.purpleMd}`, borderRadius:10, padding:"14px 18px", marginBottom:20, display:"flex", alignItems:"flex-start", gap:12 }}>
-          <div style={{ width:32, height:32, borderRadius:"50%", background:C.purpleMd, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color:C.purple }}>
-            <IconShield />
-          </div>
-          <div>
-            <div style={{ fontSize:13, fontWeight:700, color:C.purple, fontFamily:F, marginBottom:2 }}>Escalation Rules</div>
-            <div style={{ fontSize:12, color:"#5b21b6", fontFamily:F, lineHeight:"18px" }}>
-              Set what happens after an audit is submitted. Per-question escalations live on individual questions — these rules cover audit-wide outcomes.
-            </div>
-          </div>
+        {/* Page title */}
+        <div style={{ marginBottom: 20 }}>
+          <h2 style={{ margin:"0 0 5px", fontSize:20, fontWeight:700, color:C.g6, fontFamily:F }}>Escalation Rules</h2>
+          <p style={{ margin:0, fontSize:13, color:C.g5, fontFamily:F }}>Set what happens after an audit is submitted. Per-question escalations live on individual questions — these rules cover audit-wide outcomes.</p>
         </div>
 
         {/* How escalations work (info card) */}
-        <div style={{ background:C.g1, border:`1px solid ${C.g2}`, borderRadius:10, padding:"14px 18px", marginBottom:24 }}>
+        <div style={{ background:C.g1, border:`1px solid ${C.g2}`, borderRadius:12, padding:"14px 18px", marginBottom:24 }}>
           <div style={{ fontSize:13, fontWeight:700, color:C.g6, marginBottom:8 }}>Two types of escalation</div>
           <p style={{ margin:"0 0 10px", fontSize:12, color:C.g5, lineHeight:"18px" }}>
             <strong>Per-question escalations</strong> fire immediately during the audit when an auditor answers a problematic question. Set these on individual questions in the Sections &amp; Questions step.
@@ -508,10 +511,10 @@ export default function Step5Escalation({ formData, onChange, onBack, onActivate
           <p style={{ margin:"0 0 10px", fontSize:12, color:C.g5, lineHeight:"18px" }}>
             <strong>Template-level escalations</strong> fire after the audit is submitted, based on the audit's overall result. Configure them below.
           </p>
-          <div style={{ fontSize:11, color:C.g4, fontFamily:F, lineHeight:"16px", borderTop:`1px solid ${C.g2}`, paddingTop:8 }}>
+          <div style={{ fontSize:12, color:C.g4, fontFamily:F, lineHeight:"16px", borderTop:`1px solid ${C.g2}`, paddingTop:8 }}>
             Both can fire for the same audit. They serve different purposes — urgent fixes mid-audit vs. compliance reporting after.&nbsp;
             <button onClick={() => onNavigateToStep(3)}
-              style={{ background:"none", border:"none", cursor:"pointer", color:C.navy, fontSize:11, fontFamily:F, fontWeight:600, padding:0, textDecoration:"underline" }}>
+              style={{ background:"none", border:"none", cursor:"pointer", color:C.navy, fontSize:12, fontFamily:F, fontWeight:600, padding:0, textDecoration:"underline" }}>
               Configure per-question escalations →
             </button>
           </div>
@@ -557,7 +560,7 @@ export default function Step5Escalation({ formData, onChange, onBack, onActivate
         </div>
 
         {/* Section 3: Default fallback */}
-        <div style={{ background:"#fafbff", border:`1px solid #e0e5f5`, borderRadius:10, padding:"16px 18px", marginBottom:32 }}>
+        <div style={{ background:"#fafbff", border:`1px solid #e0e5f5`, borderRadius:12, padding:"16px 18px", marginBottom:32 }}>
           <SectionHeader title="Default fallback escalation" tipText={"If no specific rule applies but something is off, this fallback catches it.\nOptional but recommended for compliance-heavy templates."} />
           <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom: fallback.enabled ? 16 : 0 }}>
             <Toggle checked={fallback.enabled} onChange={() => emitFallback({ ...fallback, enabled: !fallback.enabled })} />
@@ -586,31 +589,6 @@ export default function Step5Escalation({ formData, onChange, onBack, onActivate
           )}
         </div>
 
-        {/* Footer */}
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <button onClick={onBack}
-            style={{ background:"none", border:"none", color:C.g5, fontSize:13, fontWeight:500, fontFamily:F, cursor:"pointer", display:"flex", alignItems:"center", gap:5, padding:"8px 0" }}
-            onMouseEnter={e => e.currentTarget.style.color = C.g6}
-            onMouseLeave={e => e.currentTarget.style.color = C.g5}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-            Back: Schedule
-          </button>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <button onClick={onSaveDraft}
-              style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"10px 20px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = C.g4; e.currentTarget.style.color = C.g6; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = C.g3; e.currentTarget.style.color = C.g5; }}>
-              Save as Draft
-            </button>
-            <button onClick={onActivate}
-              style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"10px 24px", fontSize:13, fontWeight:700, fontFamily:F, cursor:"pointer", display:"flex", alignItems:"center", gap:7 }}
-              onMouseEnter={e => e.currentTarget.style.background = C.navy2}
-              onMouseLeave={e => e.currentTarget.style.background = C.navy}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 12 11 14 15 10"/><circle cx="12" cy="12" r="10"/></svg>
-              Activate Template
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Rule modal */}

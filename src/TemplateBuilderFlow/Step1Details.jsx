@@ -1,28 +1,38 @@
 import { useState } from "react";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy: "#001e76", navy2: "#001356",
-  ocean: "#2226f7",
-  white: "#ffffff",
-  g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  red: "#dc2626", redBg: "#fef2f2",
+  navy:  T.action1,
+  navy2: T.action2,
+  ocean: T.actionContainer1,
+  white: T.surface1,
+  g1:    T.surface2,
+  g2:    T.border1,
+  g3:    T.border2,
+  g4:    T.disabled1,
+  g5:    T.onSurface1,
+  g6:    T.onSurface2,
+  red:   T.onError1,
+  redBg: T.errorContainer1,
 };
 
-// Admin-configurable in settings — static default list for V1
-const CATEGORIES = [
-  { name: "Health & Safety",  color: "#dc2626", bg: "#fef2f2" },
-  { name: "Loss Prevention",  color: "#2226f7", bg: "#f0f2ff" },
-  { name: "Operations",       color: "#0f766e", bg: "#ecfdf5" },
+// Fallback used only when no categories are provided via props (e.g. standalone preview).
+// In the live app, categories come from Settings → Categories via App.jsx state.
+const DEFAULT_CATEGORIES = [
+  { name: "Health & Safety",  color: "#b6143a", bg: "#fae5e6" },
+  { name: "Loss Prevention",  color: "#2226f7", bg: "#d4e2ff" },
+  { name: "Operations",       color: "#0f766e", bg: "#ccfbf1" },
   { name: "Fire Safety",      color: "#7c3aed", bg: "#faf5ff" },
   { name: "PPE Compliance",   color: "#c2410c", bg: "#fff7ed" },
-  { name: "OSHA Compliance",  color: "#0369a1", bg: "#e0f2fe" },
+  { name: "OSHA Compliance",  color: "#001e76", bg: "#e0f2fe" },
   { name: "Cash Handling",    color: "#a16207", bg: "#fefce8" },
   { name: "Asset Protection", color: "#166534", bg: "#f0fdf4" },
 ];
 
-function getCatStyle(catName) {
-  return CATEGORIES.find((c) => c.name === catName) || { color: C.g5, bg: C.g1 };
+function makeGetCatStyle(categories) {
+  return function getCatStyle(catName) {
+    return categories.find((c) => c.name === catName) || { color: C.g5, bg: C.g1 };
+  };
 }
 
 // Autocomplete pool — in production would come from previously used tags API
@@ -63,11 +73,11 @@ function FieldLabel({ required, children }) {
 
 function FieldError({ msg }) {
   if (!msg) return null;
-  return <p style={{ margin: "5px 0 0", fontSize: 11, color: C.red, fontFamily: F, lineHeight: "16px" }}>{msg}</p>;
+  return <p style={{ margin: "5px 0 0", fontSize: 12, color: C.red, fontFamily: F, lineHeight: "16px" }}>{msg}</p>;
 }
 
 function HelperText({ children }) {
-  return <p style={{ margin: "5px 0 0", fontSize: 11, color: C.g4, fontFamily: F, lineHeight: "16px" }}>{children}</p>;
+  return <p style={{ margin: "5px 0 0", fontSize: 12, color: C.g4, fontFamily: F, lineHeight: "16px" }}>{children}</p>;
 }
 
 function inputStyle(focused, hasError) {
@@ -89,7 +99,7 @@ function inputStyle(focused, hasError) {
 
 // ── Tags Input (chip-style with autocomplete) ─────────────────────────────────
 
-function TagsInput({ tags, catName, onChange }) {
+function TagsInput({ tags, catName, onChange, getCatStyle }) {
   const [input, setInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [focused, setFocused] = useState(false);
@@ -174,7 +184,7 @@ function TagsInput({ tags, catName, onChange }) {
             border: `1px solid ${chipBorder}`,
             borderRadius: 999,
             padding: "2px 8px 2px 10px",
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 600,
             fontFamily: F,
             userSelect: "none",
@@ -299,7 +309,7 @@ function LanguagesSelect({ languages, primaryLanguage, onLanguagesChange, onPrim
                     onChange={() => onPrimaryChange(lang.code)}
                     style={{ width: 14, height: 14, cursor: "pointer", accentColor: C.ocean }}
                   />
-                  <span style={{ fontSize: 11, color: isPrimary ? C.ocean : C.g4, fontWeight: isPrimary ? 600 : 400, fontFamily: F }}>
+                  <span style={{ fontSize: 12, color: isPrimary ? C.ocean : C.g4, fontWeight: isPrimary ? 600 : 400, fontFamily: F }}>
                     Primary
                   </span>
                 </label>
@@ -319,8 +329,11 @@ function LanguagesSelect({ languages, primaryLanguage, onLanguagesChange, onPrim
 
 // ── Step 1: Details ───────────────────────────────────────────────────────────
 
-export default function Step1Details({ formData, onChange, onNext, onBackToPick }) {
+export default function Step1Details({ formData, onChange, onNext, onBackToPick, categories }) {
   const d = formData || {};
+  // Use categories from Settings if provided; fall back to built-in list otherwise.
+  const CATEGORIES = (categories && categories.length > 0) ? categories : DEFAULT_CATEGORIES;
+  const getCatStyle = makeGetCatStyle(CATEGORIES);
   const [focused, setFocused] = useState(null); // which field is currently focused
   const [touched, setTouched] = useState({});   // which fields the user has left
   const [nameError, setNameError] = useState(null);
@@ -351,19 +364,24 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick 
 
   function handleNext() {
     // Mark all required fields as touched so errors show
-    setTouched({ name: true, category: true, tags: true, languages: true });
+    setTouched({ name: true, category: true, languages: true });
     onNext();
   }
 
   // Derived error visibility (only shown after field is touched)
   const showNameRequired = touched.name && !(d.name || "").trim().length && !nameError;
   const showCatError = touched.category && !(d.category || "").length;
-  const showTagsError = touched.tags && !(d.tags || []).length;
   const showLangError = touched.languages && !(d.languages || []).length;
 
   return (
     <div style={{ padding: "40px 24px 80px", display: "flex", justifyContent: "center", fontFamily: F }}>
       <div style={{ width: "100%", maxWidth: 720 }}>
+
+        {/* Page title */}
+        <div style={{ marginBottom: 28 }}>
+          <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Template Details</h2>
+          <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Name, category, languages, and basic metadata for your template.</p>
+        </div>
 
         {/* ── Form card ── */}
         <div style={{
@@ -373,13 +391,6 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick 
           padding: "32px 36px",
           marginBottom: 24,
         }}>
-          <h2 style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700, color: C.g6, fontFamily: F }}>
-            Template details
-          </h2>
-          <p style={{ margin: "0 0 28px", fontSize: 13, color: C.g5, fontFamily: F, lineHeight: "20px" }}>
-            Set up the basic information for this audit template.
-          </p>
-
           {/* Name */}
           <div style={{ marginBottom: 24 }}>
             <FieldLabel required>Template name</FieldLabel>
@@ -417,7 +428,7 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick 
           {/* Category */}
           <div style={{ marginBottom: 24 }}>
             <FieldLabel required>Category</FieldLabel>
-            {/* Note: categories are admin-configurable in settings — default list used here */}
+            {/* Categories come from Settings → Categories; falls back to built-in list */}
             <div style={{ position: "relative" }}>
               <select
                 value={d.category || ""}
@@ -450,7 +461,7 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick 
                   <span style={{ fontSize: 10, fontWeight: 700, color: s.color, background: s.bg, borderRadius: 4, padding: "2px 8px", fontFamily: F }}>
                     {d.category}
                   </span>
-                  <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>Tag colors will match this category</span>
+                  <span style={{ fontSize: 12, color: C.g4, fontFamily: F }}>Tag colors will match this category</span>
                 </div>
               );
             })()}
@@ -459,14 +470,14 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick 
 
           {/* Tags */}
           <div style={{ marginBottom: 24 }}>
-            <FieldLabel required>Tags</FieldLabel>
+            <FieldLabel>Tags</FieldLabel>
             {/* Tag colors are admin-configurable in settings — auto-assigned by category for V1 */}
             <TagsInput
               tags={d.tags || []}
               catName={d.category || ""}
               onChange={(tags) => { onChange({ tags }); touch("tags"); }}
+              getCatStyle={getCatStyle}
             />
-            {showTagsError && <FieldError msg="At least one tag is required." />}
           </div>
 
           {/* Languages */}
@@ -480,33 +491,6 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick 
             />
             {showLangError && <FieldError msg="At least one language is required." />}
           </div>
-        </div>
-
-        {/* ── Footer ── */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <button
-            onClick={onBackToPick}
-            style={{ background: "none", border: "none", color: C.g5, fontSize: 13, fontWeight: 500, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, padding: "8px 0" }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = C.g6; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = C.g5; }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-            Back to Pick a Path
-          </button>
-
-          <button
-            onClick={handleNext}
-            style={{ background: C.navy, color: C.white, border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = C.navy2; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = C.navy; }}
-          >
-            Next: Scoring
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
         </div>
       </div>
     </div>

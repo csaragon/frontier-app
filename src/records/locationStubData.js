@@ -197,6 +197,96 @@ export function getLocationDetail(locationId) {
   const topPeerScore = Math.min(100, Math.round(Math.max(base,districtAvg) + Math.floor(rng()*10)+3));
   const topPeerName  = ["Dallas Galleria","Boston Newbury","Austin Domain DC","LA Westside","NY Central"][Math.floor(rng()*5)];
 
+  // ── Details tab data ─────────────────────────────────────────────────────
+  const DIVISIONS       = ["Eastern","Western","Central","Southern","Northern","Pacific","Atlantic"];
+  const LOC_TYPES_SETS  = [["Retail","Grocery"],["Retail"],["Retail","Pharmacy"],["Retail","Gas Station"],["Grocery","Deli"]];
+  const ALARM_VENDORS   = ["ADT","Brinks","Securitas","Guardian","Tyco","Bosch Security"];
+  const CCTV_BRANDS     = ["Axis","Hikvision","Dahua","Bosch","Pelco","Samsung"];
+  const CCTV_REC_TYPES  = ["NVR","DVR","Hybrid"];
+  const GUARD_VENDORS   = ["Allied Universal","Securitas","G4S","US Security Associates","Burns Security"];
+  const GUARD_TYPES     = ["Armed","Unarmed","Patrol"];
+  const GUARD_INDS      = ["Retail","Logistics","Commercial","Government","Healthcare"];
+  const CONTRACT_TYPES  = ["Full-time","Part-time","Contract","Seasonal"];
+  const RISK_TOLS       = ["Low","Medium","High"];
+  const SHRINK_COLORS   = ["red","orange","yellow","green","blue"];
+  const OPEN_YEARS      = [2008,2010,2012,2013,2015,2016,2017,2018,2019,2020];
+  const SUP_NAMES       = ["James Whitfield","Sandra Park","Marcus Reyes","Tanya Brown","Kevin Osei","Maria Nguyen"];
+  const GUARD_SCHEDS    = ["Mon–Fri 8am–10pm","24/7","Mon–Sun 9am–9pm","Weekdays 7am–9pm","Thu–Mon 10am–6am"];
+  const REVIEWER_NAMES  = ["Marcus King","Emma Walsh","Javier Reyes","Priya Nair","Lisa Chen"];
+  const KEY_HOLDER_SETS = [
+    "James Petrov – (212) 555-0110\nSandra Yuen – (212) 555-0111\nMiguel Ochoa – (212) 555-0112",
+    "Tanya Brooks – (617) 555-0210\nKevin Larson – (617) 555-0211",
+    "David Chen – (312) 555-0310\nPriya Nair – (312) 555-0311\nRobert Ellis – (312) 555-0312\nAlicia Torres – (312) 555-0313",
+  ];
+
+  const openY  = OPEN_YEARS[Math.floor(rng()*OPEN_YEARS.length)];
+  const openM  = String(Math.floor(rng()*12)+1).padStart(2,"0");
+  const openD  = String(Math.floor(rng()*28)+1).padStart(2,"0");
+  const openDate = `${openY}-${openM}-${openD}`;
+  const division = DIVISIONS[Math.floor(rng()*DIVISIONS.length)];
+  const locationTypes = LOC_TYPES_SETS[Math.floor(rng()*LOC_TYPES_SETS.length)];
+  const squareFootage = Math.floor(rng()*20000+5000);
+  const hasSelfCheckout = rng() > 0.4;
+
+  const alarmCY = 2022+Math.floor(rng()*3);
+  const alarm = {
+    authorizedPeople: KEY_HOLDER_SETS[Math.floor(rng()*KEY_HOLDER_SETS.length)].replace(/–[^\n]*/g,""),
+    contactPhone: `(${Math.floor(rng()*800)+200}) 555-${String(Math.floor(rng()*9000)+1000)}`,
+    contractDate: `${alarmCY}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-01`,
+    contractExpiration: `${alarmCY+3}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-01`,
+    monthlyFee: (Math.floor(rng()*200+50)).toFixed(2),
+    vendor: ALARM_VENDORS[Math.floor(rng()*ALARM_VENDORS.length)],
+  };
+
+  const cctvY = 2019+Math.floor(rng()*5);
+  const cctv = {
+    recorderType: CCTV_REC_TYPES[Math.floor(rng()*CCTV_REC_TYPES.length)],
+    recorderBrand: CCTV_BRANDS[Math.floor(rng()*CCTV_BRANDS.length)],
+    recorderSerialNumber: `SN-${Math.floor(rng()*900000+100000)}`,
+    numberOfCameras: Math.floor(rng()*20+8),
+    installDate: `${cctvY}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-01`,
+    dateOfLastUpdate: `${cctvY+1}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-01`,
+    licenseDate: `${cctvY}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-15`,
+    licenseExpiration: `${cctvY+2}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-15`,
+  };
+
+  const guardCY = 2022+Math.floor(rng()*3);
+  const guard = {
+    vendor: GUARD_VENDORS[Math.floor(rng()*GUARD_VENDORS.length)],
+    type: GUARD_TYPES[Math.floor(rng()*GUARD_TYPES.length)],
+    industry: GUARD_INDS[Math.floor(rng()*GUARD_INDS.length)],
+    contractType: CONTRACT_TYPES[Math.floor(rng()*CONTRACT_TYPES.length)],
+    vendorName: GUARD_VENDORS[Math.floor(rng()*GUARD_VENDORS.length)],
+    vendorContactPhone: `(${Math.floor(rng()*800)+200}) 555-${String(Math.floor(rng()*9000)+1000)}`,
+    vendorSupervisorName: SUP_NAMES[Math.floor(rng()*SUP_NAMES.length)],
+    vendorSupervisorPhone: `(${Math.floor(rng()*800)+200}) 555-${String(Math.floor(rng()*9000)+1000)}`,
+    contractDate: `${guardCY}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-01`,
+    contractExpiration: `${guardCY+2}-${String(Math.floor(rng()*12)+1).padStart(2,"0")}-01`,
+    numberOfGuards: Math.floor(rng()*4)+1,
+    hourlyRate: (Math.floor(rng()*15+18)).toFixed(2),
+    hoursPerWeek: [20,24,32,40,48][Math.floor(rng()*5)],
+    schedule: GUARD_SCHEDS[Math.floor(rng()*GUARD_SCHEDS.length)],
+  };
+
+  const keyHolders = {
+    list: KEY_HOLDER_SETS[Math.floor(rng()*KEY_HOLDER_SETS.length)],
+    lastReviewedDate: `Mar ${Math.floor(rng()*28)+1}, 2026`,
+    lastReviewedBy: REVIEWER_NAMES[Math.floor(rng()*REVIEWER_NAMES.length)],
+  };
+
+  const annualRev = Math.floor(rng()*5000000+1000000);
+  const shrinkPct = parseFloat((rng()*3+0.5).toFixed(2));
+  const shrink = {
+    shrinkDollars: (annualRev*shrinkPct/100).toFixed(2),
+    shrinkPercent: shrinkPct.toFixed(2),
+    annualRevenue: annualRev.toFixed(2),
+    iconColor: SHRINK_COLORS[Math.floor(rng()*SHRINK_COLORS.length)],
+    riskTolerance: RISK_TOLS[Math.floor(rng()*RISK_TOLS.length)],
+    invPeriodSales: (annualRev/13).toFixed(2),
+  };
+
+  const shippingAddress = { street:loc.address, city:loc.city, state:loc.state, zip:loc.zip, country:"United States" };
+
   // ── Report data ───────────────────────────────────────────────────────────
   const MONTHS_SHORT = ["Nov","Dec","Jan","Feb","Mar","Apr"];
   const scoreTrend    = perfTrend;
@@ -231,5 +321,7 @@ export function getLocationDetail(locationId) {
     perfTrend,
     districtAvg, regionAvg, topPeerScore, topPeerName,
     reportData: { scoreTrend, districtTrend, regionTrend, volumeTrend, apResolution, missedQs, peers, MONTHS_SHORT },
+    openDate, division, locationTypes, squareFootage, hasSelfCheckout,
+    alarm, cctv, guard, keyHolders, shrink, shippingAddress,
   };
 }

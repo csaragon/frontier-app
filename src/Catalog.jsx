@@ -1,28 +1,30 @@
 import { useState } from "react";
 import AppSidebar from "./AppSidebar.jsx";
+import { T, F } from "./aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
+// Local aliases mapping legacy names → Aegis semantic tokens
 const C = {
-  primary:      "#2226f7",
-  primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
-  primaryLight: "#d4e2ff",
-  navy:         "#001e76",
-  navyDeep:     "#16191d",
-  textSec:      "#555f6d",
-  textMuted:    "#8692a2",
-  bgApp:        "#f4f4f6",
-  bgSurface:    "#ffffff",
-  borderSubtle: "#e2e5e9",
-  borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
+  primary:      T.actionContainer1,   // ocean 500
+  primaryHover: T.actionContainer2,   // ocean 700
+  primaryBg:    T.actionContainer3,   // ocean 50 (confirmed April 2026)
+  primaryLight: T.actionContainer3,
+  navy:         T.action1,            // navy 500
+  navyDeep:     T.onSurface2,         // neutral 900
+  textSec:      T.onSurface1,         // neutral 600
+  textMuted:    T.disabled1,          // neutral 400
+  bgApp:        T.surface2,           // neutral 30
+  bgSurface:    T.surface1,           // white
+  borderSubtle: T.border1,            // neutral 100
+  borderDef:    T.border2,            // neutral 200
+  success:      T.success1,           // teal 800
+  successBg:    T.successContainer1,  // teal 100
+  error:        T.onError1,           // rose 700
+  errorBg:      T.errorContainer1,    // rose 100
+  warning:      T.warning1,           // yellow 800
+  warningBg:    T.warningContainer1,  // yellow 100
+  info:         T.onInfo1,            // navy 500
+  infoBg:       T.infoContainer1,     // ocean 50
+  // Category-specific (not in Aegis semantic layer):
   purple:       "#7c3aed",
   purpleBg:     "#faf5ff",
   orange:       "#c2410c",
@@ -86,10 +88,10 @@ export const SECTIONS = [
 export const CAT_COLORS = {
   "Fire Safety":    { color:"#7c3aed", bg:"#faf5ff" },
   "PPE":            { color:"#c2410c", bg:"#fff7ed" },
-  "Loss Prevention":{ color:"#001e76", bg:"#f0f2ff" },
-  "Operations":     { color:"#0f766e", bg:"#ecfdf5" },
-  "OSHA":           { color:"#0369a1", bg:"#f0f9ff" },
-  "Health & Safety":{ color:"#dc2626", bg:"#fef2f2" },
+  "Loss Prevention":{ color:"#001e76", bg:"#d4e2ff" },
+  "Operations":     { color:"#0f766e", bg:"#ccfbf1" },
+  "OSHA":           { color:"#001e76", bg:"#d4e2ff" },
+  "Health & Safety":{ color:"#b6143a", bg:"#fae5e6" },
 };
 
 // Implements: TLP-221 (deactivate/archive lifecycle, blocking rules, data integrity)
@@ -107,6 +109,23 @@ export const TEMPLATES = [
   { id:"T011", name:"Cash Handling Compliance",    ootb:false, cat:"Loss Prevention",sections:2, questions:5,  updated:"Mar 20, 2025", author:"James Rodriguez", state:"active",      linkedPrograms:3, inProgressAudits:2, auditCount:18, actionPlanCount:5  },
   { id:"T012", name:"Emergency Preparedness v1",   ootb:false, cat:"Health & Safety",sections:3, questions:9,  updated:"Mar 10, 2025", author:"Sarah Patel",     state:"archived",    linkedPrograms:0, inProgressAudits:0, auditCount:7,  actionPlanCount:1  },
 ];
+
+const MARKETPLACE_ENTRIES = [
+  { id:"M001", templateId:"T001", name:"Fire Safety Audit",       cat:"Fire Safety",    currentVersion:"3.2", versions:[{v:"3.0",date:"Jan 4, 2025",notes:"Initial release"},{v:"3.1",date:"Feb 18, 2025",notes:"Added exit signage questions"},{v:"3.2",date:"Apr 10, 2025",notes:"Revised extinguisher checklist"}], status:"live",         publishedBy:"Aegis Team",      publishedDate:"Apr 10, 2025", installs:47 },
+  { id:"M002", templateId:"T002", name:"Slip Trip & Fall",        cat:"Health & Safety",currentVersion:"1.3", versions:[{v:"1.0",date:"Oct 1, 2024",notes:"Initial release"},{v:"1.1",date:"Dec 5, 2024",notes:"Added spill response items"},{v:"1.2",date:"Feb 1, 2025",notes:"Matting checklist update"},{v:"1.3",date:"Mar 28, 2025",notes:"Minor wording corrections"}], status:"live",         publishedBy:"Aegis Team",      publishedDate:"Mar 28, 2025", installs:23 },
+  { id:"M003", templateId:"T003", name:"PPE Compliance",          cat:"PPE",            currentVersion:"2.1", versions:[{v:"1.0",date:"Jun 10, 2024",notes:"Initial release"},{v:"2.0",date:"Nov 20, 2024",notes:"Full rewrite for OSHA 2024"},{v:"2.1",date:"Mar 14, 2025",notes:"Added glove sizing check"}], status:"live",         publishedBy:"Aegis Team",      publishedDate:"Mar 14, 2025", installs:31 },
+  { id:"M004", templateId:"T004", name:"LP Standard Audit",       cat:"Loss Prevention",currentVersion:"4.0", versions:[{v:"2.0",date:"May 1, 2024",notes:"Expanded cash handling"},{v:"3.0",date:"Sep 15, 2024",notes:"EAS tagging added"},{v:"4.0",date:"Feb 20, 2025",notes:"Access control overhaul"}], status:"live",         publishedBy:"Aegis Team",      publishedDate:"Feb 20, 2025", installs:58 },
+  { id:"M005", templateId:"T005", name:"OSHA Standard",           cat:"OSHA",           currentVersion:"2.1", versions:[{v:"1.0",date:"Apr 3, 2024",notes:"Initial release"},{v:"2.0",date:"Jan 15, 2025",notes:"Lockout/tagout added"},{v:"2.1",date:"Apr 22, 2025",notes:"Submitted — pending review"}], status:"under_review", publishedBy:"Aegis Team",      publishedDate:"Apr 22, 2025", installs:19 },
+  { id:"M006", templateId:"T006", name:"Ops Standards v2",        cat:"Operations",     currentVersion:"2.0", versions:[{v:"1.0",date:"Jul 1, 2024",notes:"Initial release"},{v:"2.0",date:"Apr 1, 2025",notes:"Deprecated — superseded by Q2 Ops Review"}], status:"deprecated",    publishedBy:"Aegis Team",      publishedDate:"Apr 1, 2025",  installs:14 },
+  { id:"M007", templateId:"T007", name:"SE Fire Safety - Custom", cat:"Fire Safety",    currentVersion:"1.0", versions:[{v:"1.0",date:"Apr 12, 2025",notes:"First submission from SE region"}], status:"under_review", publishedBy:"Marcus King",     publishedDate:"Apr 12, 2025", installs:0  },
+  { id:"M008", templateId:"T011", name:"Cash Handling Compliance",cat:"Loss Prevention",currentVersion:"1.2", versions:[{v:"1.0",date:"Jan 5, 2025",notes:"Initial publish"},{v:"1.1",date:"Feb 10, 2025",notes:"Return desk procedure added"},{v:"1.2",date:"Mar 20, 2025",notes:"Shrink driver dropdown expanded"}], status:"live",         publishedBy:"James Rodriguez", publishedDate:"Mar 20, 2025", installs:18 },
+];
+
+const MP_STATUS = {
+  live:         { label:"Live",         color:"#115e59", bg:"#ccfbf1" },
+  under_review: { label:"Under Review", color:"#854d0e", bg:"#fef9c3" },
+  deprecated:   { label:"Deprecated",  color:"#8692a2", bg:"#f4f4f6" },
+};
 
 // ── Small UI primitives ───────────────────────────────────────────────────────
 
@@ -129,7 +148,7 @@ function SearchBar({ value, onChange, placeholder = "Search…" }) {
 
 function FilterChip({ label, active, onClick }) {
   return <button onClick={onClick}
-    style={{ padding:"5px 12px", borderRadius:999, border:`1px solid ${active?C.primary:C.borderDef}`, background:active?C.primaryLight:C.bgSurface, color:active?C.primaryHover:C.textSec, fontSize:11, fontWeight:active?600:400, fontFamily:F, cursor:"pointer", whiteSpace:"nowrap" }}>
+    style={{ padding:"5px 12px", borderRadius:999, border:`1px solid ${active?C.primary:C.borderDef}`, background:active?C.primaryLight:C.bgSurface, color:active?C.primaryHover:C.textSec, fontSize:12, fontWeight:active?600:400, fontFamily:F, cursor:"pointer", whiteSpace:"nowrap" }}>
     {label}
   </button>;
 }
@@ -140,7 +159,7 @@ function IconBtn({ icon, label, onClick, primary, danger, sm }) {
   const fg = primary ? "#fff" : danger ? C.error : C.textSec;
   const bd = primary ? "none" : danger ? `1px solid ${C.borderSubtle}` : `1px solid ${C.borderDef}`;
   return <button onClick={onClick} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-    style={{ display:"inline-flex", alignItems:"center", gap:5, padding: sm?"5px 10px":"6px 12px", borderRadius:7, border:bd, background:bg, color:fg, fontSize: sm?11:12, fontWeight:500, fontFamily:F, cursor:"pointer", whiteSpace:"nowrap" }}>
+    style={{ display:"inline-flex", alignItems:"center", gap:5, padding: sm?"5px 10px":"6px 12px", borderRadius:8, border:bd, background:bg, color:fg, fontSize: sm?11:12, fontWeight:500, fontFamily:F, cursor:"pointer", whiteSpace:"nowrap" }}>
     {icon && <span>{icon}</span>}{label}
   </button>;
 }
@@ -170,9 +189,9 @@ function DuplicateModal({ template, onClose }) {
   const [name, setName] = useState(`${template.name} - Copy`);
   return (
     <ModalShell onClose={onClose}>
-      <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>Duplicate template</div>
+      <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>Duplicate template</div>
       <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginBottom:16 }}>A copy will be created that you can freely edit. The original OOTB template stays locked.</div>
-      <label style={{ fontSize:11, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>New template name</label>
+      <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>New template name</label>
       <input value={name} onChange={e => setName(e.target.value)}
         style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box", marginBottom:16 }}
         onFocus={e => e.target.style.borderColor = C.primary}
@@ -194,7 +213,7 @@ function ArchiveModal({ template, onConfirm, onClose }) {
 
   return (
     <ModalShell onClose={onClose}>
-      <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:8 }}>
+      <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:8 }}>
         {blocked ? "Cannot archive template" : "Archive template?"}
       </div>
 
@@ -205,11 +224,11 @@ function ArchiveModal({ template, onConfirm, onClose }) {
           </div>
           {template.linkedPrograms > 0 && (
             <div style={{ background:C.errorBg, border:`1px solid #fca5a5`, borderRadius:8, padding:"10px 14px", marginBottom:10 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.error, fontFamily:F, marginBottom:6 }}>
+              <div style={{ fontSize:12, fontWeight:600, color:C.error, fontFamily:F, marginBottom:6 }}>
                 Linked to {template.linkedPrograms} program{template.linkedPrograms !== 1 ? "s" : ""}
               </div>
               {mockPrograms.map(p => (
-                <div key={p} style={{ fontSize:11, color:C.error, fontFamily:F, marginBottom:2, display:"flex", alignItems:"center", gap:5 }}>
+                <div key={p} style={{ fontSize:12, color:C.error, fontFamily:F, marginBottom:2, display:"flex", alignItems:"center", gap:5 }}>
                   <span style={{ width:4, height:4, borderRadius:"50%", background:C.error, display:"inline-block", flexShrink:0 }} />{p}
                 </div>
               ))}
@@ -217,15 +236,15 @@ function ArchiveModal({ template, onConfirm, onClose }) {
           )}
           {template.inProgressAudits > 0 && (
             <div style={{ background:C.warningBg, border:`1px solid #fde68a`, borderRadius:8, padding:"10px 14px", marginBottom:10 }}>
-              <div style={{ fontSize:11, fontWeight:600, color:C.warning, fontFamily:F }}>
+              <div style={{ fontSize:12, fontWeight:600, color:C.warning, fontFamily:F }}>
                 {template.inProgressAudits} audit{template.inProgressAudits !== 1 ? "s" : ""} in progress
               </div>
-              <div style={{ fontSize:11, color:C.textSec, fontFamily:F, marginTop:2 }}>All in-progress audits must complete before archiving.</div>
+              <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginTop:2 }}>All in-progress audits must complete before archiving.</div>
             </div>
           )}
           <div style={{ display:"flex", gap:8, justifyContent:"flex-end", marginTop:16 }}>
             <IconBtn label="Cancel" onClick={onClose} />
-            <button disabled style={{ padding:"7px 16px", borderRadius:7, border:"none", background:C.borderDef, color:C.textMuted, fontSize:12, fontFamily:F, cursor:"not-allowed" }}>
+            <button disabled style={{ padding:"7px 16px", borderRadius:8, border:"none", background:C.borderDef, color:C.textMuted, fontSize:12, fontFamily:F, cursor:"not-allowed" }}>
               Remove from programs first
             </button>
           </div>
@@ -251,11 +270,11 @@ function DeleteModal({ template, onConfirm, onClose }) {
   const confirmed = typed === "DELETE";
   return (
     <ModalShell onClose={onClose}>
-      <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:8 }}>Delete draft permanently?</div>
+      <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:8 }}>Delete draft permanently?</div>
       <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginBottom:16, lineHeight:"18px" }}>
         <strong style={{ color:C.navyDeep }}>{template.name}</strong> is a draft that has never been used. This action is permanent and cannot be undone.
       </div>
-      <label style={{ fontSize:11, fontWeight:600, color:C.error, fontFamily:F, display:"block", marginBottom:4 }}>
+      <label style={{ fontSize:12, fontWeight:600, color:C.error, fontFamily:F, display:"block", marginBottom:4 }}>
         Type DELETE to confirm
       </label>
       <input
@@ -271,7 +290,7 @@ function DeleteModal({ template, onConfirm, onClose }) {
         <button
           disabled={!confirmed}
           onClick={confirmed ? onConfirm : undefined}
-          style={{ padding:"7px 16px", borderRadius:7, border:"none", background:confirmed ? C.error : C.borderDef, color:confirmed ? "#fff" : C.textMuted, fontSize:12, fontFamily:F, fontWeight:600, cursor:confirmed ? "pointer" : "not-allowed" }}>
+          style={{ padding:"7px 16px", borderRadius:8, border:"none", background:confirmed ? C.error : C.borderDef, color:confirmed ? "#fff" : C.textMuted, fontSize:12, fontFamily:F, fontWeight:600, cursor:confirmed ? "pointer" : "not-allowed" }}>
           Delete permanently
         </button>
       </div>
@@ -291,13 +310,13 @@ function DataIntegrityPanel({ template }) {
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        style={{ width:"100%", padding:"8px 12px", display:"flex", alignItems:"center", justifyContent:"space-between", background:C.bgApp, border:"none", cursor:"pointer", fontFamily:F, fontSize:11, color:C.textMuted }}
+        style={{ width:"100%", padding:"8px 12px", display:"flex", alignItems:"center", justifyContent:"space-between", background:C.bgApp, border:"none", cursor:"pointer", fontFamily:F, fontSize:12, color:C.textMuted }}
       >
         <span style={{ fontWeight:600 }}>Dev: Data integrity check</span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: open ? "rotate(180deg)" : "rotate(0)" }}><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       {open && (
-        <div style={{ padding:"10px 12px", fontSize:11, fontFamily:F, display:"flex", flexDirection:"column", gap:4 }}>
+        <div style={{ padding:"10px 12px", fontSize:12, fontFamily:F, display:"flex", flexDirection:"column", gap:4 }}>
           <div style={{ color:C.textSec, marginBottom:4 }}>Counts before archive action (must be unchanged after):</div>
           {[
             { label:"Historical audits",  val:before.audits },
@@ -340,7 +359,7 @@ function KebabMenu({ template, onAction }) {
         aria-label="Template actions"
         aria-haspopup="true"
         aria-expanded={open}
-        style={{ padding:"3px 6px", border:`1px solid ${C.borderSubtle}`, borderRadius:5, background:"transparent", cursor:"pointer", color:C.textMuted, display:"flex", alignItems:"center" }}
+        style={{ padding:"3px 6px", border:`1px solid ${C.borderSubtle}`, borderRadius:4, background:"transparent", cursor:"pointer", color:C.textMuted, display:"flex", alignItems:"center" }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
       </button>
@@ -373,7 +392,7 @@ function NewTemplateDropdown({ onNav }) {
   const [open, setOpen] = useState(false);
   return (
     <div style={{ position:"relative" }}>
-      <div style={{ display:"flex", borderRadius:7, overflow:"hidden", border:`1px solid ${C.primary}` }}>
+      <div style={{ display:"flex", borderRadius:8, overflow:"hidden", border:`1px solid ${C.primary}` }}>
         <button type="button" onClick={() => onNav("template_wizard")}
           style={{ padding:"6px 12px", border:"none", background:C.primary, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}>
           + New Template
@@ -386,7 +405,7 @@ function NewTemplateDropdown({ onNav }) {
       {open && (
         <>
           <div style={{ position:"fixed", inset:0, zIndex:698 }} onClick={() => setOpen(false)} />
-          <div style={{ position:"absolute", top:"calc(100% + 6px)", right:0, zIndex:699, background:C.bgSurface, border:`1px solid ${C.borderSubtle}`, borderRadius:10, boxShadow:"0 8px 24px rgba(0,0,0,0.12)", minWidth:220, overflow:"hidden" }}>
+          <div style={{ position:"absolute", top:"calc(100% + 6px)", right:0, zIndex:699, background:C.bgSurface, border:`1px solid ${C.borderSubtle}`, borderRadius:12, boxShadow:"0 8px 24px rgba(0,0,0,0.12)", minWidth:220, overflow:"hidden" }}>
             {[
               { label:"Blank template",           sub:"Start from scratch",                           key:"blank",   icon:"✦" },
               { label:"Upload Excel (Seymour)",    sub:"Auto-generate from an audit checklist",       key:"seymour", icon:"⬆" },
@@ -396,7 +415,7 @@ function NewTemplateDropdown({ onNav }) {
                 style={{ width:"100%", padding:"11px 16px", border:"none", background:"transparent", textAlign:"left", cursor:"pointer", display:"flex", alignItems:"center", gap:12 }}
                 onMouseEnter={e => e.currentTarget.style.background = C.bgApp}
                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                <span style={{ width:28, height:28, borderRadius:7, background:item.key==="seymour"?C.primaryBg:C.bgApp, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{item.icon}</span>
+                <span style={{ width:28, height:28, borderRadius:8, background:item.key==="seymour"?C.primaryBg:C.bgApp, display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, flexShrink:0 }}>{item.icon}</span>
                 <div>
                   <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>{item.label}</div>
                   <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:1 }}>{item.sub}</div>
@@ -466,7 +485,7 @@ function TemplatesTab({ templates, onAction, isAdmin, onNav }) {
 
       {/* Archived informational banner */}
       {effectiveStateTab === "archived" && (
-        <div style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 14px", background:C.bgApp, border:`1px solid ${C.borderSubtle}`, borderRadius:8, marginBottom:14, fontSize:11, color:C.textSec, fontFamily:F, lineHeight:"16px" }}>
+        <div style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"10px 14px", background:C.bgApp, border:`1px solid ${C.borderSubtle}`, borderRadius:8, marginBottom:14, fontSize:12, color:C.textSec, fontFamily:F, lineHeight:"16px" }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.textMuted} strokeWidth="2" style={{ flexShrink:0, marginTop:1 }}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           Archived templates cannot be assigned to new programs or audits but remain fully accessible for reference and reporting.
         </div>
@@ -528,7 +547,7 @@ function TemplateCard({ t, onDuplicate, onOpenWizard, onAction }) {
       <div
         onMouseEnter={() => setH(true)}
         onMouseLeave={() => setH(false)}
-        style={{ background:C.bgSurface, borderRadius:10, border:`1px solid ${h ? C.primary : C.borderSubtle}`, padding:"14px 16px", display:"flex", flexDirection:"column", gap:10, transition:"border-color 0.15s", boxShadow: h ? "0 2px 8px rgba(0,0,0,0.06)" : "none" }}
+        style={{ background:C.bgSurface, borderRadius:12, border:`1px solid ${h ? C.primary : C.borderSubtle}`, padding:"14px 16px", display:"flex", flexDirection:"column", gap:10, transition:"border-color 0.15s", boxShadow: h ? "0 2px 8px rgba(0,0,0,0.06)" : "none" }}
       >
         {/* Header */}
         <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8 }}>
@@ -557,7 +576,7 @@ function TemplateCard({ t, onDuplicate, onOpenWizard, onAction }) {
           ].map(s => (
             <div key={s.label}>
               <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, lineHeight:1 }}>{s.val}</div>
-              <div style={{ fontSize:9, color:C.textMuted, fontFamily:F, textTransform:"uppercase", letterSpacing:"0.04em", marginTop:2 }}>{s.label}</div>
+              <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, textTransform:"uppercase", letterSpacing:"0.04em", marginTop:2 }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -582,7 +601,7 @@ function TemplateCard({ t, onDuplicate, onOpenWizard, onAction }) {
           <IconBtn sm label="Duplicate" onClick={onDuplicate} />
           {canEdit
             ? <IconBtn sm primary label="Open in wizard" onClick={onOpenWizard} />
-            : <button disabled style={{ padding:"5px 10px", borderRadius:7, border:`1px solid ${C.borderSubtle}`, background:C.bgApp, color:C.textMuted, fontSize:11, fontFamily:F, cursor:"not-allowed" }}>Edit (OOTB)</button>
+            : <button disabled style={{ padding:"5px 10px", borderRadius:8, border:`1px solid ${C.borderSubtle}`, background:C.bgApp, color:C.textMuted, fontSize:12, fontFamily:F, cursor:"not-allowed" }}>Edit (OOTB)</button>
           }
         </div>
       </div>
@@ -620,11 +639,11 @@ function SectionsTab() {
         </div>
       </div>
 
-      <div style={{ background:C.bgSurface, borderRadius:10, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}>
+      <div style={{ background:C.bgSurface, borderRadius:12, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}>
         {/* Header */}
         <div style={{ display:"grid", gridTemplateColumns:"1fr 120px 80px 80px 140px", gap:8, padding:"8px 16px", background:C.bgApp, borderBottom:`1px solid ${C.borderSubtle}` }}>
           {["Section name","Category","Questions","Used in",""].map((h,i) =>
-            <span key={i} style={{ fontSize:9, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, textAlign: i>=2&&i<=3?"center":"left" }}>{h}</span>
+            <span key={i} style={{ fontSize:10, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, textAlign: i>=2&&i<=3?"center":"left" }}>{h}</span>
           )}
         </div>
 
@@ -704,7 +723,7 @@ function SectionEditModal({ section, onClose }) {
         <div style={{ padding:"18px 24px", borderBottom:`1px solid ${C.borderSubtle}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0, background:C.bgSurface }}>
           <div>
             <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F }}>{isNew ? "Create new section" : `Edit section — ${section.name}`}</div>
-            <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:2 }}>
+            <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:2 }}>
               {isNew ? "Name your section, then pick questions from the bank on the right." : "Adjust the name or swap questions. Changes apply to all templates using this section."}
             </div>
           </div>
@@ -723,14 +742,14 @@ function SectionEditModal({ section, onClose }) {
 
             {/* Section details */}
             <div style={{ padding:"20px 20px 16px", borderBottom:`1px solid ${C.borderSubtle}`, flexShrink:0 }}>
-              <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:12 }}>Section details</div>
-              <label style={{ fontSize:11, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Section name</label>
+              <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:12 }}>Section details</div>
+              <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Section name</label>
               <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Fire Safety Checklist"
                 style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box", marginBottom:12 }}
                 onFocus={e => e.target.style.borderColor = C.primary}
                 onBlur={e => e.target.style.borderColor = C.borderDef}
               />
-              <label style={{ fontSize:11, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Category</label>
+              <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Category</label>
               <select value={cat} onChange={e => setCat(e.target.value)}
                 style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, cursor:"pointer" }}>
                 {Object.keys(CAT_COLORS).map(c => <option key={c}>{c}</option>)}
@@ -739,8 +758,8 @@ function SectionEditModal({ section, onClose }) {
 
             {/* Selected questions */}
             <div style={{ padding:"14px 20px 8px", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-              <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Selected questions</div>
-              <span style={{ fontSize:11, fontWeight:600, color: selectedQs.size>0?C.primary:C.textMuted, fontFamily:F }}>{selectedQs.size} added</span>
+              <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Selected questions</div>
+              <span style={{ fontSize:12, fontWeight:600, color: selectedQs.size>0?C.primary:C.textMuted, fontFamily:F }}>{selectedQs.size} added</span>
             </div>
 
             <div style={{ flex:1, overflowY:"auto", padding:"0 20px 16px" }}>
@@ -748,7 +767,7 @@ function SectionEditModal({ section, onClose }) {
                 <div style={{ padding:"32px 0", textAlign:"center" }}>
                   <div style={{ fontSize:28, marginBottom:8 }}>☑️</div>
                   <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>No questions selected yet.</div>
-                  <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:4 }}>Browse the question bank →</div>
+                  <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:4 }}>Browse the question bank →</div>
                 </div>
               ) : (
                 <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
@@ -756,9 +775,9 @@ function SectionEditModal({ section, onClose }) {
                     const tm = TYPE_META[q.type] || { color:C.textSec, bg:C.bgApp };
                     return (
                       <div key={q.id} style={{ background:C.bgSurface, border:`1px solid ${C.borderSubtle}`, borderRadius:8, padding:"10px 12px", display:"flex", alignItems:"flex-start", gap:10 }}>
-                        <div style={{ width:20, height:20, borderRadius:4, background:C.primaryLight, color:C.primaryHover, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:700, fontFamily:F, flexShrink:0, marginTop:1 }}>{i+1}</div>
+                        <div style={{ width:20, height:20, borderRadius:4, background:C.primaryLight, color:C.primaryHover, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, fontFamily:F, flexShrink:0, marginTop:1 }}>{i+1}</div>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontSize:11, color:C.navyDeep, fontFamily:F, fontWeight:500, lineHeight:"15px" }}>{q.text}</div>
+                          <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, fontWeight:500, lineHeight:"15px" }}>{q.text}</div>
                           <div style={{ marginTop:4 }}><Badge label={q.type} color={tm.color} bg={tm.bg} sm /></div>
                         </div>
                         <button onClick={() => remove(q.id)} style={{ background:"none", border:"none", cursor:"pointer", color:C.textMuted, padding:2, flexShrink:0, marginTop:1 }}
@@ -780,13 +799,13 @@ function SectionEditModal({ section, onClose }) {
             {/* Bank toolbar */}
             <div style={{ padding:"16px 20px", borderBottom:`1px solid ${C.borderSubtle}`, flexShrink:0 }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
-                <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Question bank</div>
-                <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>{bankFiltered.length} question{bankFiltered.length!==1?"s":""}</span>
+                <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Question bank</div>
+                <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>{bankFiltered.length} question{bankFiltered.length!==1?"s":""}</span>
               </div>
               <div style={{ display:"flex", gap:8, marginBottom:10 }}>
                 <SearchBar value={search} onChange={setSearch} placeholder="Search questions…" />
                 <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-                  style={{ padding:"7px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:11, fontFamily:F, color:C.navyDeep, background:C.bgSurface, cursor:"pointer" }}>
+                  style={{ padding:"7px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, cursor:"pointer" }}>
                   <option>All</option>
                   {QUESTION_TYPES.map(t => <option key={t}>{t}</option>)}
                 </select>
@@ -830,7 +849,7 @@ function SectionEditModal({ section, onClose }) {
             {/* Create new question CTA */}
             <div style={{ padding:"12px 20px", borderTop:`1px solid ${C.borderSubtle}`, background:C.warningBg, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"space-between", gap:12 }}>
               <div>
-                <div style={{ fontSize:11, fontWeight:600, color:C.warning, fontFamily:F }}>Can't find what you need?</div>
+                <div style={{ fontSize:12, fontWeight:600, color:C.warning, fontFamily:F }}>Can't find what you need?</div>
                 <div style={{ fontSize:10, color:C.textSec, fontFamily:F, marginTop:2 }}>The system will check for similar questions before you create a new one to prevent duplicates.</div>
               </div>
               <IconBtn sm label="+ New question" onClick={() => setShowNewQ(true)} />
@@ -840,7 +859,7 @@ function SectionEditModal({ section, onClose }) {
 
         {/* ── Footer */}
         <div style={{ padding:"14px 24px", borderTop:`1px solid ${C.borderSubtle}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0, background:C.bgSurface }}>
-          <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+          <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
             {selectedQs.size > 0 ? `${selectedQs.size} question${selectedQs.size!==1?"s":""} will be added to this section` : "Select at least one question to save"}
           </div>
           <div style={{ display:"flex", gap:8 }}>
@@ -876,7 +895,7 @@ function QuestionsTab() {
       <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
         <SearchBar value={search} onChange={setSearch} placeholder="Search questions…" />
         <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-          style={{ padding:"7px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:11, fontFamily:F, color:C.navyDeep, background:C.bgSurface, cursor:"pointer" }}>
+          style={{ padding:"7px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, cursor:"pointer" }}>
           <option>All</option>
           {QUESTION_TYPES.map(t => <option key={t}>{t}</option>)}
         </select>
@@ -888,12 +907,12 @@ function QuestionsTab() {
         </div>
       </div>
 
-      <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginBottom:10 }}>{filtered.length} question{filtered.length!==1?"s":""} in the bank</div>
+      <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:10 }}>{filtered.length} question{filtered.length!==1?"s":""} in the bank</div>
 
-      <div style={{ background:C.bgSurface, borderRadius:10, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}>
+      <div style={{ background:C.bgSurface, borderRadius:12, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 110px 120px 80px", gap:8, padding:"8px 16px", background:C.bgApp, borderBottom:`1px solid ${C.borderSubtle}` }}>
           {["Question","Type","Category","Used in"].map((h,i) =>
-            <span key={i} style={{ fontSize:9, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, textAlign:i===3?"center":"left" }}>{h}</span>
+            <span key={i} style={{ fontSize:10, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, textAlign:i===3?"center":"left" }}>{h}</span>
           )}
         </div>
 
@@ -939,10 +958,10 @@ function NewQuestionModal({ onClose }) {
 
         {step === "form" ? (
           <>
-            <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>New question</div>
+            <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>New question</div>
             <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginBottom:16 }}>Before saving, we'll check the bank for similar questions to avoid duplicates.</div>
 
-            <label style={{ fontSize:11, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Question text</label>
+            <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Question text</label>
             <textarea value={text} onChange={e => setText(e.target.value)} rows={3} placeholder="Enter the question as it will appear to auditors…"
               style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box", resize:"vertical", marginBottom:12 }}
               onFocus={e => e.target.style.borderColor = C.primary}
@@ -951,14 +970,14 @@ function NewQuestionModal({ onClose }) {
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:20 }}>
               <div>
-                <label style={{ fontSize:11, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Question type</label>
+                <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Question type</label>
                 <select value={type} onChange={e => setType(e.target.value)}
                   style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface }}>
                   {QUESTION_TYPES.map(t => <option key={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ fontSize:11, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Category</label>
+                <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Category</label>
                 <select value={cat} onChange={e => setCat(e.target.value)}
                   style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface }}>
                   {Object.keys(CAT_COLORS).map(c => <option key={c}>{c}</option>)}
@@ -973,21 +992,21 @@ function NewQuestionModal({ onClose }) {
           </>
         ) : (
           <>
-            <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>Similarity check</div>
+            <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>Similarity check</div>
             <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginBottom:14 }}>The system found {similarExamples.length > 0 ? "potentially similar" : "no similar"} questions in the bank. Review before adding.</div>
 
             {similarExamples.length > 0 ? (
               <div style={{ background:C.warningBg, border:`1px solid #fde68a`, borderRadius:8, padding:12, marginBottom:16 }}>
-                <div style={{ fontSize:11, fontWeight:600, color:C.warning, fontFamily:F, marginBottom:8 }}>Possible duplicates found</div>
+                <div style={{ fontSize:12, fontWeight:600, color:C.warning, fontFamily:F, marginBottom:8 }}>Possible duplicates found</div>
                 {similarExamples.map(q => (
-                  <div key={q.id} style={{ fontSize:11, color:C.navyDeep, fontFamily:F, padding:"6px 0", borderBottom:`1px solid #fde68a`, lineHeight:"15px" }}>
+                  <div key={q.id} style={{ fontSize:12, color:C.navyDeep, fontFamily:F, padding:"6px 0", borderBottom:`1px solid #fde68a`, lineHeight:"15px" }}>
                     {q.text} <span style={{ color:C.textMuted }}>({q.type})</span>
                   </div>
                 ))}
                 <div style={{ fontSize:10, color:C.warning, fontFamily:F, marginTop:8 }}>If one of these matches your intent, use it instead to keep the bank clean.</div>
               </div>
             ) : (
-              <div style={{ background:C.successBg, border:`1px solid #bbf7d0`, borderRadius:8, padding:12, marginBottom:16, fontSize:11, color:C.success, fontFamily:F }}>
+              <div style={{ background:C.successBg, border:`1px solid #bbf7d0`, borderRadius:8, padding:12, marginBottom:16, fontSize:12, color:C.success, fontFamily:F }}>
                 No similar questions found. Your question looks unique.
               </div>
             )}
@@ -1009,17 +1028,232 @@ function NewQuestionModal({ onClose }) {
   );
 }
 
+// ── Marketplace tab ───────────────────────────────────────────────────────────
+
+function PublishModal({ onClose }) {
+  const unpublishedIds = new Set(MARKETPLACE_ENTRIES.map(m => m.templateId));
+  const eligible = TEMPLATES.filter(t => !unpublishedIds.has(t.id) && t.state === "active");
+  const [sel, setSel] = useState(eligible[0]?.id ?? null);
+  const [ver, setVer] = useState("1.0");
+  const [notes, setNotes] = useState("");
+  return (
+    <ModalShell onClose={onClose} width={480}>
+      <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>Publish to Marketplace</div>
+      <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginBottom:18 }}>Make a template available to other teams. Published versions go through a brief review before going live.</div>
+
+      <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Template</label>
+      {eligible.length > 0 ? (
+        <select value={sel ?? ""} onChange={e => setSel(e.target.value)}
+          style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, marginBottom:14, boxSizing:"border-box" }}>
+          {eligible.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+        </select>
+      ) : (
+        <div style={{ padding:"10px 12px", borderRadius:8, background:C.bgApp, border:`1px solid ${C.borderSubtle}`, fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:14 }}>All active templates are already published.</div>
+      )}
+
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:14 }}>
+        <div>
+          <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Version number</label>
+          <input value={ver} onChange={e => setVer(e.target.value)} placeholder="e.g. 1.0"
+            style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box" }}
+            onFocus={e => e.target.style.borderColor = C.primary}
+            onBlur={e => e.target.style.borderColor = C.borderDef}
+          />
+        </div>
+        <div>
+          <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Audience</label>
+          <select style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, boxSizing:"border-box" }}>
+            <option>All regions</option>
+            <option>Northeast only</option>
+            <option>Southeast only</option>
+          </select>
+        </div>
+      </div>
+
+      <label style={{ fontSize:12, fontWeight:500, color:C.textSec, fontFamily:F, display:"block", marginBottom:4 }}>Release notes</label>
+      <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="What changed in this version?"
+        style={{ width:"100%", padding:"8px 10px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", boxSizing:"border-box", resize:"vertical", marginBottom:20 }}
+        onFocus={e => e.target.style.borderColor = C.primary}
+        onBlur={e => e.target.style.borderColor = C.borderDef}
+      />
+
+      <div style={{ display:"flex", gap:8, justifyContent:"flex-end" }}>
+        <IconBtn label="Cancel" onClick={onClose} />
+        <IconBtn primary label="Submit for review" onClick={onClose} />
+      </div>
+    </ModalShell>
+  );
+}
+
+function VersionDrawer({ entry, onClose }) {
+  return (
+    <div style={{ background:C.bgApp, border:`1px solid ${C.borderSubtle}`, borderRadius:8, padding:"14px 18px", marginTop:8 }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+        <div style={{ fontSize:12, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Version history</div>
+        <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.textMuted, fontSize:12, fontFamily:F, padding:"2px 6px" }}>Close</button>
+      </div>
+      {[...entry.versions].reverse().map((v, i) => (
+        <div key={v.v} style={{ display:"flex", gap:14, padding:"10px 0", borderBottom: i < entry.versions.length - 1 ? `1px solid ${C.borderSubtle}` : "none" }}>
+          <div style={{ minWidth:36, fontSize:12, fontWeight:700, color: i === 0 ? C.primary : C.textMuted, fontFamily:F }}>{v.v}</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, lineHeight:"15px" }}>{v.notes}</div>
+            <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:2 }}>{v.date}</div>
+          </div>
+          {i === 0 && <span style={{ padding:"2px 7px", borderRadius:4, background:C.primaryLight, color:C.primary, fontSize:10, fontWeight:700, fontFamily:F, alignSelf:"flex-start" }}>CURRENT</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MarketplaceRow({ entry }) {
+  const [expanded, setExpanded] = useState(false);
+  const [hov, setHov] = useState(false);
+  const catStyle = CAT_COLORS[entry.cat] || { color:C.textSec, bg:C.bgApp };
+  const st = MP_STATUS[entry.status];
+  return (
+    <div style={{ background:C.bgSurface, border:`1px solid ${hov && !expanded ? C.borderDef : C.borderSubtle}`, borderRadius:12, overflow:"hidden", transition:"box-shadow 0.12s", boxShadow: hov ? "0 2px 8px rgba(0,0,0,0.06)" : "none" }}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 130px 110px 80px 90px 110px", gap:12, padding:"14px 18px", alignItems:"center" }}>
+        {/* Name + meta */}
+        <div>
+          <div style={{ fontSize:13, fontWeight:600, color:C.navyDeep, fontFamily:F }}>{entry.name}</div>
+          <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:2 }}>
+            Published by <span style={{ color:C.textSec, fontWeight:500 }}>{entry.publishedBy}</span> · {entry.publishedDate}
+          </div>
+        </div>
+        {/* Category */}
+        <div><Badge label={entry.cat} color={catStyle.color} bg={catStyle.bg} sm /></div>
+        {/* Version */}
+        <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+          <span style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>v{entry.currentVersion}</span>
+          <span style={{ fontSize:10, color:C.textMuted, fontFamily:F }}>· {entry.versions.length} version{entry.versions.length !== 1 ? "s" : ""}</span>
+        </div>
+        {/* Installs */}
+        <div style={{ fontSize:12, color:C.textSec, fontFamily:F, textAlign:"center" }}>{entry.installs > 0 ? entry.installs : "—"}</div>
+        {/* Status */}
+        <div><span style={{ padding:"3px 8px", borderRadius:4, fontSize:10, fontWeight:600, fontFamily:F, background:st.bg, color:st.color }}>{st.label}</span></div>
+        {/* Actions */}
+        <div style={{ display:"flex", gap:6, justifyContent:"flex-end" }}>
+          <button
+            onClick={() => setExpanded(x => !x)}
+            style={{ padding:"5px 10px", borderRadius:6, border:`1px solid ${C.borderDef}`, background: expanded ? C.primaryLight : C.bgSurface, color: expanded ? C.primary : C.textSec, fontSize:12, fontFamily:F, cursor:"pointer", fontWeight:500 }}>
+            {expanded ? "Hide" : "Changelog"}
+          </button>
+          {entry.status === "live" && (
+            <button style={{ padding:"5px 10px", borderRadius:6, border:`1px solid ${C.primary}`, background:C.primaryBg, color:C.primary, fontSize:12, fontFamily:F, cursor:"pointer", fontWeight:600 }}>
+              Update
+            </button>
+          )}
+        </div>
+      </div>
+      {expanded && (
+        <div style={{ padding:"0 18px 14px" }}>
+          <VersionDrawer entry={entry} onClose={() => setExpanded(false)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MarketplaceTab() {
+  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
+  const [showPublish, setShowPublish] = useState(false);
+
+  const liveCount        = MARKETPLACE_ENTRIES.filter(e => e.status === "live").length;
+  const reviewCount      = MARKETPLACE_ENTRIES.filter(e => e.status === "under_review").length;
+  const deprecatedCount  = MARKETPLACE_ENTRIES.filter(e => e.status === "deprecated").length;
+
+  const FILTERS = [
+    { key:"all",          label:"All",          count: MARKETPLACE_ENTRIES.length },
+    { key:"live",         label:"Live",         count: liveCount },
+    { key:"under_review", label:"Under Review", count: reviewCount },
+    { key:"deprecated",   label:"Deprecated",   count: deprecatedCount },
+  ];
+
+  const visible = MARKETPLACE_ENTRIES.filter(e => {
+    if (filter !== "all" && e.status !== filter) return false;
+    if (search && !e.name.toLowerCase().includes(search.toLowerCase()) && !e.cat.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  return (
+    <div>
+      {/* Sub-header */}
+      <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:20 }}>
+        <div>
+          <div style={{ fontSize:13, fontWeight:600, color:C.navyDeep, fontFamily:F }}>Published templates</div>
+          <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:2 }}>Templates submitted here are reviewed and made available across the organization.</div>
+        </div>
+        <IconBtn primary icon={
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+        } label="Publish template" onClick={() => setShowPublish(true)} />
+      </div>
+
+      {/* Stats bar */}
+      <div style={{ display:"flex", gap:12, marginBottom:20 }}>
+        {[
+          { label:"Live",         value:liveCount,       color:C.success,  bg:C.successBg },
+          { label:"Under Review", value:reviewCount,     color:C.warning,  bg:C.warningBg },
+          { label:"Deprecated",   value:deprecatedCount, color:C.textMuted, bg:C.bgApp     },
+        ].map(s => (
+          <div key={s.label} style={{ padding:"10px 16px", borderRadius:8, border:`1px solid ${C.borderSubtle}`, background:C.bgSurface, display:"flex", alignItems:"center", gap:10 }}>
+            <span style={{ fontSize:20, fontWeight:700, color:s.color, fontFamily:F }}>{s.value}</span>
+            <span style={{ fontSize:12, color:C.textSec, fontFamily:F }}>{s.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter + search row */}
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16, flexWrap:"wrap" }}>
+        <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+          {FILTERS.map(f => (
+            <FilterChip key={f.key} label={`${f.label} (${f.count})`} active={filter === f.key} onClick={() => setFilter(f.key)} />
+          ))}
+        </div>
+        <div style={{ marginLeft:"auto" }}>
+          <SearchBar value={search} onChange={setSearch} placeholder="Search marketplace…" />
+        </div>
+      </div>
+
+      {/* Column headers */}
+      <div style={{ display:"grid", gridTemplateColumns:"1fr 130px 110px 80px 90px 110px", gap:12, padding:"0 18px", marginBottom:8 }}>
+        {["Template","Category","Version","Installs","Status",""].map((h, i) => (
+          <div key={i} style={{ fontSize:10, fontWeight:600, color:C.textMuted, fontFamily:F, textTransform:"uppercase", letterSpacing:"0.06em", textAlign: h === "Installs" ? "center" : "left" }}>{h}</div>
+        ))}
+      </div>
+
+      {/* Rows */}
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        {visible.map(e => <MarketplaceRow key={e.id} entry={e} />)}
+        {visible.length === 0 && (
+          <div style={{ textAlign:"center", padding:"48px 0", color:C.textMuted, fontSize:13, fontFamily:F }}>No marketplace entries match your filters.</div>
+        )}
+      </div>
+
+      {showPublish && <PublishModal onClose={() => setShowPublish(false)} />}
+    </div>
+  );
+}
+
 // ── Sidebar (local, nav-aware) ────────────────────────────────────────────────
 
 // ── Catalog page ──────────────────────────────────────────────────────────────
 
 export default function Catalog({ onNav, templates, onTemplateAction, isAdmin, onToggleRole }) {
+  const [pageTab, setPageTab] = useState("catalog");
   const [tab, setTab] = useState("templates");
 
-  const TABS = [
+  const CATALOG_TABS = [
     { key:"templates", label:"Templates",     count:templates.length },
     { key:"sections",  label:"Sections",      count:SECTIONS.length  },
     { key:"questions", label:"Question Bank", count:QUESTIONS.length },
+  ];
+
+  const PAGE_TABS = [
+    { key:"catalog",     label:"Catalog" },
+    { key:"marketplace", label:"Marketplace" },
   ];
 
   return (
@@ -1028,60 +1262,80 @@ export default function Catalog({ onNav, templates, onTemplateAction, isAdmin, o
 
       <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", minWidth:0 }}>
         {/* Page header */}
-        <header style={{ height:69, background:C.bgSurface, borderBottom:`1px solid ${C.borderSubtle}`, padding:"0 24px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <div>
-            <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Audit Catalog</div>
-            <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:1 }}>Browse templates, sections, and questions to build standardized audits</div>
+        <header style={{ background:C.bgSurface, borderBottom:`1px solid ${C.borderSubtle}`, padding:"0 24px", flexShrink:0 }}>
+          <div style={{ height:60, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div>
+              <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Audit Catalog</div>
+              <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:1 }}>
+                {pageTab === "catalog" ? "Browse templates, sections, and questions to build standardized audits" : "Publish and manage versioned templates for the organization"}
+              </div>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:7, padding:"5px 10px", background:C.bgApp, borderRadius:8, border:`1px solid ${C.borderSubtle}` }}>
+                <span style={{ fontSize:10, color:C.textMuted, fontFamily:F }}>View as:</span>
+                {["Admin","Program Manager"].map(role => {
+                  const active = isAdmin ? role === "Admin" : role === "Program Manager";
+                  return (
+                    <button key={role} onClick={() => onToggleRole(role === "Admin")}
+                      style={{ padding:"2px 8px", borderRadius:4, border:"none", background:active ? C.primary : "transparent", color:active ? "#fff" : C.textSec, fontSize:10, fontFamily:F, fontWeight:active?600:400, cursor:"pointer" }}>
+                      {role}
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{ width:30, height:30, borderRadius:"50%", background:C.navy, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>
+                {isAdmin ? "A" : "P"}
+              </div>
+            </div>
           </div>
-          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            {/* Role toggle for demo */}
-            <div style={{ display:"flex", alignItems:"center", gap:7, padding:"5px 10px", background:C.bgApp, borderRadius:7, border:`1px solid ${C.borderSubtle}` }}>
-              <span style={{ fontSize:10, color:C.textMuted, fontFamily:F }}>View as:</span>
-              {["Admin","Program Manager"].map(role => {
-                const active = isAdmin ? role === "Admin" : role === "Program Manager";
-                return (
-                  <button
-                    key={role}
-                    onClick={() => onToggleRole(role === "Admin")}
-                    style={{ padding:"2px 8px", borderRadius:4, border:"none", background:active ? C.primary : "transparent", color:active ? "#fff" : C.textSec, fontSize:10, fontFamily:F, fontWeight:active?600:400, cursor:"pointer" }}
-                  >
-                    {role}
-                  </button>
-                );
-              })}
-            </div>
-            <div style={{ width:30, height:30, borderRadius:"50%", background:C.navy, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>
-              {isAdmin ? "A" : "P"}
-            </div>
+
+          {/* Top-level tabs: Catalog | Marketplace */}
+          <div style={{ display:"flex", gap:0 }}>
+            {PAGE_TABS.map(pt => {
+              const active = pageTab === pt.key;
+              return (
+                <button key={pt.key} onClick={() => setPageTab(pt.key)}
+                  style={{ display:"flex", alignItems:"center", gap:6, padding:"12px 20px", border:"none", borderBottom: active ? `2px solid ${C.primary}` : "2px solid transparent", background:"transparent", color: active ? C.primary : C.textSec, fontSize:13, fontWeight: active ? 600 : 400, fontFamily:F, cursor:"pointer", marginBottom:-1 }}>
+                  {pt.label}
+                  {pt.key === "marketplace" && (
+                    <span style={{ padding:"1px 6px", borderRadius:999, background: active ? C.primaryLight : C.bgApp, color: active ? C.primary : C.textMuted, fontSize:10, fontWeight:700, fontFamily:F }}>
+                      {MARKETPLACE_ENTRIES.filter(e => e.status === "under_review").length} in review
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </header>
 
-        {/* Tab bar */}
-        <div style={{ background:C.bgSurface, borderBottom:`1px solid ${C.borderSubtle}`, padding:"0 24px", display:"flex", gap:0, flexShrink:0 }}>
-          {TABS.map(t => {
-            const active = tab === t.key;
-            return <button key={t.key} onClick={() => setTab(t.key)}
-              style={{ display:"flex", alignItems:"center", gap:7, padding:"14px 18px", border:"none", borderBottom: active?`2px solid ${C.primary}`:"2px solid transparent", background:"transparent", color: active?C.primary:C.textSec, fontSize:13, fontWeight: active?600:400, fontFamily:F, cursor:"pointer", marginBottom:-1 }}>
-              {t.label}
-              <span style={{ padding:"1px 7px", borderRadius:999, background:active?C.primaryLight:C.bgApp, color:active?C.primaryHover:C.textMuted, fontSize:10, fontWeight:600, fontFamily:F }}>
-                {t.count}
-              </span>
-            </button>;
-          })}
-        </div>
+        {/* Sub-tab bar (catalog only) */}
+        {pageTab === "catalog" && (
+          <div style={{ background:C.bgSurface, borderBottom:`1px solid ${C.borderSubtle}`, padding:"0 24px", display:"flex", gap:0, flexShrink:0 }}>
+            {CATALOG_TABS.map(t => {
+              const active = tab === t.key;
+              return <button key={t.key} onClick={() => setTab(t.key)}
+                style={{ display:"flex", alignItems:"center", gap:7, padding:"12px 18px", border:"none", borderBottom: active?`2px solid ${C.primary}`:"2px solid transparent", background:"transparent", color: active?C.primary:C.textSec, fontSize:12, fontWeight: active?600:400, fontFamily:F, cursor:"pointer", marginBottom:-1 }}>
+                {t.label}
+                <span style={{ padding:"1px 7px", borderRadius:999, background:active?C.primaryLight:C.bgApp, color:active?C.primaryHover:C.textMuted, fontSize:10, fontWeight:600, fontFamily:F }}>
+                  {t.count}
+                </span>
+              </button>;
+            })}
+          </div>
+        )}
 
         {/* Content */}
         <main style={{ flex:1, overflowY:"auto", padding:"20px 24px" }}>
-          {tab === "templates" && (
-            <TemplatesTab
-              templates={templates}
-              onAction={onTemplateAction}
-              isAdmin={isAdmin}
-              onNav={onNav}
-            />
+          {pageTab === "catalog" && (
+            <>
+              {tab === "templates" && (
+                <TemplatesTab templates={templates} onAction={onTemplateAction} isAdmin={isAdmin} onNav={onNav} />
+              )}
+              {tab === "sections"  && <SectionsTab />}
+              {tab === "questions" && <QuestionsTab />}
+            </>
           )}
-          {tab === "sections"  && <SectionsTab />}
-          {tab === "questions" && <QuestionsTab />}
+          {pageTab === "marketplace" && <MarketplaceTab />}
         </main>
       </div>
     </div>

@@ -7,7 +7,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -17,12 +17,12 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -86,11 +86,11 @@ function SectionPointsSummary({ section, scoring, dispatch }) {
 
   return (
     <div style={{ display: "flex", gap: 24, alignItems: "center", padding: "9px 16px", background: C.primaryBg, borderBottom: `1px solid ${C.borderSubtle}` }}>
-      <span style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>
+      <span style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>
         Max points available: <strong style={{ color: C.navyDeep }}>{maxAvail}</strong>
       </span>
       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-        <label htmlFor={`ptp-${section.id}`} style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>
+        <label htmlFor={`ptp-${section.id}`} style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>
           Points to pass:
         </label>
         <input
@@ -100,7 +100,7 @@ function SectionPointsSummary({ section, scoring, dispatch }) {
           max={maxAvail}
           value={pointsToPass}
           onChange={e => dispatch({ type: "SET_SECTION_SCORING", id: section.id, updates: { pointsToPass: parseFloat(e.target.value) || 0 } })}
-          style={{ width: 64, padding: "4px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`, fontSize: 11, fontFamily: F, outline: "none", color: C.navyDeep }}
+          style={{ width: 64, padding: "4px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`, fontSize: 12, fontFamily: F, outline: "none", color: C.navyDeep }}
           onFocus={e => (e.target.style.borderColor = C.primary)}
           onBlur={e => (e.target.style.borderColor = C.borderDef)}
         />
@@ -174,14 +174,14 @@ const Step3Scoring = forwardRef(function Step3Scoring({ structure, scoring, disp
       {errors.length > 0 && (
         <div
           role="alert"
-          style={{ background: C.errorBg, border: `1px solid #fca5a5`, borderRadius: 10, padding: "12px 16px", marginBottom: 20 }}
+          style={{ background: C.errorBg, border: `1px solid #fca5a5`, borderRadius: 12, padding: "12px 16px", marginBottom: 20 }}
         >
           <div style={{ fontSize: 12, fontWeight: 700, color: C.error, fontFamily: F, marginBottom: 8 }}>
             {errors.length} scoring {errors.length === 1 ? "issue" : "issues"} — resolve before publishing
           </div>
           <ul style={{ margin: 0, padding: "0 0 0 16px", listStyleType: "disc" }}>
             {errors.map(err => (
-              <li key={err.key} style={{ fontSize: 11, color: C.error, fontFamily: F, marginBottom: 3 }}>
+              <li key={err.key} style={{ fontSize: 12, color: C.error, fontFamily: F, marginBottom: 3 }}>
                 {err.questionId
                   ? <a href={`#q-score-${err.questionId}`} style={{ color: C.error, fontFamily: F }}>{err.msg}</a>
                   : err.msg
@@ -202,7 +202,7 @@ const Step3Scoring = forwardRef(function Step3Scoring({ structure, scoring, disp
 
       {/* Informational notice */}
       {model === "informational" && sections.length > 0 && (
-        <div style={{ background: C.infoBg, border: `1px solid #bae6fd`, borderRadius: 10, padding: "14px 18px", color: C.info, fontSize: 12, fontFamily: F, lineHeight: "18px" }}>
+        <div style={{ background: C.infoBg, border: `1px solid #bae6fd`, borderRadius: 12, padding: "14px 18px", color: C.info, fontSize: 12, fontFamily: F, lineHeight: "18px" }}>
           <strong>Informational mode active.</strong> No scoring configuration is needed — all questions collect data only. Switch the scoring model above to enable scoring.
         </div>
       )}
@@ -231,7 +231,7 @@ const Step3Scoring = forwardRef(function Step3Scoring({ structure, scoring, disp
           <div
             key={section.id}
             style={{
-              background: C.bgSurface, borderRadius: 10,
+              background: C.bgSurface, borderRadius: 12,
               border: `1px solid ${hasWeightErr ? C.error : C.borderSubtle}`,
               marginBottom: 16, overflow: "hidden",
             }}
@@ -240,12 +240,12 @@ const Step3Scoring = forwardRef(function Step3Scoring({ structure, scoring, disp
             <div style={{ padding: "11px 16px", background: C.bgApp, borderBottom: `1px solid ${C.borderSubtle}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>
                 <span style={{ fontSize: 13, fontWeight: 700, color: C.navy, fontFamily: F }}>{section.name}</span>
-                <span style={{ fontSize: 11, color: C.textMuted, fontFamily: F, marginLeft: 8 }}>
+                <span style={{ fontSize: 12, color: C.textMuted, fontFamily: F, marginLeft: 8 }}>
                   {section.questions.length} question{section.questions.length !== 1 ? "s" : ""}
                 </span>
               </div>
               {model === "weighted" && weightTotal !== null && (
-                <span style={{ fontSize: 11, fontWeight: 600, fontFamily: F, color: hasWeightErr ? C.error : C.success }}>
+                <span style={{ fontSize: 12, fontWeight: 600, fontFamily: F, color: hasWeightErr ? C.error : C.success }}>
                   {Math.round(weightTotal * 100) / 100}% / 100%{hasWeightErr ? " — must equal 100%" : " ✓"}
                 </span>
               )}
@@ -259,8 +259,8 @@ const Step3Scoring = forwardRef(function Step3Scoring({ structure, scoring, disp
             {/* Column headers */}
             {section.questions.length > 0 && (
               <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", gap: 16, padding: "7px 16px", background: C.bgApp, borderBottom: `1px solid ${C.borderSubtle}` }}>
-                <span style={{ fontSize: 9, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: F }}>Question</span>
-                <span style={{ fontSize: 9, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: F, textAlign: "right" }}>Scoring config</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: F }}>Question</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: F, textAlign: "right" }}>Scoring config</span>
               </div>
             )}
 

@@ -1,21 +1,21 @@
 import { useState } from "react";
 import AppSidebar from "./AppSidebar.jsx";
 import { PROGS } from "./Dashboard.jsx";
+import { T, F } from "./aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:    "#001e76",
-  navyDeep:"#16191d",
-  textSec: "#555f6d",
-  textMuted:"#8692a2",
-  bgApp:   "#f4f4f6",
-  bgSurf:  "#ffffff",
-  border:  "#e2e5e9",
-  primary: "#2226f7",
-  primaryBg:"#f0f2ff",
-  success: "#15803d", successBg:"#f0fdf4",
-  warning: "#a16207", warningBg:"#fef9c3",
-  error:   "#dc2626", errorBg:  "#fef2f2",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   "#15803d", successBg: "#f0fdf4",
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
 };
 
 const sc    = s => s >= 80 ? C.success : s >= 65 ? C.warning : s === 0 ? C.textMuted : C.error;
@@ -65,7 +65,7 @@ export default function ProgramList({ onNav, onSelectProgram, density = "condens
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search programs…"
-              style={{ padding:"6px 10px 6px 30px", borderRadius:7, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:220, background:C.bgSurf }}
+              style={{ padding:"6px 10px 6px 30px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:220, background:C.bgSurf }}
               onFocus={e => (e.target.style.borderColor = C.primary)}
               onBlur={e => (e.target.style.borderColor = C.border)}
             />

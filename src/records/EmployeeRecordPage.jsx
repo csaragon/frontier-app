@@ -1,16 +1,23 @@
 import { useState, useMemo } from "react";
 import AppSidebar from "../AppSidebar.jsx";
 import { getEmployeeDetail, EMPLOYEES_25, AVATAR_COLORS } from "./employeeStubData.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9", border2:"#c3c8d0",
-  primary:"#2226f7", primaryBg:"#f0f2ff",
-  success:"#15803d", successBg:"#f0fdf4",
-  warning:"#a16207", warningBg:"#fef9c3",
-  error:"#dc2626",   errorBg:"#fef2f2",
-  info:"#0369a1",    infoBg:"#f0f9ff",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  border2:   T.border2,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   "#15803d", successBg: "#f0fdf4",
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
+  info:      T.onInfo1,  infoBg:    T.infoContainer1,
 };
 
 const AUDIT_STATUS_META = {
@@ -51,7 +58,7 @@ function Pill({ label, color, bg, sm }) {
 
 function SectionCard({ title, action, children }) {
   return (
-    <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+    <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
         padding:"13px 20px", borderBottom:`1px solid ${C.border}` }}>
         <span style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F }}>{title}</span>
@@ -78,10 +85,10 @@ function EditableField({ label, value, fieldKey, canEdit, onSave }) {
       {editing ? (
         <div style={{ display:"flex", alignItems:"center", gap:6 }}>
           <input value={draft} onChange={e => setDraft(e.target.value)} autoFocus
-            style={{ padding:"4px 8px", borderRadius:5, border:`1.5px solid ${C.primary}`,
+            style={{ padding:"4px 8px", borderRadius:4, border:`1.5px solid ${C.primary}`,
               fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", flex:1 }} />
-          <button onClick={save}   style={{ padding:"3px 8px", borderRadius:4, border:"none", background:C.primary, color:"white", fontSize:11, fontFamily:F, cursor:"pointer" }}>Save</button>
-          <button onClick={cancel} style={{ padding:"3px 8px", borderRadius:4, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:11, fontFamily:F, cursor:"pointer" }}>✕</button>
+          <button onClick={save}   style={{ padding:"3px 8px", borderRadius:4, border:"none", background:C.primary, color:"white", fontSize:12, fontFamily:F, cursor:"pointer" }}>Save</button>
+          <button onClick={cancel} style={{ padding:"3px 8px", borderRadius:4, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>✕</button>
         </div>
       ) : (
         <div style={{ display:"flex", alignItems:"center", gap:6 }}>
@@ -90,7 +97,7 @@ function EditableField({ label, value, fieldKey, canEdit, onSave }) {
           </span>
           {canEdit && hovered && (
             <button onClick={() => { setDraft(value || ""); setEditing(true); }}
-              style={{ width:18, height:18, borderRadius:3, border:`1px solid ${C.border}`, background:C.bgApp,
+              style={{ width:18, height:18, borderRadius:4, border:`1px solid ${C.border}`, background:C.bgApp,
                 cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
                 color:C.textMuted, padding:0 }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -181,7 +188,7 @@ function ScoreHistogram({ data }) {
           <div style={{ width:"100%", background: d.count > 0 ? C.primary : C.bgApp,
             borderRadius:"3px 3px 0 0", opacity: d.count > 0 ? 0.7 + (d.count/maxCount)*0.3 : 1,
             height: `${Math.max(4, (d.count / maxCount) * 60)}px` }} />
-          <div style={{ fontSize:9, color:C.textMuted, fontFamily:F, textAlign:"center", lineHeight:1.2 }}>{d.label}</div>
+          <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, textAlign:"center", lineHeight:1.2 }}>{d.label}</div>
         </div>
       ))}
     </div>
@@ -302,7 +309,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
               background:C.primaryBg, borderRadius:6, border:`1px solid ${C.primary}30` }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <select value={viewerRole} onChange={e => setViewerRole(e.target.value)}
-                style={{ border:"none", background:"transparent", color:C.primary, fontSize:11, fontFamily:F, fontWeight:600, cursor:"pointer", outline:"none" }}>
+                style={{ border:"none", background:"transparent", color:C.primary, fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer", outline:"none" }}>
                 {VIEWER_ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -336,7 +343,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
             {/* Action buttons */}
             <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
               {canEdit("role") && (
-                <button style={{ padding:"7px 14px", borderRadius:7, border:`1px solid ${C.border}`,
+                <button style={{ padding:"7px 14px", borderRadius:8, border:`1px solid ${C.border}`,
                   background:C.bgSurf, color:C.navyDeep, fontSize:12, fontFamily:F, cursor:"pointer",
                   display:"flex", alignItems:"center", gap:5 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -345,7 +352,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
               )}
               <div style={{ position:"relative" }}>
                 <button onClick={() => setKebabOpen(o => !o)}
-                  style={{ width:32, height:32, borderRadius:7, border:`1px solid ${C.border}`, background:C.bgSurf,
+                  style={{ width:32, height:32, borderRadius:8, border:`1px solid ${C.border}`, background:C.bgSurf,
                     cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:C.textMuted }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
                 </button>
@@ -382,7 +389,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                   fontWeight: tab===k ? 700 : 400, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
                 {label}
                 {k === "reports" && (
-                  <span style={{ fontSize:9, fontWeight:700, background:C.primary, color:"white", padding:"2px 5px", borderRadius:3 }}>Insights</span>
+                  <span style={{ fontSize:10, fontWeight:700, background:C.primary, color:"white", padding:"2px 5px", borderRadius:4 }}>Insights</span>
                 )}
               </button>
             ))}
@@ -399,7 +406,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
                   {/* Left: Contact */}
                   <div>
-                    <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase",
+                    <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase",
                       letterSpacing:"0.05em", fontFamily:F, marginBottom:12 }}>Contact</div>
                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                       <EditableField label="Work email" value={detail.email} fieldKey="email" canEdit={canEdit("email")} onSave={handleSaveField} />
@@ -417,7 +424,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                   </div>
                   {/* Right: Employment */}
                   <div>
-                    <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase",
+                    <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase",
                       letterSpacing:"0.05em", fontFamily:F, marginBottom:12 }}>Employment</div>
                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
                       <div>
@@ -477,8 +484,8 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
               <SectionCard title="Performance"
                 action={
                   <select value={reportRange} onChange={e => setReportRange(e.target.value)}
-                    style={{ padding:"4px 8px", borderRadius:5, border:`1px solid ${C.border}`,
-                      fontSize:11, fontFamily:F, color:C.navyDeep, cursor:"pointer", outline:"none" }}>
+                    style={{ padding:"4px 8px", borderRadius:4, border:`1px solid ${C.border}`,
+                      fontSize:12, fontFamily:F, color:C.navyDeep, cursor:"pointer", outline:"none" }}>
                     {["Last 30 days","Last quarter","Last year"].map(o => <option key={o}>{o}</option>)}
                   </select>
                 }>
@@ -497,7 +504,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                   ].filter(t => !t.hidden).map(({ label, value, subtext, color }) => (
                     <div key={label} style={{ background:C.bgApp, borderRadius:8, padding:"12px 14px", textAlign:"center" }}>
                       <div style={{ fontSize:24, fontWeight:800, color, fontFamily:F, lineHeight:1, marginBottom:3 }}>{value}</div>
-                      {subtext && <div style={{ fontSize:9, color:C.textMuted, fontFamily:F, marginBottom:2 }}>{subtext}</div>}
+                      {subtext && <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginBottom:2 }}>{subtext}</div>}
                       <div style={{ fontSize:10, fontWeight:600, color:C.textMuted, fontFamily:F,
                         textTransform:"uppercase", letterSpacing:"0.04em" }}>{label}</div>
                     </div>
@@ -513,9 +520,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                         <div style={{ display:"flex", gap:4 }}>
                           {[["completion","Completion rate"],["score","Avg score"]].map(([k,l]) => (
                             <button key={k} onClick={() => setTrendMetric(k)}
-                              style={{ padding:"3px 9px", borderRadius:5, border:`1px solid ${trendMetric===k ? C.primary : C.border}`,
+                              style={{ padding:"3px 9px", borderRadius:4, border:`1px solid ${trendMetric===k ? C.primary : C.border}`,
                                 background: trendMetric===k ? C.primaryBg : "transparent",
-                                color: trendMetric===k ? C.primary : C.textSec, fontSize:11, fontFamily:F,
+                                color: trendMetric===k ? C.primary : C.textSec, fontSize:12, fontFamily:F,
                                 fontWeight: trendMetric===k ? 600 : 400, cursor:"pointer" }}>
                               {l}
                             </button>
@@ -548,9 +555,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                   <div style={{ display:"flex", gap:4 }}>
                     {[["all","All"],["audits","Audits"],["plans","Action Plans"],["other","Other"]].map(([k,l]) => (
                       <button key={k} onClick={() => setTlFilter(k)}
-                        style={{ padding:"3px 9px", borderRadius:5, border:`1px solid ${tlFilter===k ? C.primary : C.border}`,
+                        style={{ padding:"3px 9px", borderRadius:4, border:`1px solid ${tlFilter===k ? C.primary : C.border}`,
                           background: tlFilter===k ? C.primaryBg : "transparent",
-                          color: tlFilter===k ? C.primary : C.textSec, fontSize:11, fontFamily:F,
+                          color: tlFilter===k ? C.primary : C.textSec, fontSize:12, fontFamily:F,
                           fontWeight: tlFilter===k ? 600 : 400, cursor:"pointer" }}>
                         {l}
                       </button>
@@ -568,16 +575,16 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                           <span style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>{ev.title}</span>
                           {ev.entityId && (
                             <button onClick={() => onNav("audit_record", { auditId: ev.entityId })}
-                              style={{ fontSize:11, color:C.primary, background:"none", border:"none", cursor:"pointer",
+                              style={{ fontSize:12, color:C.primary, background:"none", border:"none", cursor:"pointer",
                                 fontFamily:F, padding:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:200 }}>
                               {ev.entity}
                             </button>
                           )}
                           {ev.entity && !ev.entityId && (
-                            <span style={{ fontSize:11, color:C.textSec, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:200 }}>{ev.entity}</span>
+                            <span style={{ fontSize:12, color:C.textSec, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:200 }}>{ev.entity}</span>
                           )}
                         </div>
-                        <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>{ev.timestamp} · {ev.context}</div>
+                        <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>{ev.timestamp} · {ev.context}</div>
                       </div>
                     </div>
                   ))}
@@ -605,9 +612,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                   <div style={{ display:"flex", gap:4 }}>
                     {[["all","All"],["in_progress","In Progress"],["overdue","Overdue"],["completed","Completed"]].map(([k,l]) => (
                       <button key={k} onClick={() => setAuditFilter(k)}
-                        style={{ padding:"3px 9px", borderRadius:5, border:`1px solid ${auditFilter===k ? C.primary : C.border}`,
+                        style={{ padding:"3px 9px", borderRadius:4, border:`1px solid ${auditFilter===k ? C.primary : C.border}`,
                           background: auditFilter===k ? C.primaryBg : "transparent",
-                          color: auditFilter===k ? C.primary : C.textSec, fontSize:11, fontFamily:F,
+                          color: auditFilter===k ? C.primary : C.textSec, fontSize:12, fontFamily:F,
                           fontWeight: auditFilter===k ? 600 : 400, cursor:"pointer" }}>
                         {l}
                       </button>
@@ -638,8 +645,8 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                               overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                             {a.name}
                           </button>
-                          <div style={{ fontSize:11, color:C.textSec, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.locationName}</div>
-                          <div style={{ fontSize:11, color: a.status==="overdue" ? C.error : C.textSec, fontFamily:F }}>{a.date}</div>
+                          <div style={{ fontSize:12, color:C.textSec, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.locationName}</div>
+                          <div style={{ fontSize:12, color: a.status==="overdue" ? C.error : C.textSec, fontFamily:F }}>{a.date}</div>
                           <Pill label={sm.label} color={sm.color} bg={sm.bg} sm />
                           <div style={{ fontSize:12, fontWeight:700, color: a.score ? (a.score>=85?C.success:a.score>=70?C.warning:C.error) : C.textMuted, fontFamily:F }}>
                             {a.score ? `${a.score}%` : "—"}
@@ -657,9 +664,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                   <div style={{ display:"flex", gap:4 }}>
                     {[["all","All"],["open","Open"],["in_progress","In Progress"],["completed","Completed"],["overdue","Overdue"]].map(([k,l]) => (
                       <button key={k} onClick={() => setApFilter(k)}
-                        style={{ padding:"3px 9px", borderRadius:5, border:`1px solid ${apFilter===k ? C.primary : C.border}`,
+                        style={{ padding:"3px 9px", borderRadius:4, border:`1px solid ${apFilter===k ? C.primary : C.border}`,
                           background: apFilter===k ? C.primaryBg : "transparent",
-                          color: apFilter===k ? C.primary : C.textSec, fontSize:11, fontFamily:F,
+                          color: apFilter===k ? C.primary : C.textSec, fontSize:12, fontFamily:F,
                           fontWeight: apFilter===k ? 600 : 400, cursor:"pointer" }}>
                         {l}
                       </button>
@@ -685,10 +692,10 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                           gap:8, padding:"9px 0", borderBottom:`1px solid ${C.border}`, alignItems:"center" }}>
                           <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F,
                             overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{ap.title}</div>
-                          <div style={{ fontSize:11, color:C.textSec, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{ap.location}</div>
-                          <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>{ap.dueDate}</div>
+                          <div style={{ fontSize:12, color:C.textSec, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{ap.location}</div>
+                          <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>{ap.dueDate}</div>
                           <Pill label={sm.label} color={sm.color} bg={sm.bg} sm />
-                          <div style={{ fontSize:11, fontWeight:700, color:PRIORITY_COLOR[ap.priority]||C.textMuted, fontFamily:F, textTransform:"capitalize" }}>{ap.priority}</div>
+                          <div style={{ fontSize:12, fontWeight:700, color:PRIORITY_COLOR[ap.priority]||C.textMuted, fontFamily:F, textTransform:"capitalize" }}>{ap.priority}</div>
                         </div>
                       );
                     })}
@@ -703,9 +710,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
             <div style={{ display:"flex", gap:16, height:"100%", minHeight:500 }}>
               {/* Left: report list */}
               <div style={{ width:240, flexShrink:0, background:C.bgSurf, border:`1px solid ${C.border}`,
-                borderRadius:10, overflow:"hidden", alignSelf:"flex-start" }}>
+                borderRadius:12, overflow:"hidden", alignSelf:"flex-start" }}>
                 <div style={{ padding:"12px 16px", borderBottom:`1px solid ${C.border}` }}>
-                  <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase",
+                  <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase",
                     letterSpacing:"0.05em", fontFamily:F }}>Default Reports</div>
                 </div>
                 {DEFAULT_REPORTS.filter(r => {
@@ -727,14 +734,14 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                 <div style={{ padding:"12px 16px" }}>
                   <button onClick={() => alert("Custom report builder coming in V2.")}
                     style={{ width:"100%", padding:"7px 0", borderRadius:6, border:`1px dashed ${C.border2}`,
-                      background:"transparent", color:C.textMuted, fontSize:11, fontFamily:F, cursor:"pointer" }}>
+                      background:"transparent", color:C.textMuted, fontSize:12, fontFamily:F, cursor:"pointer" }}>
                     + Build new report
                   </button>
                 </div>
               </div>
 
               {/* Right: report content */}
-              <div style={{ flex:1, background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+              <div style={{ flex:1, background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden" }}>
                 {/* Insights badge */}
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
                   padding:"13px 20px", borderBottom:`1px solid ${C.border}` }}>
@@ -742,25 +749,25 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                     <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F }}>
                       {DEFAULT_REPORTS.find(r => r.id === selectedReport)?.label}
                     </div>
-                    <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:2 }}>
+                    <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:2 }}>
                       {DEFAULT_REPORTS.find(r => r.id === selectedReport)?.desc}
                     </div>
                   </div>
                   <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                     <select value={reportRange} onChange={e => setReportRange(e.target.value)}
-                      style={{ padding:"4px 8px", borderRadius:5, border:`1px solid ${C.border}`,
-                        fontSize:11, fontFamily:F, color:C.navyDeep, cursor:"pointer", outline:"none" }}>
+                      style={{ padding:"4px 8px", borderRadius:4, border:`1px solid ${C.border}`,
+                        fontSize:12, fontFamily:F, color:C.navyDeep, cursor:"pointer", outline:"none" }}>
                       {["Last 30 days","Last quarter","Last year"].map(o => <option key={o}>{o}</option>)}
                     </select>
                     <div title="Reports are powered by Insights — Frontier's analytics product."
                       style={{ display:"flex", alignItems:"center", gap:4, padding:"3px 8px",
-                        background:"#f0f2ff", borderRadius:4, border:"1px solid #c7d0ff", cursor:"help" }}>
+                        background:"#d4e2ff", borderRadius:4, border:"1px solid #c7d0ff", cursor:"help" }}>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                      <span style={{ fontSize:9, fontWeight:700, color:C.primary, fontFamily:F }}>Insights</span>
+                      <span style={{ fontSize:10, fontWeight:700, color:C.primary, fontFamily:F }}>Insights</span>
                     </div>
                     <button onClick={() => alert("Export coming soon.")}
-                      style={{ padding:"5px 10px", borderRadius:5, border:`1px solid ${C.border}`,
-                        background:C.bgSurf, color:C.textSec, fontSize:11, fontFamily:F, cursor:"pointer" }}>
+                      style={{ padding:"5px 10px", borderRadius:4, border:`1px solid ${C.border}`,
+                        background:C.bgSurf, color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>
                       Export
                     </button>
                   </div>
@@ -775,9 +782,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                             <div style={{ display:"flex", gap:4 }}>
                               {[["completion","Completion rate"],["score","Avg score"]].filter(([k]) => k==="completion" || detail.isAuditor).map(([k,l]) => (
                                 <button key={k} onClick={() => setTrendMetric(k)}
-                                  style={{ padding:"4px 10px", borderRadius:5, border:`1px solid ${trendMetric===k?C.primary:C.border}`,
+                                  style={{ padding:"4px 10px", borderRadius:4, border:`1px solid ${trendMetric===k?C.primary:C.border}`,
                                     background: trendMetric===k?C.primaryBg:"transparent",
-                                    color: trendMetric===k?C.primary:C.textSec, fontSize:11, fontFamily:F,
+                                    color: trendMetric===k?C.primary:C.textSec, fontSize:12, fontFamily:F,
                                     fontWeight: trendMetric===k?600:400, cursor:"pointer" }}>
                                   {l}
                                 </button>
@@ -792,7 +799,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                               { label:"6-mo avg", value:`${Math.round(chartData.reduce((a,d)=>a+d.v,0)/chartData.length)}%`, color:C.navyDeep },
                               { label:"Trend", value: chartData[chartData.length-1]?.v > chartData[0]?.v ? "↑ Improving" : "↓ Declining", color: chartData[chartData.length-1]?.v > chartData[0]?.v ? C.success : C.error },
                             ].map(({ label, value, color }) => (
-                              <div key={label} style={{ background:C.bgApp, borderRadius:7, padding:"10px 14px" }}>
+                              <div key={label} style={{ background:C.bgApp, borderRadius:8, padding:"10px 14px" }}>
                                 <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginBottom:3, textTransform:"uppercase", letterSpacing:"0.04em", fontWeight:700 }}>{label}</div>
                                 <div style={{ fontSize:16, fontWeight:700, color, fontFamily:F }}>{value}</div>
                               </div>
@@ -812,11 +819,11 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                       <div style={{ display:"flex", gap:12, marginBottom:16 }}>
                         <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                           <div style={{ width:10, height:10, borderRadius:2, background:C.success, opacity:0.8 }} />
-                          <span style={{ fontSize:11, color:C.textSec, fontFamily:F }}>Completed</span>
+                          <span style={{ fontSize:12, color:C.textSec, fontFamily:F }}>Completed</span>
                         </div>
                         <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                           <div style={{ width:10, height:10, borderRadius:2, background:C.error, opacity:0.8 }} />
-                          <span style={{ fontSize:11, color:C.textSec, fontFamily:F }}>Overdue</span>
+                          <span style={{ fontSize:12, color:C.textSec, fontFamily:F }}>Overdue</span>
                         </div>
                       </div>
                       <ApBarChart data={apResolution} />
@@ -826,9 +833,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                           { label:"Total overdue",   value: apResolution.reduce((a,d)=>a+d.overdue,0),   color: apResolution.reduce((a,d)=>a+d.overdue,0) > 0 ? C.error : C.success },
                           { label:"Avg per month",   value: (apResolution.reduce((a,d)=>a+d.completed,0)/apResolution.length).toFixed(1), color:C.primary },
                         ].map(({ label, value, color }) => (
-                          <div key={label} style={{ background:C.bgApp, borderRadius:7, padding:"10px 14px" }}>
+                          <div key={label} style={{ background:C.bgApp, borderRadius:8, padding:"10px 14px" }}>
                             <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginBottom:3, textTransform:"uppercase", letterSpacing:"0.04em", fontWeight:700 }}>{label}</div>
-                            <div style={{ fontSize:18, fontWeight:700, color, fontFamily:F }}>{value}</div>
+                            <div style={{ fontSize:20, fontWeight:700, color, fontFamily:F }}>{value}</div>
                           </div>
                         ))}
                       </div>
@@ -859,7 +866,7 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                               <div style={{ flex:1, height:8, background:C.bgApp, borderRadius:4, overflow:"hidden" }}>
                                 <div style={{ height:"100%", width:`${Math.min(100, val)}%`, background:color, borderRadius:4, opacity:0.8 }} />
                               </div>
-                              <div style={{ width:35, fontSize:11, fontWeight:600, color, fontFamily:F, textAlign:"right" }}>{val}{unit}</div>
+                              <div style={{ width:35, fontSize:12, fontWeight:600, color, fontFamily:F, textAlign:"right" }}>{val}{unit}</div>
                             </div>
                           ))}
                         </div>
@@ -880,9 +887,9 @@ export default function EmployeeRecordPage({ employeeId, onNav, fromList = true 
                             { label:"High scores (90+)", value: scoreDist[4].count, color:C.success },
                             { label:"Low scores (<70)", value: scoreDist[0].count + scoreDist[1].count, color: (scoreDist[0].count + scoreDist[1].count) > 0 ? C.error : C.success },
                           ].map(({ label, value, color }) => (
-                            <div key={label} style={{ background:C.bgApp, borderRadius:7, padding:"10px 14px" }}>
+                            <div key={label} style={{ background:C.bgApp, borderRadius:8, padding:"10px 14px" }}>
                               <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginBottom:3, textTransform:"uppercase", letterSpacing:"0.04em", fontWeight:700 }}>{label}</div>
-                              <div style={{ fontSize:18, fontWeight:700, color, fontFamily:F }}>{value}</div>
+                              <div style={{ fontSize:20, fontWeight:700, color, fontFamily:F }}>{value}</div>
                             </div>
                           ))}
                         </div>

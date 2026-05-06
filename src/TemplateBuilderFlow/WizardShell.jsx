@@ -5,24 +5,34 @@ import Step3Sections from "./Step3Sections.jsx";
 import Step4Schedule from "./Step4Schedule.jsx";
 import Step5Escalation from "./Step5Escalation.jsx";
 import { DiscardModal } from "./modals.jsx";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy: "#001e76", navy2: "#001356",
-  ocean: "#2226f7",
-  white: "#ffffff",
-  g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  teal: "#0f766e",
-  amber: "#b45309",
-  red: "#b6143a",
+  navy:      T.action1,
+  navy2:     T.action2,
+  ocean:     T.actionContainer1,
+  oceanBg:   T.actionContainer3,
+  white:     T.surface1,
+  g1:        T.surface2,
+  g2:        T.border1,
+  g3:        T.border2,
+  g4:        T.disabled1,
+  g5:        T.onSurface1,
+  g6:        T.onSurface2,
+  teal:      "#0f766e",
+  tealBg:    T.successContainer1,
+  amber:     T.warning1,
+  amberBg:   T.warningContainer1,
+  red:       T.onError1,
+  redBg:     T.errorContainer1,
 };
 
 const STEPS = [
-  { num: 1, label: "Details" },
-  { num: 2, label: "Scoring" },
-  { num: 3, label: "Questions" },
-  { num: 4, label: "Schedule" },
-  { num: 5, label: "Escalation" },
+  { num: 1, label: "Details",    help: "Name, category, languages, and basic metadata for your template." },
+  { num: 2, label: "Scoring",    help: "Define how audits are scored — methodology, display format, and score visibility." },
+  { num: 3, label: "Questions",  help: "Build your audit structure by adding sections and questions." },
+  { num: 4, label: "Schedule",   help: "Set when audits run, where they happen, and who completes them." },
+  { num: 5, label: "Escalation", help: "Define automated actions triggered after an audit is submitted based on its outcome." },
 ];
 
 function isStep1Complete(data) {
@@ -30,7 +40,6 @@ function isStep1Complete(data) {
   return (
     (data.name || "").trim().length > 0 &&
     (data.category || "").length > 0 &&
-    Array.isArray(data.tags) && data.tags.length > 0 &&
     Array.isArray(data.languages) && data.languages.length > 0
   );
 }
@@ -74,12 +83,70 @@ function isStepComplete(stepNum, formData) {
   return false;
 }
 
+function getStepWarningTip(stepNum, formData) {
+  if (stepNum === 1) {
+    const d = formData[1] || {};
+    const missing = [];
+    if (!(d.name || "").trim()) missing.push("template name");
+    if (!d.category) missing.push("category");
+    if (!Array.isArray(d.languages) || !d.languages.length) missing.push("at least one language");
+    return missing.length ? `Missing: ${missing.join(", ")}` : null;
+  }
+  if (stepNum === 2) {
+    const d = formData[2] || {};
+    if (!d.methodology) return "Scoring methodology not selected";
+    if (d.methodology !== "informational" && !d.displayFormat) return "Display format not selected";
+    if (d.methodology === "weighted" && d.sectionWeights) {
+      const total = Object.values(d.sectionWeights).reduce((s, v) => s + Number(v ?? 0), 0);
+      if (Math.round(total) !== 100) return `Section weights total ${Math.round(total)}% — must equal 100%`;
+    }
+    if (d.displayFormat === "lettergrade" && d.gradeThresholds) {
+      const t = d.gradeThresholds;
+      const A = Number(t.A ?? 90), B = Number(t.B ?? 80), Cv = Number(t.C ?? 70), D = Number(t.D ?? 60);
+      if (!(A > B && B > Cv && Cv > D && D >= 0)) return "Grade thresholds must be in descending order";
+    }
+    return null;
+  }
+  if (stepNum === 3) {
+    const secs = formData[3]?.sections || [];
+    if (!secs.length) return "No sections added yet";
+    if (!secs.some(s => (s.questions || []).length > 0)) return "At least one section needs a question";
+    return null;
+  }
+  if (stepNum === 4) {
+    const d = formData[4] || {};
+    if (!d.scheduleType) return "Schedule type not selected";
+    if (!(d.locations || []).length) return "No locations selected";
+    const a = d.assignees || {};
+    if (!((a.users||[]).length || (a.roles||[]).length || (a.groups||[]).length)) return "No assignees selected";
+    return null;
+  }
+  return null;
+}
+
 function formatRelativeTime(date) {
   if (!date) return null;
   const diffSec = Math.floor((Date.now() - date.getTime()) / 1000);
   if (diffSec < 10) return "Saved just now";
   if (diffSec < 60) return `Saved ${diffSec}s ago`;
   return `Saved ${Math.floor(diffSec / 60)}m ago`;
+}
+
+// ── Status tags ───────────────────────────────────────────────────────────────
+
+function StatusTag({ label, color, icon = "dot" }) {
+  const icons = {
+    check: <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2 6 5 9 10 3"/></svg>,
+    draft: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+    pause: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/><circle cx="12" cy="12" r="10"/></svg>,
+    lock:  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+  };
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color, fontFamily: F, whiteSpace: "nowrap" }}>
+      {icons[icon] ?? icons.check}
+      {label}
+    </span>
+  );
 }
 
 // ── Icons ────────────────────────────────────────────────────────────────────
@@ -111,46 +178,181 @@ function IconCloud() {
   );
 }
 
-// ── Nav Step Button ───────────────────────────────────────────────────────────
+// ── Progress Bar ──────────────────────────────────────────────────────────────
 
-function NavStep({ stepDef, status, onClick }) {
+function StepHelpTip({ text }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: 3 }}>
+      <button
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={e => e.stopPropagation()}
+        style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", color: C.g3, lineHeight: 1 }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </button>
+      {show && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)",
+          background: C.g6, color: C.white, padding: "7px 11px", borderRadius: 6,
+          fontSize: 11, fontFamily: F, lineHeight: "16px", width: 200, zIndex: 9999,
+          boxShadow: "0 4px 14px rgba(0,0,0,0.22)", whiteSpace: "normal", pointerEvents: "none",
+        }}>
+          {text}
+        </div>
+      )}
+    </span>
+  );
+}
+
+function ProgressStepNode({ stepDef, status, onClick, warningTip }) {
   const [hover, setHover] = useState(false);
   const isCurrent = status === "current";
   const isComplete = status === "complete";
   const isWarning = status === "warning";
+  const isFuture = status === "future";
 
-  const textColor = isCurrent
-    ? C.navy
-    : isComplete || isWarning ? C.g6
-    : C.g4;
+  // Circle styling
+  const circleBg = isCurrent ? C.navy
+                 : isComplete ? C.navy
+                 : isWarning ? "#fef3c7"
+                 : C.white;
+  const circleBorder = isCurrent ? C.navy
+                     : isComplete ? C.navy
+                     : isWarning ? "#fcd34d"
+                     : (hover ? C.g4 : C.g3);
+  const circleColor = isCurrent ? C.white
+                    : isComplete ? C.white
+                    : isWarning ? C.amber
+                    : C.g4;
+
+  const labelColor = isCurrent ? C.navy
+                   : isFuture ? C.g4
+                   : C.g6;
 
   return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        background: "none",
-        border: "none",
-        borderBottom: isCurrent ? `2px solid ${C.navy}` : "2px solid transparent",
-        padding: "0 16px",
-        height: "100%",
-        fontSize: 12,
-        fontWeight: isCurrent ? 700 : 500,
-        color: hover && !isCurrent ? C.g6 : textColor,
-        fontFamily: F,
-        cursor: "pointer",
-        transition: "color 0.1s",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {isComplete && !isCurrent && <IconCheckCircle />}
-      {isWarning && !isCurrent && <IconWarn />}
-      {stepDef.label}
-    </button>
+    <div style={{ position: "relative", display: "inline-flex", flexShrink: 0 }}>
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 9,
+          background: "none",
+          border: "none",
+          padding: "4px 8px",
+          fontFamily: F,
+          cursor: "pointer",
+        }}
+      >
+        {/* Circle + label row */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 26,
+            height: 26,
+            borderRadius: "50%",
+            background: circleBg,
+            border: `2px solid ${circleBorder}`,
+            color: circleColor,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 12,
+            fontWeight: 700,
+            fontFamily: F,
+            transition: "all 0.15s",
+            flexShrink: 0,
+          }}>
+            {isComplete ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ) : isWarning ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="9"/></svg>
+            ) : (
+              stepDef.num
+            )}
+          </div>
+          <span style={{
+            fontSize: 12,
+            fontWeight: isCurrent ? 700 : 500,
+            color: labelColor,
+            whiteSpace: "nowrap",
+            transition: "color 0.1s",
+          }}>
+            {stepDef.label}
+          </span>
+        </div>
+      </button>
+      {isWarning && warningTip && hover && (
+        <div style={{
+          position: "absolute",
+          top: "calc(100% + 6px)",
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#fef3c7",
+          border: "1px solid #fcd34d",
+          color: "#92400e",
+          padding: "7px 11px",
+          borderRadius: 7,
+          fontSize: 12,
+          fontFamily: F,
+          lineHeight: "17px",
+          whiteSpace: "nowrap",
+          zIndex: 9999,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+          pointerEvents: "none",
+        }}>
+          ⚠ {warningTip}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProgressBar({ steps, getStatus, onStepClick, getWarningTip }) {
+  return (
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 0,
+      padding: "14px 32px",
+      background: C.white,
+      borderBottom: `1px solid ${C.g2}`,
+      flexShrink: 0,
+    }}>
+      {steps.map((s, i) => {
+        const status = getStatus(s.num);
+        const nextStatus = i < steps.length - 1 ? getStatus(steps[i + 1].num) : null;
+        const connectorComplete =
+          status === "complete" &&
+          nextStatus !== "future";
+        return (
+          <div key={s.num} style={{ display: "flex", alignItems: "center", flex: i === steps.length - 1 ? "0 0 auto" : "1 1 auto", minWidth: 0 }}>
+            <ProgressStepNode
+              stepDef={s}
+              status={status}
+              onClick={() => onStepClick(s.num)}
+              warningTip={status === "warning" ? getWarningTip(s.num) : null}
+            />
+            {i < steps.length - 1 && (
+              <div style={{
+                flex: 1,
+                height: 2,
+                background: connectorComplete ? C.navy : C.g2,
+                margin: "0 8px",
+                minWidth: 16,
+                transition: "background 0.15s",
+              }} />
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -192,7 +394,7 @@ function BtnOutline({ onClick, children }) {
         background: hover ? C.g1 : C.white,
         color: C.g6,
         border: `1px solid ${C.g3}`,
-        borderRadius: 7,
+        borderRadius: 8,
         padding: "5px 14px",
         fontSize: 12,
         fontWeight: 500,
@@ -217,7 +419,7 @@ function BtnNavy({ onClick, children }) {
         background: hover ? C.navy2 : C.navy,
         color: C.white,
         border: "none",
-        borderRadius: 7,
+        borderRadius: 8,
         padding: "5px 14px",
         fontSize: 12,
         fontWeight: 600,
@@ -231,6 +433,35 @@ function BtnNavy({ onClick, children }) {
   );
 }
 
+function BackBtn({ onClick }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        border: `1px solid ${hover ? C.g3 : C.g2}`,
+        background: hover ? C.g1 : C.white,
+        color: C.g5,
+        cursor: "pointer",
+        flexShrink: 0,
+        transition: "background 0.1s, border-color 0.1s",
+      }}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+  );
+}
+
 function BtnDiscard({ onClick }) {
   const [hover, setHover] = useState(false);
   return (
@@ -239,19 +470,110 @@ function BtnDiscard({ onClick }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        background: "none",
-        border: "none",
-        color: hover ? "#8b0022" : C.red,
+        background: hover ? C.g1 : C.white,
+        color: hover ? C.g5 : C.g4,
+        border: `1px solid ${C.g2}`,
+        borderRadius: 8,
+        padding: "5px 14px",
         fontSize: 12,
         fontWeight: 500,
         fontFamily: F,
         cursor: "pointer",
-        padding: "5px 8px",
-        textDecoration: hover ? "underline" : "none",
-        transition: "color 0.1s",
+        transition: "background 0.1s, color 0.1s",
+        flexShrink: 0,
       }}
     >
       Discard
+    </button>
+  );
+}
+
+// ── Footer Buttons ────────────────────────────────────────────────────────────
+
+function BtnFooterPrev({ onClick, disabled }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: disabled ? C.g1 : (hover ? C.g1 : C.white),
+        color: disabled ? C.g3 : C.g6,
+        border: `1px solid ${C.g3}`,
+        borderRadius: 8,
+        padding: "9px 18px",
+        fontSize: 13,
+        fontWeight: 500,
+        fontFamily: F,
+        cursor: disabled ? "not-allowed" : "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        transition: "background 0.1s",
+      }}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Previous
+    </button>
+  );
+}
+
+function BtnFooterNext({ onClick, label = "Next" }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: hover ? C.navy2 : C.navy,
+        color: C.white,
+        border: "none",
+        borderRadius: 8,
+        padding: "9px 22px",
+        fontSize: 13,
+        fontWeight: 600,
+        fontFamily: F,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        transition: "background 0.1s",
+      }}
+    >
+      {label}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  );
+}
+
+function BtnFooterActivate({ onClick }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: hover ? C.navy2 : C.navy,
+        color: C.white,
+        border: "none",
+        borderRadius: 8,
+        padding: "9px 22px",
+        fontSize: 13,
+        fontWeight: 700,
+        fontFamily: F,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        gap: 6,
+        transition: "background 0.1s",
+      }}
+    >
+      Activate Template
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
     </button>
   );
 }
@@ -264,6 +586,7 @@ export default function WizardShell({
   entryPoint = "catalog",
   onBackToPick,
   onExit,
+  categories = [],
 }) {
   const [step, setStep] = useState(1);
   // Tracks whether the user entered any field value on each step (during this visit to that step)
@@ -274,6 +597,8 @@ export default function WizardShell({
   const [stepIncomplete, setStepIncomplete] = useState({});
   const [formData, setFormData] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {} });
 
+  const [isActive,    setIsActive]    = useState(!!templateId);
+  const [isPublished, setIsPublished] = useState(!!templateId);
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [savedLabel, setSavedLabel] = useState(null);
@@ -339,11 +664,7 @@ export default function WizardShell({
   }
 
   function handleDiscardClick() {
-    if (isDirty) {
-      setShowDiscard(true);
-    } else {
-      onExit();
-    }
+    setShowDiscard(true);
   }
 
   function handleActivateClick() {
@@ -424,71 +745,71 @@ export default function WizardShell({
 
       {/* ── Header ── */}
       <div style={{
+        position: "relative",
         background: C.white,
         borderBottom: `1px solid ${C.g2}`,
         height: 60,
         flexShrink: 0,
         display: "flex",
-        alignItems: "stretch",
+        alignItems: "center",
         padding: "0 20px",
-        position: "relative",
       }}>
 
-        {/* Left: template name + version (when editing existing) */}
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", flexShrink: 0, zIndex: 1, minWidth: 140 }}>
+
+        {/* Center: Audit Template Builder label + template name */}
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
+          <span style={{ fontSize: 20, fontWeight: 300, color: C.g6, fontFamily: F }}>
+            Audit Template Builder
+          </span>
+        </div>
+
+        {/* Far left: back button */}
+        <BackBtn onClick={handleDiscardClick} />
+
+        {/* Left: template name */}
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", flexShrink: 0, minWidth: 0, maxWidth: 280, marginLeft: 10 }}>
           <span style={{
             fontSize: 13,
             fontWeight: 700,
             color: nameIsPlaceholder ? C.g4 : C.g6,
             fontFamily: F,
-            lineHeight: "19px",
+            lineHeight: "18px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}>
             {templateName}
           </span>
           {isEditing && (
-            // TODO: resolve actual version numbers from template service
-            <span style={{ fontSize: 10, color: C.g4, fontFamily: F, lineHeight: "15px", marginTop: 1 }}>
-              v1 → v2 (draft)
-            </span>
+            <span style={{ fontSize: 10, color: C.g4, fontFamily: F, marginTop: 2 }}>v1 → v2</span>
           )}
         </div>
 
-        {/* Center: progress nav — absolutely positioned for true centering */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "stretch",
-          pointerEvents: "none",
-        }}>
-          <div style={{ display: "flex", alignItems: "stretch", pointerEvents: "all" }}>
-            {STEPS.map((s) => (
-              <NavStep
-                key={s.num}
-                stepDef={s}
-                status={getStepStatus(s.num)}
-                onClick={() => navigateToStep(s.num)}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Right: save controls */}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, zIndex: 1 }}>
-          {savedLabel && (
-            <div style={{ display: "flex", alignItems: "center", gap: 5, marginRight: 4 }}>
-              <IconCloud />
-              <span style={{ fontSize: 11, color: C.teal, fontFamily: F, whiteSpace: "nowrap" }}>
-                {savedLabel}
-              </span>
-            </div>
-          )}
-          <BtnOutline onClick={handleManualSave}>Save</BtnOutline>
-          <BtnNavy onClick={handleSaveAndClose}>Save &amp; Close</BtnNavy>
-          <BtnDiscard onClick={handleDiscardClick} />
+        {/* Right: status tags */}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+          <StatusTag label="Draft" color="#b45309" icon="draft" />
+          <span style={{ color: C.g3, fontSize: 11 }}>·</span>
+          <StatusTag
+            label={isActive ? "Active" : "Inactive"}
+            color={isActive ? C.teal : C.g5}
+            icon={isActive ? "check" : "pause"}
+          />
+          <span style={{ color: C.g3, fontSize: 11 }}>·</span>
+          <StatusTag
+            label={isPublished ? "Published" : "Unpublished"}
+            color={isPublished ? C.ocean : C.g5}
+            icon={isPublished ? "check" : "lock"}
+          />
         </div>
       </div>
+
+      {/* ── Progress bar ── */}
+      <ProgressBar
+        steps={STEPS}
+        getStatus={getStepStatus}
+        onStepClick={navigateToStep}
+        getWarningTip={(num) => getStepWarningTip(num, formData)}
+      />
 
       {/* ── Step content ── */}
       <div style={{ flex: 1, overflowY: "auto" }}>
@@ -498,6 +819,7 @@ export default function WizardShell({
             onChange={(patch) => handleStepDataChange(1, patch)}
             onNext={() => navigateToStep(2)}
             onBackToPick={onBackToPick}
+            categories={categories}
           />
         )}
         {step === 2 && (
@@ -506,6 +828,9 @@ export default function WizardShell({
             onChange={(patch) => handleStepDataChange(2, patch)}
             onNext={() => navigateToStep(3)}
             onBack={() => navigateToStep(1)}
+            hasQuestions={
+              (formData[3]?.sections || []).some(s => s.questions?.length > 0)
+            }
           />
         )}
         {step === 3 && (
@@ -535,6 +860,55 @@ export default function WizardShell({
             onNavigateToStep={navigateToStep}
           />
         )}
+      </div>
+
+      {/* ── Fixed footer ── */}
+      <div style={{
+        background: C.white,
+        borderTop: `1px solid ${C.g2}`,
+        padding: "12px 24px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexShrink: 0,
+        boxShadow: "0 -1px 4px rgba(0,0,0,0.04)",
+      }}>
+        {/* Left: save actions + saved label */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <BtnDiscard onClick={handleDiscardClick} />
+          <BtnOutline onClick={handleManualSave}>Save</BtnOutline>
+          <BtnNavy onClick={handleSaveAndClose}>Save &amp; Close</BtnNavy>
+          {savedLabel && (
+            <div style={{ display: "flex", alignItems: "center", gap: 5, marginLeft: 4 }}>
+              <IconCloud />
+              <span style={{ fontSize: 12, color: C.teal, fontFamily: F, whiteSpace: "nowrap" }}>
+                {savedLabel}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Right: navigation */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <BtnFooterPrev
+            onClick={step === 1 ? onBackToPick : () => navigateToStep(step - 1)}
+            disabled={false}
+          />
+          {step < 5 ? (
+            <BtnFooterNext
+              onClick={() => navigateToStep(step + 1)}
+              label={
+                step === 1 ? "Next: Scoring"
+                : step === 2 ? "Next: Questions"
+                : step === 3 ? "Next: Schedule"
+                : step === 4 ? "Next: Escalation"
+                : "Next"
+              }
+            />
+          ) : (
+            <BtnFooterActivate onClick={handleActivateClick} />
+          )}
+        </div>
       </div>
 
       {/* ── Discard confirmation modal ── */}

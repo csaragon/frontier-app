@@ -13,26 +13,36 @@ import QuestionEditor from "./QuestionEditor.jsx";
 import BanksPanel from "./BanksPanel.jsx";
 import GridSection from "./GridSection.jsx";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
+import { T, F } from "../aegis-tokens.js";
+
 const C = {
-  navy: "#001e76", navy2: "#001356",
-  white: "#ffffff",
-  g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  amber: "#b45309", amberBg: "#fffbeb",
-  red: "#b6143a",
-  teal: "#0f766e",
-  purple: "#7c3aed", purpleLt: "#f5f3ff", purpleMd: "#ede9fe",
+  navy:     T.action1,
+  navy2:    T.action2,
+  white:    T.surface1,
+  g1:       T.surface2,
+  g2:       T.border1,
+  g3:       T.border2,
+  g4:       T.disabled1,
+  g5:       T.onSurface1,
+  g6:       T.onSurface2,
+  amber:    T.warning1,
+  amberBg:  T.warningContainer1,
+  red:      T.onError1,
+  teal:     "#0f766e",
+  purple:   "#7c3aed",
+  purpleLt: "#f5f3ff",
+  purpleMd: "#ede9fe",
 };
 
 const ANSWER_TYPES = [
-  { value: "Yes/No/NA",       bg: "#ecfdf5", color: "#065f46" },
+  { value: "Yes/No/NA",       bg: "#ccfbf1", color: "#065f46" },
   { value: "Yes/No",          bg: "#eff6ff", color: "#1d4ed8" },
   { value: "Pass/Fail",       bg: "#fff7ed", color: "#9a3412" },
   { value: "Rating Scale",    bg: "#faf5ff", color: "#6d28d9" },
   { value: "Free Text",       bg: "#f9fafb", color: "#374151" },
   { value: "Number",          bg: "#f0fdfa", color: "#0f766e" },
   { value: "Multiple Choice", bg: "#fefce8", color: "#92400e" },
-  { value: "Grid",            bg: "#f0f2ff", color: "#1e40af" },
+  { value: "Grid",            bg: "#d4e2ff", color: "#1e40af" },
   { value: "Asset",           bg: "#fff1f2", color: "#9f1239" },
   { value: "Photo Required",  bg: "#ecfeff", color: "#0e7490" },
 ];
@@ -229,14 +239,14 @@ function IconWarn() {
 function AnswerBadge({ value }) {
   const m = ansTypeMeta(value);
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", background: m.bg, color: m.color, fontSize: 11, fontWeight: 600, fontFamily: F, borderRadius: 4, padding: "2px 7px", whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", background: m.bg, color: m.color, fontSize: 12, fontWeight: 600, fontFamily: F, borderRadius: 4, padding: "2px 7px", whiteSpace: "nowrap" }}>
       {value}
     </span>
   );
 }
 
 function SmallBadge({ label, bg, color }) {
-  return <span style={{ fontSize: 11, fontWeight: 600, fontFamily: F, background: bg, color, borderRadius: 4, padding: "2px 7px", whiteSpace: "nowrap" }}>{label}</span>;
+  return <span style={{ fontSize: 12, fontWeight: 600, fontFamily: F, background: bg, color, borderRadius: 4, padding: "2px 7px", whiteSpace: "nowrap" }}>{label}</span>;
 }
 
 function Checkbox({ checked }) {
@@ -267,7 +277,7 @@ function FixMathModal({ sections, onClose, onApply }) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{ background:C.white, borderRadius:12, width:480, maxHeight:"80vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
         <div style={{ padding:"16px 20px 0", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <span style={{ fontSize:15, fontWeight:700, color:C.g6 }}>Rebalance weights proportionally?</span>
+          <span style={{ fontSize:16, fontWeight:700, color:C.g6 }}>Rebalance weights proportionally?</span>
           <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex" }}><IconClose /></button>
         </div>
         <div style={{ padding:"12px 20px 0", flexShrink:0 }}>
@@ -278,9 +288,9 @@ function FixMathModal({ sections, onClose, onApply }) {
         </div>
         <div style={{ flex:1, overflowY:"auto", padding:"0 20px" }}>
           <div style={{ display:"grid", gridTemplateColumns:"1fr auto auto", borderRadius:8, overflow:"hidden", border:`1px solid ${C.g2}` }}>
-            <div style={{ padding:"7px 12px", background:C.g1, fontSize:11, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em" }}>Section</div>
-            <div style={{ padding:"7px 12px", background:C.g1, fontSize:11, fontWeight:700, color:C.g4, textTransform:"uppercase", textAlign:"center" }}>Before</div>
-            <div style={{ padding:"7px 12px", background:C.g1, fontSize:11, fontWeight:700, color:C.navy, textTransform:"uppercase", textAlign:"center" }}>After</div>
+            <div style={{ padding:"7px 12px", background:C.g1, fontSize:12, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em" }}>Section</div>
+            <div style={{ padding:"7px 12px", background:C.g1, fontSize:12, fontWeight:700, color:C.g4, textTransform:"uppercase", textAlign:"center" }}>Before</div>
+            <div style={{ padding:"7px 12px", background:C.g1, fontSize:12, fontWeight:700, color:C.navy, textTransform:"uppercase", textAlign:"center" }}>After</div>
             {preview.map((s, i) => {
               const changed = s.afterWeight !== Number(s.weight ?? 0);
               return [
@@ -294,9 +304,9 @@ function FixMathModal({ sections, onClose, onApply }) {
           </div>
         </div>
         <div style={{ padding:"14px 20px", borderTop:`1px solid ${C.g2}`, display:"flex", gap:8, justifyContent:"flex-end", alignItems:"center", flexShrink:0, marginTop:12 }}>
-          {wasRounded && <span style={{ fontSize:11, color:C.g4, fontFamily:F, flex:1 }}>Some weights rounded to 0.1%</span>}
-          <button onClick={onClose} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
-          <button onClick={() => onApply(preview)} style={{ background:C.navy, color:C.white, border:"none", borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+          {wasRounded && <span style={{ fontSize:12, color:C.g4, fontFamily:F, flex:1 }}>Some weights rounded to 0.1%</span>}
+          <button onClick={onClose} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
+          <button onClick={() => onApply(preview)} style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
             onMouseEnter={e => e.currentTarget.style.background = C.navy2} onMouseLeave={e => e.currentTarget.style.background = C.navy}>
             Apply rebalance
           </button>
@@ -351,12 +361,12 @@ function BulkDeleteConfirmModal({ count, onConfirm, onClose }) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{ background:C.white, borderRadius:12, width:380, boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
         <div style={{ padding:"18px 20px 14px" }}>
-          <div style={{ fontSize:15, fontWeight:700, color:C.g6 }}>Delete {count} question{count !== 1 ? "s" : ""}?</div>
+          <div style={{ fontSize:16, fontWeight:700, color:C.g6 }}>Delete {count} question{count !== 1 ? "s" : ""}?</div>
           <div style={{ fontSize:13, color:C.g5, marginTop:8 }}>This can't be undone.</div>
         </div>
         <div style={{ padding:"12px 20px", borderTop:`1px solid ${C.g2}`, display:"flex", gap:8, justifyContent:"flex-end" }}>
-          <button onClick={onClose} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
-          <button onClick={onConfirm} style={{ background:C.red, color:C.white, border:"none", borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>Delete</button>
+          <button onClick={onClose} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
+          <button onClick={onConfirm} style={{ background:C.red, color:C.white, border:"none", borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>Delete</button>
         </div>
       </div>
     </div>
@@ -369,7 +379,7 @@ function BulkMoveModal({ sections, onMove, onClose }) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{ background:C.white, borderRadius:12, width:360, maxHeight:"60vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
         <div style={{ padding:"16px 20px 0", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-          <div style={{ fontSize:15, fontWeight:700, color:C.g6 }}>Move to section</div>
+          <div style={{ fontSize:16, fontWeight:700, color:C.g6 }}>Move to section</div>
           <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex" }}><IconClose /></button>
         </div>
         <div style={{ flex:1, overflowY:"auto", padding:"8px 0" }}>
@@ -378,7 +388,7 @@ function BulkMoveModal({ sections, onMove, onClose }) {
               style={{ display:"block", width:"100%", textAlign:"left", background:"none", border:"none", padding:"11px 20px", fontSize:13, color:C.g6, fontFamily:F, cursor:"pointer", borderBottom:`1px solid ${C.g1}` }}
               onMouseEnter={e => e.currentTarget.style.background = C.g1}
               onMouseLeave={e => e.currentTarget.style.background = "none"}>
-              {s.name}<span style={{ fontSize:11, color:C.g4, marginLeft:8 }}>{s.questions.length} questions</span>
+              {s.name}<span style={{ fontSize:12, color:C.g4, marginLeft:8 }}>{s.questions.length} questions</span>
             </button>
           ))}
           {sections.length === 0 && <div style={{ padding:"20px", fontSize:13, color:C.g4, textAlign:"center" }}>No sections available.</div>}
@@ -395,7 +405,7 @@ function DeleteDepsModal({ qIds, deps, onConfirm, onClose }) {
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div style={{ background:C.white, borderRadius:12, width:440, maxHeight:"70vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
         <div style={{ padding:"18px 20px 0", flexShrink:0 }}>
-          <div style={{ fontSize:15, fontWeight:700, color:C.g6 }}>
+          <div style={{ fontSize:16, fontWeight:700, color:C.g6 }}>
             {isBulk ? "Some of these questions are referenced elsewhere" : "This question is referenced elsewhere"}
           </div>
           <div style={{ fontSize:13, color:C.g5, marginTop:8, lineHeight:"19px" }}>
@@ -414,8 +424,8 @@ function DeleteDepsModal({ qIds, deps, onConfirm, onClose }) {
         <div style={{ padding:"10px 20px 14px", flexShrink:0 }}>
           <p style={{ margin:"0 0 12px", fontSize:12, color:C.g4, lineHeight:"17px" }}>Deleting will remove these conditions automatically. Affected questions will become unconditional.</p>
           <div style={{ display:"flex", gap:8, justifyContent:"flex-end" }}>
-            <button onClick={onClose} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
-            <button onClick={onConfirm} style={{ background:"none", border:`1px solid ${C.red}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, color:C.red, cursor:"pointer" }}>Delete anyway</button>
+            <button onClick={onClose} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
+            <button onClick={onConfirm} style={{ background:"none", border:`1px solid ${C.red}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, color:C.red, cursor:"pointer" }}>Delete anyway</button>
           </div>
         </div>
       </div>
@@ -445,7 +455,7 @@ function ApplyConfigPanel({ selectedQIds, allSections, onApplyRequest, onClose }
       <div style={{ padding:"16px 20px", borderBottom:`1px solid ${C.g2}`, flexShrink:0 }}>
         <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between" }}>
           <div>
-            <div style={{ fontSize:15, fontWeight:700, color:C.g6 }}>Apply config to {selectedQIds.size} question{selectedQIds.size !== 1 ? "s" : ""}</div>
+            <div style={{ fontSize:16, fontWeight:700, color:C.g6 }}>Apply config to {selectedQIds.size} question{selectedQIds.size !== 1 ? "s" : ""}</div>
             <div style={{ fontSize:12, color:C.g4, marginTop:2 }}>Pick a source question and which fields to copy.</div>
           </div>
           <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex", flexShrink:0 }}><IconClose /></button>
@@ -453,13 +463,13 @@ function ApplyConfigPanel({ selectedQIds, allSections, onApplyRequest, onClose }
       </div>
       <div style={{ flex:1, overflowY:"auto", padding:"16px 20px" }}>
         <div style={{ marginBottom:20 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.g5, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>1 — Source question</div>
+          <div style={{ fontSize:12, fontWeight:700, color:C.g5, textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:8 }}>1 — Source question</div>
           <div ref={dropRef} style={{ position:"relative" }}>
             <input value={sourceSearch}
               onChange={e => { setSourceSearch(e.target.value); setDropdownOpen(true); if (sourceQ) setSourceQ(null); }}
               onFocus={() => setDropdownOpen(true)}
               placeholder={sourceQ ? sourceQ.title.slice(0,45) + (sourceQ.title.length > 45 ? "…" : "") : "Search questions…"}
-              style={{ width:"100%", boxSizing:"border-box", fontFamily:F, fontSize:13, color:C.g6, border:`1px solid ${dropdownOpen ? C.navy : C.g3}`, borderRadius:7, padding:"8px 12px", outline:"none" }}
+              style={{ width:"100%", boxSizing:"border-box", fontFamily:F, fontSize:13, color:C.g6, border:`1px solid ${dropdownOpen ? C.navy : C.g3}`, borderRadius:8, padding:"8px 12px", outline:"none" }}
             />
             {dropdownOpen && (
               <div style={{ position:"absolute", top:"100%", left:0, right:0, zIndex:500, background:C.white, border:`1px solid ${C.g2}`, borderRadius:8, boxShadow:"0 4px 16px rgba(0,0,0,0.12)", maxHeight:200, overflowY:"auto", marginTop:2 }}>
@@ -469,7 +479,7 @@ function ApplyConfigPanel({ selectedQIds, allSections, onApplyRequest, onClose }
                     onMouseEnter={e => e.currentTarget.style.background = C.g1}
                     onMouseLeave={e => e.currentTarget.style.background = "none"}>
                     <div style={{ fontSize:12, color:C.g6, fontFamily:F }}>{q.title}</div>
-                    <div style={{ fontSize:11, color:C.g4, fontFamily:F, marginTop:2 }}>{q.sectionName} · {q.answerType}</div>
+                    <div style={{ fontSize:12, color:C.g4, fontFamily:F, marginTop:2 }}>{q.sectionName} · {q.answerType}</div>
                   </button>
                 ))}
                 {filtered.length === 0 && <div style={{ padding:"12px", fontSize:12, color:C.g4, fontFamily:F }}>{eligible.length === 0 ? "No other questions available." : "No matches."}</div>}
@@ -477,24 +487,24 @@ function ApplyConfigPanel({ selectedQIds, allSections, onApplyRequest, onClose }
             )}
           </div>
           {sourceQ && (
-            <div style={{ marginTop:8, background:C.g1, borderRadius:7, padding:"10px 12px", display:"flex", gap:8, alignItems:"flex-start" }}>
+            <div style={{ marginTop:8, background:C.g1, borderRadius:8, padding:"10px 12px", display:"flex", gap:8, alignItems:"flex-start" }}>
               <div style={{ flex:1 }}>
                 <div style={{ fontSize:12, fontWeight:600, color:C.g6, fontFamily:F }}>{sourceQ.title}</div>
-                <div style={{ fontSize:11, color:C.g4, fontFamily:F, marginTop:3 }}>{sourceQ.sectionName}</div>
+                <div style={{ fontSize:12, color:C.g4, fontFamily:F, marginTop:3 }}>{sourceQ.sectionName}</div>
               </div>
               <button onClick={() => { setSourceQ(null); setSourceSearch(""); }} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:2, display:"flex", flexShrink:0 }}><IconClose /></button>
             </div>
           )}
           {mismatchCount > 0 && (
-            <div style={{ marginTop:6, background:"#fffbeb", border:"1px solid #fde68a", borderRadius:6, padding:"8px 10px", display:"flex", gap:6, alignItems:"flex-start" }}>
+            <div style={{ marginTop:6, background:"#fef9c3", border:"1px solid #fde68a", borderRadius:6, padding:"8px 10px", display:"flex", gap:6, alignItems:"flex-start" }}>
               <span style={{ flexShrink:0, color:C.amber, display:"flex" }}><IconWarn /></span>
-              <span style={{ fontSize:11, color:C.amber, fontFamily:F, lineHeight:"16px" }}>{mismatchCount} of {selectedQIds.size} selected questions have a different answer type. Some fields may not transfer cleanly.</span>
+              <span style={{ fontSize:12, color:C.amber, fontFamily:F, lineHeight:"16px" }}>{mismatchCount} of {selectedQIds.size} selected questions have a different answer type. Some fields may not transfer cleanly.</span>
             </div>
           )}
         </div>
         <div>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-            <div style={{ fontSize:11, fontWeight:700, color:C.g5, textTransform:"uppercase", letterSpacing:"0.05em" }}>2 — Fields to copy</div>
+            <div style={{ fontSize:12, fontWeight:700, color:C.g5, textTransform:"uppercase", letterSpacing:"0.05em" }}>2 — Fields to copy</div>
             <div style={{ display:"flex", gap:10 }}>
               <button onClick={() => setSelectedFields(new Set(["scoring","media","actions","escalation","conditional"]))} style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, color:C.navy, fontFamily:F, fontWeight:500, padding:0 }}>Select all</button>
               <button onClick={() => setSelectedFields(new Set())} style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, color:C.g4, fontFamily:F, fontWeight:500, padding:0 }}>Deselect all</button>
@@ -509,7 +519,7 @@ function ApplyConfigPanel({ selectedQIds, allSections, onApplyRequest, onClose }
                 </div>
                 <div>
                   <div style={{ fontSize:13, fontWeight:500, color:C.g6, fontFamily:F }}>{f.label}</div>
-                  <div style={{ fontSize:11, color:C.g4, fontFamily:F, marginTop:1 }}>{f.desc}</div>
+                  <div style={{ fontSize:12, color:C.g4, fontFamily:F, marginTop:1 }}>{f.desc}</div>
                 </div>
               </label>
             );
@@ -519,7 +529,7 @@ function ApplyConfigPanel({ selectedQIds, allSections, onApplyRequest, onClose }
       <div style={{ padding:"12px 20px", borderTop:`1px solid ${C.g2}`, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <button onClick={onClose} style={{ background:"none", border:"none", color:C.g5, fontSize:13, fontFamily:F, fontWeight:500, cursor:"pointer" }}>Cancel</button>
         <button disabled={!canApply} onClick={() => canApply && onApplyRequest({ qIds: selectedQIds, sourceQ, fields: selectedFields })}
-          style={{ background: canApply ? C.navy : C.g2, color: canApply ? C.white : C.g4, border:"none", borderRadius:7, padding:"8px 18px", fontSize:13, fontWeight:600, fontFamily:F, cursor: canApply ? "pointer" : "not-allowed" }}
+          style={{ background: canApply ? C.navy : C.g2, color: canApply ? C.white : C.g4, border:"none", borderRadius:8, padding:"8px 18px", fontSize:13, fontWeight:600, fontFamily:F, cursor: canApply ? "pointer" : "not-allowed" }}
           onMouseEnter={e => { if (canApply) e.currentTarget.style.background = C.navy2; }}
           onMouseLeave={e => { if (canApply) e.currentTarget.style.background = C.navy; }}>
           Apply to {selectedQIds.size} question{selectedQIds.size !== 1 ? "s" : ""}
@@ -569,23 +579,23 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
     <div style={{ background:C.white, borderRadius:14, width:W, boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
       <div style={{ padding:"20px 24px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:28, height:28, borderRadius:8, background:C.purpleMd, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.purple} strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/></svg>
+          <div style={{ width:28, height:28, borderRadius:8, background:"#eef1ff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.navy} strokeWidth="2" strokeLinecap="round"><path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/></svg>
           </div>
-          <span style={{ fontSize:15, fontWeight:700, color:C.g6 }}>What would you like to generate?</span>
+          <span style={{ fontSize:16, fontWeight:700, color:C.g6 }}>What would you like to generate?</span>
         </div>
         <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex" }}><IconClose /></button>
       </div>
       <div style={{ padding:"20px 24px", display:"flex", flexDirection:"column", gap:10 }}>
         {[
-          { id:"section",   title:"Generate a full section",              desc:"Create a new section with questions, scoring, and actions all configured.", icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.purple} strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg> },
-          { id:"questions", title:"Add questions to an existing section", desc:"Generate more questions for a section you've already started.",            icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.purple} strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> },
-          { id:"scoring",   title:"Suggest scoring for current questions",desc:"Review your existing questions and recommend scoring values.",              icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.purple} strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> },
+          { id:"section",   title:"Generate a full section",              desc:"Create a new section with questions, scoring, and actions all configured.", icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.navy} strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg> },
+          { id:"questions", title:"Add questions to an existing section", desc:"Generate more questions for a section you've already started.",            icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.navy} strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> },
+          { id:"scoring",   title:"Suggest scoring for current questions",desc:"Review your existing questions and recommend scoring values.",              icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.navy} strokeWidth="1.8" strokeLinecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> },
         ].map(opt => (
           <button key={opt.id} onClick={() => { setOption(opt.id); setStep(2); }}
-            style={{ display:"flex", alignItems:"flex-start", gap:14, background:C.purpleLt, border:`1.5px solid ${C.purpleMd}`, borderRadius:10, padding:"14px 16px", cursor:"pointer", textAlign:"left", width:"100%" }}
-            onMouseEnter={e => { e.currentTarget.style.background = C.purpleMd; e.currentTarget.style.borderColor = C.purple; }}
-            onMouseLeave={e => { e.currentTarget.style.background = C.purpleLt; e.currentTarget.style.borderColor = C.purpleMd; }}>
+            style={{ display:"flex", alignItems:"flex-start", gap:14, background:"#eef1ff", border:`1.5px solid #c7cff7`, borderRadius:12, padding:"14px 16px", cursor:"pointer", textAlign:"left", width:"100%" }}
+            onMouseEnter={e => { e.currentTarget.style.background = "#dde4ff"; e.currentTarget.style.borderColor = "#c7cff7"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "#eef1ff"; e.currentTarget.style.borderColor = "#c7cff7"; }}>
             <div style={{ flexShrink:0, marginTop:1 }}>{opt.icon}</div>
             <div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F, marginBottom:3 }}>{opt.title}</div>
@@ -612,7 +622,7 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
             <div style={{ marginBottom:12 }}>
               <label style={{ fontSize:12, fontWeight:600, color:C.g5, fontFamily:F, display:"block", marginBottom:6 }}>Target section</label>
               <select value={targetSectionId ?? ""} onChange={e => setTargetSectionId(e.target.value)}
-                style={{ width:"100%", fontFamily:F, fontSize:13, color:C.g6, border:`1px solid ${C.g3}`, borderRadius:7, padding:"8px 12px", outline:"none" }}>
+                style={{ width:"100%", fontFamily:F, fontSize:13, color:C.g6, border:`1px solid ${C.g3}`, borderRadius:8, padding:"8px 12px", outline:"none" }}>
                 {sections.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
@@ -623,13 +633,13 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
             onFocus={e => e.currentTarget.style.borderColor = C.navy}
             onBlur={e => e.currentTarget.style.borderColor = C.g3}
           />
-          <p style={{ margin:"6px 0 0", fontSize:11, color:C.g4, lineHeight:"16px" }}>AI uses your template structure and audit best practices to generate content.</p>
+          <p style={{ margin:"6px 0 0", fontSize:12, color:C.g4, lineHeight:"16px" }}>AI uses your template structure and audit best practices to generate content.</p>
         </div>
         <div style={{ padding:"0 24px 20px", display:"flex", gap:8, justifyContent:"flex-end" }}>
           <button onClick={startGeneration} disabled={!prompt.trim()}
-            style={{ background: prompt.trim() ? C.purple : C.g2, color: prompt.trim() ? C.white : C.g4, border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:600, fontFamily:F, cursor: prompt.trim() ? "pointer" : "not-allowed" }}
-            onMouseEnter={e => { if (prompt.trim()) e.currentTarget.style.background = "#6d28d9"; }}
-            onMouseLeave={e => { if (prompt.trim()) e.currentTarget.style.background = C.purple; }}>
+            style={{ background: prompt.trim() ? C.navy : C.g2, color: prompt.trim() ? C.white : C.g4, border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:600, fontFamily:F, cursor: prompt.trim() ? "pointer" : "not-allowed" }}
+            onMouseEnter={e => { if (prompt.trim()) e.currentTarget.style.background = C.navy2; }}
+            onMouseLeave={e => { if (prompt.trim()) e.currentTarget.style.background = C.navy; }}>
             Generate
           </button>
         </div>
@@ -640,24 +650,24 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
   if (step === 3) return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, fontFamily:F }}>
       <div style={{ background:C.white, borderRadius:14, width:W, padding:"32px 36px", boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
-        <div style={{ marginBottom:24, fontSize:15, fontWeight:700, color:C.g6 }}>Generating…</div>
+        <div style={{ marginBottom:24, fontSize:16, fontWeight:700, color:C.g6 }}>Generating…</div>
         <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
           {AI_LOADING_STEPS.map((label, i) => {
             const done = i < progressStep; const active = i === progressStep;
             return (
               <div key={i} style={{ display:"flex", alignItems:"center", gap:12 }}>
-                <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, background: done ? C.teal : active ? C.purpleLt : C.g1, border: active ? `2px solid ${C.purple}` : "2px solid transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, background: done ? C.teal : active ? "#eef1ff" : C.g1, border: active ? `2px solid ${C.navy}` : "2px solid transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   {done ? <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>
-                       : active ? <div style={{ width:8, height:8, borderRadius:"50%", background:C.purple }} /> : null}
+                       : active ? <div style={{ width:8, height:8, borderRadius:"50%", background:C.navy }} /> : null}
                 </div>
-                <span style={{ fontSize:13, color: done ? C.teal : active ? C.purple : C.g4, fontFamily:F, fontWeight: active ? 600 : 400 }}>{label}</span>
+                <span style={{ fontSize:13, color: done ? C.teal : active ? C.navy : C.g4, fontFamily:F, fontWeight: active ? 600 : 400 }}>{label}</span>
               </div>
             );
           })}
         </div>
         <div style={{ marginTop:24, display:"flex", justifyContent:"flex-end" }}>
           <button onClick={() => { clearInterval(timerRef.current); setStep(2); setProgressStep(0); }}
-            style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
+            style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -666,7 +676,7 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
   if (step === 4 && result) return overlay(
     <div style={{ background:C.white, borderRadius:14, width:W, maxHeight:"80vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
       <div style={{ padding:"18px 24px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
-        <span style={{ fontSize:15, fontWeight:700, color:C.g6 }}>
+        <span style={{ fontSize:16, fontWeight:700, color:C.g6 }}>
           {result.type==="section" ? `Section: "${result.sectionName}"` : result.type==="questions" ? `Questions for ${result.sectionName}` : "Scoring suggestions"}
         </span>
         <button onClick={handleClose} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex" }}><IconClose /></button>
@@ -678,17 +688,17 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
               <div style={{ fontSize:13, color:C.g6, fontFamily:F, lineHeight:"18px" }}>{q.title}</div>
               <div style={{ display:"flex", gap:6, marginTop:4, alignItems:"center" }}>
                 <AnswerBadge value={q.answerType} />
-                {q.score > 0 && <span style={{ fontSize:11, color:C.g4, fontFamily:F }}>{q.score} pts</span>}
-                {q.actionSummary && q.actionSummary!=="None" && <span style={{ fontSize:11, color:C.g4, fontFamily:F }}>· {q.actionSummary}</span>}
+                {q.score > 0 && <span style={{ fontSize:12, color:C.g4, fontFamily:F }}>{q.score} pts</span>}
+                {q.actionSummary && q.actionSummary!=="None" && <span style={{ fontSize:12, color:C.g4, fontFamily:F }}>· {q.actionSummary}</span>}
               </div>
             </div>
           </div>
         ))}
         {result.type==="scoring" && (
           <div style={{ display:"grid", gridTemplateColumns:"1fr auto auto", borderRadius:8, overflow:"hidden", border:`1px solid ${C.g2}` }}>
-            <div style={{ padding:"7px 12px", background:C.g1, fontSize:11, fontWeight:700, color:C.g4, textTransform:"uppercase" }}>Question</div>
-            <div style={{ padding:"7px 12px", background:C.g1, fontSize:11, fontWeight:700, color:C.g4, textTransform:"uppercase", textAlign:"center" }}>Current</div>
-            <div style={{ padding:"7px 12px", background:C.g1, fontSize:11, fontWeight:700, color:C.navy, textTransform:"uppercase", textAlign:"center" }}>Proposed</div>
+            <div style={{ padding:"7px 12px", background:C.g1, fontSize:12, fontWeight:700, color:C.g4, textTransform:"uppercase" }}>Question</div>
+            <div style={{ padding:"7px 12px", background:C.g1, fontSize:12, fontWeight:700, color:C.g4, textTransform:"uppercase", textAlign:"center" }}>Current</div>
+            <div style={{ padding:"7px 12px", background:C.g1, fontSize:12, fontWeight:700, color:C.navy, textTransform:"uppercase", textAlign:"center" }}>Proposed</div>
             {result.suggestions.map((sg,i) => [
               <div key={`n${i}`} style={{ padding:"8px 12px", fontSize:12, color:C.g6, borderTop:`1px solid ${C.g2}` }}>{sg.qTitle.slice(0,50)}{sg.qTitle.length>50?"…":""}</div>,
               <div key={`c${i}`} style={{ padding:"8px 12px", fontSize:12, color:C.g5, borderTop:`1px solid ${C.g2}`, textAlign:"center", fontFamily:"monospace" }}>{sg.currentScore} pts</div>,
@@ -703,19 +713,19 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
           <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", fontSize:13, color:C.g5, fontFamily:F, fontWeight:500, padding:0 }}>Discard</button>
         </div>
         <button onClick={() => { onInsert(result); onClose(); }}
-          style={{ background:C.purple, color:C.white, border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
-          onMouseEnter={e => e.currentTarget.style.background = "#6d28d9"}
-          onMouseLeave={e => e.currentTarget.style.background = C.purple}>
+          style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+          onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+          onMouseLeave={e => e.currentTarget.style.background = C.navy}>
           Insert
         </button>
       </div>
       {discardConfirm && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.3)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10000 }}>
           <div style={{ background:C.white, borderRadius:12, width:340, padding:"20px", boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
-            <div style={{ fontSize:15, fontWeight:700, color:C.g6, marginBottom:8 }}>Discard generated content?</div>
+            <div style={{ fontSize:16, fontWeight:700, color:C.g6, marginBottom:8 }}>Discard generated content?</div>
             <div style={{ display:"flex", gap:8, justifyContent:"flex-end", marginTop:16 }}>
-              <button onClick={() => setDiscardConfirm(false)} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontFamily:F, color:C.g5, cursor:"pointer" }}>Keep</button>
-              <button onClick={onClose} style={{ background:C.red, color:C.white, border:"none", borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>Discard</button>
+              <button onClick={() => setDiscardConfirm(false)} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontFamily:F, color:C.g5, cursor:"pointer" }}>Keep</button>
+              <button onClick={onClose} style={{ background:C.red, color:C.white, border:"none", borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}>Discard</button>
             </div>
           </div>
         </div>
@@ -794,7 +804,7 @@ function QuestionIndicatorIcons({ question }) {
   return (
     <>
       {question.action?.type && question.action.type !== "none" && (
-        <span title="Has action" style={{ display: "flex", color: "#b45309" }}>
+        <span title="Has action" style={{ display: "flex", color: "#854d0e" }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         </span>
       )}
@@ -809,7 +819,7 @@ function QuestionIndicatorIcons({ question }) {
         </span>
       )}
       {question.media?.requireOnFail && (
-        <span title="Photo required on fail" style={{ display: "flex", color: "#0369a1" }}>
+        <span title="Photo required on fail" style={{ display: "flex", color: "#001e76" }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </span>
       )}
@@ -824,7 +834,7 @@ function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDupl
   if (viewMode === "grid") {
     return (
       <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        style={{ background: isSelected ? "#f0f2ff" : hover ? "#f8f9fb" : C.white, border: `1px solid ${isSelected ? "#c7ccff" : C.g2}`, borderRadius: 8, padding: "10px 12px", transition: "background 0.1s", display: "flex", flexDirection: "column", gap: 6, position:"relative" }}
+        style={{ background: isSelected ? "#d4e2ff" : hover ? "#f8f9fb" : C.white, border: `1px solid ${isSelected ? "#c7ccff" : C.g2}`, borderRadius: 8, padding: "10px 12px", transition: "background 0.1s", display: "flex", flexDirection: "column", gap: 6, position:"relative" }}
       >
         <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
           <div onClick={e => { e.stopPropagation(); onSelect(); }} style={{ flexShrink: 0, marginTop: 1 }}><Checkbox checked={isSelected} /></div>
@@ -841,8 +851,8 @@ function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDupl
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingLeft: 20, alignItems: "center" }}>
           <AnswerBadge value={question.answerType} />
-          {question.required      && <SmallBadge label="Required"   bg="#fef2f2" color={C.red} />}
-          {question.informational && <SmallBadge label="Info only"  bg="#f0f9ff" color="#0369a1" />}
+          {question.required      && <SmallBadge label="Required"   bg="#fae5e6" color={C.red} />}
+          {question.informational && <SmallBadge label="Info only"  bg="#d4e2ff" color="#001e76" />}
           <QuestionIndicatorIcons question={question} />
         </div>
       </div>
@@ -851,7 +861,7 @@ function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDupl
 
   return (
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: isSelected ? "#f0f2ff" : hover ? "#f8f9fb" : C.white, borderRadius: 6, transition: "background 0.1s", borderBottom: `1px solid ${C.g1}`, position:"relative" }}
+      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: isSelected ? "#d4e2ff" : hover ? "#f8f9fb" : C.white, borderRadius: 6, transition: "background 0.1s", borderBottom: `1px solid ${C.g1}`, position:"relative" }}
     >
       <div {...dragProps} style={{ color: hover ? C.g4 : C.g3, cursor: "grab", flexShrink: 0, display: "flex", alignItems: "center", touchAction: "none" }}>
         <IconGrip />
@@ -860,8 +870,8 @@ function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDupl
       <span onClick={onClick} style={{ flex: 1, fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px", cursor: "pointer" }}>{question.title}</span>
       <div style={{ display: "flex", gap: 5, alignItems: "center", flexShrink: 0 }}>
         <AnswerBadge value={question.answerType} />
-        {question.required      && <SmallBadge label="Required"  bg="#fef2f2" color={C.red} />}
-        {question.informational && <SmallBadge label="Info only" bg="#f0f9ff" color="#0369a1" />}
+        {question.required      && <SmallBadge label="Required"  bg="#fae5e6" color={C.red} />}
+        {question.informational && <SmallBadge label="Info only" bg="#d4e2ff" color="#001e76" />}
         <QuestionIndicatorIcons question={question} />
         <div style={{ position:"relative" }}>
           <button onClick={e => { e.stopPropagation(); setShowKebab(k => !k); }}
@@ -920,7 +930,7 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
   const qLabel = section.isGrid ? "1 question (grid)" : `${qCount} ${qCount === 1 ? "question" : "questions"}`;
 
   return (
-    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 10, marginBottom: 10, overflow: "visible" }}>
+    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12, marginBottom: 10, overflow: "visible" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderBottom: section.collapsed ? "none" : `1px solid ${C.g2}`, position: "relative" }}>
         <div {...dragProps} style={{ color: C.g3, cursor: "grab", flexShrink: 0, display: "flex", alignItems: "center", touchAction: "none" }}
@@ -934,7 +944,7 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
         {editingName ? (
           <input value={nameVal} onChange={e => setNameVal(e.target.value)} onBlur={commitName}
             onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); commitName(); } if (e.key === "Escape") { setNameVal(section.name); setEditingName(false); } }}
-            autoFocus style={{ flex: 1, fontSize: 14, fontWeight: 700, color: C.g6, fontFamily: F, border: `1px solid ${C.navy}`, borderRadius: 5, padding: "3px 7px", outline: "none", background: C.white }}
+            autoFocus style={{ flex: 1, fontSize: 14, fontWeight: 700, color: C.g6, fontFamily: F, border: `1px solid ${C.navy}`, borderRadius: 4, padding: "3px 7px", outline: "none", background: C.white }}
           />
         ) : (
           <span onClick={() => setEditingName(true)} title="Click to rename"
@@ -943,13 +953,13 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
         )}
 
         {/* Question count badge */}
-        <span style={{ fontSize: 11, fontWeight: 600, color: C.g4, fontFamily: F, background: C.g1, borderRadius: 10, padding: "2px 8px", flexShrink: 0 }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: C.g4, fontFamily: F, background: C.g1, borderRadius: 12, padding: "2px 8px", flexShrink: 0 }}>
           {qLabel}
         </span>
 
         {/* Grid badge when active */}
         {section.isGrid && (
-          <span style={{ fontSize: 10, fontWeight: 700, fontFamily: F, color: "#1e40af", background: "#f0f2ff", borderRadius: 4, padding: "2px 6px", flexShrink: 0 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, fontFamily: F, color: "#1e40af", background: "#d4e2ff", borderRadius: 4, padding: "2px 6px", flexShrink: 0 }}>
             Grid
           </span>
         )}
@@ -960,11 +970,11 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
           title={section.isGrid ? "Switch to question list" : "Switch to grid section"}
           style={{
             display: "flex", alignItems: "center", gap: 4,
-            fontSize: 11, fontWeight: 600, fontFamily: F,
+            fontSize: 12, fontWeight: 600, fontFamily: F,
             color: section.isGrid ? C.navy : C.g4,
             background: section.isGrid ? "#eef1ff" : "none",
             border: section.isGrid ? `1px solid #c7cff7` : `1px dashed ${C.g3}`,
-            borderRadius: 5, padding: "2px 8px", cursor: "pointer", flexShrink: 0,
+            borderRadius: 4, padding: "2px 8px", cursor: "pointer", flexShrink: 0,
           }}
           onMouseEnter={e => { if (!section.isGrid) { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; } }}
           onMouseLeave={e => { if (!section.isGrid) { e.currentTarget.style.borderColor = C.g3; e.currentTarget.style.color = C.g4; } }}
@@ -982,7 +992,7 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
                 else setWeightVal(String(section.weight ?? 0));
               }}
               min={0} max={100}
-              style={{ width: 50, textAlign: "center", fontSize: 13, fontFamily: F, color: C.g6, border: `1px solid ${C.g3}`, borderRadius: 5, padding: "3px 6px", outline: "none" }}
+              style={{ width: 50, textAlign: "center", fontSize: 13, fontFamily: F, color: C.g6, border: `1px solid ${C.g3}`, borderRadius: 4, padding: "3px 6px", outline: "none" }}
               onFocus={e => e.currentTarget.style.borderColor = C.navy}
               onBlur2={e => e.currentTarget.style.borderColor = C.g3}
             />
@@ -992,7 +1002,7 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
 
         <div style={{ position: "relative", flexShrink: 0 }}>
           <button onClick={() => setShowKebab(k => !k)}
-            style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, display: "flex", alignItems: "center", padding: 4, borderRadius: 5 }}
+            style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, display: "flex", alignItems: "center", padding: 4, borderRadius: 4 }}
             onMouseEnter={e => { e.currentTarget.style.background = C.g1; e.currentTarget.style.color = C.g6; }}
             onMouseLeave={e => { e.currentTarget.style.background = "none"; e.currentTarget.style.color = C.g4; }}
           ><IconDots /></button>
@@ -1059,13 +1069,13 @@ function AddSectionInline({ value, onChange, onConfirm, onCancel }) {
     <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 10 }}>
       <input value={value} onChange={e => onChange(e.target.value)} placeholder="Section name…" autoFocus
         onKeyDown={e => { if (e.key === "Enter") onConfirm(); if (e.key === "Escape") onCancel(); }}
-        style={{ flex: 1, fontFamily: F, fontSize: 13, color: C.g6, border: `1px solid ${C.navy}`, borderRadius: 7, padding: "8px 12px", outline: "none", background: C.white }}
+        style={{ flex: 1, fontFamily: F, fontSize: 13, color: C.g6, border: `1px solid ${C.navy}`, borderRadius: 8, padding: "8px 12px", outline: "none", background: C.white }}
       />
       <button onClick={onConfirm} disabled={!value.trim()}
-        style={{ background: value.trim() ? C.navy : C.g2, color: value.trim() ? C.white : C.g4, border: "none", borderRadius: 7, padding: "8px 14px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: value.trim() ? "pointer" : "not-allowed" }}
+        style={{ background: value.trim() ? C.navy : C.g2, color: value.trim() ? C.white : C.g4, border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: value.trim() ? "pointer" : "not-allowed" }}
       >Add</button>
       <button onClick={onCancel}
-        style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "8px 14px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
+        style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 8, padding: "8px 14px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
       >Cancel</button>
     </div>
   );
@@ -1104,7 +1114,7 @@ function BankReuseModal({ bankSection, onConfirm, onClose }) {
         {/* Header */}
         <div style={{ padding: "16px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: C.g6 }}>Add section from bank</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: C.g6 }}>Add section from bank</div>
             <div style={{ fontSize: 12, color: C.g4, marginTop: 2 }}>
               <strong style={{ color: C.g6 }}>{bankSection.name}</strong> — choose which questions to include
             </div>
@@ -1143,7 +1153,7 @@ function BankReuseModal({ bankSection, onConfirm, onClose }) {
                   <div style={{ fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px" }}>{q.title}</div>
                   <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
                     <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: C.g4, background: C.g1, borderRadius: 4, padding: "1px 5px" }}>{q.answerType}</span>
-                    {q.required && <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: "#b6143a", background: "#fef2f2", borderRadius: 4, padding: "1px 5px" }}>Required</span>}
+                    {q.required && <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: "#b6143a", background: "#fae5e6", borderRadius: 4, padding: "1px 5px" }}>Required</span>}
                   </div>
                 </div>
               </label>
@@ -1153,7 +1163,7 @@ function BankReuseModal({ bankSection, onConfirm, onClose }) {
         {/* Footer */}
         <div style={{ padding: "12px 20px", borderTop: `1px solid ${C.g2}`, display: "flex", gap: 8, justifyContent: "flex-end", flexShrink: 0 }}>
           <button onClick={onClose}
-            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
+            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
           >Cancel</button>
           <button
             onClick={() => { if (selectedQuestions.length > 0) onConfirm(selectedQuestions); }}
@@ -1161,7 +1171,7 @@ function BankReuseModal({ bankSection, onConfirm, onClose }) {
             style={{
               background: selectedQuestions.length > 0 ? C.navy : C.g2,
               color: selectedQuestions.length > 0 ? C.white : C.g4,
-              border: "none", borderRadius: 7, padding: "7px 16px",
+              border: "none", borderRadius: 8, padding: "7px 16px",
               fontSize: 13, fontWeight: 600, fontFamily: F,
               cursor: selectedQuestions.length > 0 ? "pointer" : "not-allowed",
             }}
@@ -1187,7 +1197,7 @@ function GridConfirmModal({ direction, qCount, onConfirm, onCancel }) {
     >
       <div style={{ background: C.white, borderRadius: 12, width: 380, boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
         <div style={{ padding: "18px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: C.g6 }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: C.g6 }}>
             {isOn ? "Switch to Grid Section?" : "Switch back to question list?"}
           </span>
           <button onClick={onCancel} style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, padding: 4, display: "flex", alignItems: "center" }}>
@@ -1203,10 +1213,10 @@ function GridConfirmModal({ direction, qCount, onConfirm, onCancel }) {
         </div>
         <div style={{ padding: "12px 20px", borderTop: `1px solid ${C.g2}`, display: "flex", gap: 8, justifyContent: "flex-end" }}>
           <button onClick={onCancel}
-            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
+            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
           >Cancel</button>
           <button onClick={onConfirm}
-            style={{ background: C.navy, color: C.white, border: "none", borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer" }}
+            style={{ background: C.navy, color: C.white, border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer" }}
             onMouseEnter={e => e.currentTarget.style.background = C.navy2}
             onMouseLeave={e => e.currentTarget.style.background = C.navy}
           >{isOn ? "Switch to Grid" : "Switch to Questions"}</button>
@@ -1223,7 +1233,6 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
 
   const [sections, setSections]       = useState(() => formData?.sections ?? DEFAULT_SECTIONS);
   const [viewMode, setViewMode]       = useState(() => formData?.viewMode ?? "row");
-  const [railOpen, setRailOpen]       = useState(true);
   const [selectedQs, setSelectedQs]   = useState(new Set());
   const [editingQ, setEditingQ]       = useState(null); // { q, sectionId, isNew }
   const [showFixMath, setShowFixMath] = useState(false);
@@ -1461,6 +1470,55 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
     showToast(`Added "${bankQuestion.title.slice(0, 30)}${bankQuestion.title.length > 30 ? "..." : ""}" to ${targetSection.name}`);
   }
 
+  // Multi-add: append all selected sections at once (skips per-section question-pick modal)
+  function handleAddManySectionsFromBank(bankSections) {
+    if (!bankSections || bankSections.length === 0) return;
+    const newSections = bankSections.map(bs => ({
+      id: genId("sec"),
+      name: bs.name,
+      weight: 0,
+      collapsed: false,
+      isGrid: false,
+      gridData: null,
+      questions: (bs.questions || []).map(bq => ({
+        id: genId("q"),
+        title: bq.title,
+        answerType: bq.answerType,
+        required: bq.required ?? false,
+        critical: false, informational: false, instructions: "",
+        typeConfig: {}, inBank: true, scoring: {}, media: {},
+        action: { type: "none" }, escalation: { rules: [] },
+        conditional: { operator: "AND", items: [] },
+      })),
+    }));
+    const next = [...sections, ...newSections];
+    setSections(next); emit(next);
+    showToast(`Added ${bankSections.length} section${bankSections.length === 1 ? "" : "s"}`);
+  }
+
+  // Multi-add: append all selected questions to the last section
+  function handleAddManyQuestionsFromBank(bankQuestions) {
+    if (!bankQuestions || bankQuestions.length === 0) return;
+    if (sections.length === 0) {
+      showToast("Add a section first, then use question bank items.");
+      return;
+    }
+    const targetSection = sections[sections.length - 1];
+    const newQuestions = bankQuestions.map(bq => ({
+      id: genId("q"),
+      title: bq.title,
+      answerType: bq.answerType,
+      required: bq.required ?? false,
+      critical: false, informational: false, instructions: "",
+      typeConfig: {}, inBank: true, scoring: {}, media: {},
+      action: { type: "none" }, escalation: { rules: [] },
+      conditional: { operator: "AND", items: [] },
+    }));
+    const next = sections.map(s => s.id === targetSection.id ? { ...s, questions: [...s.questions, ...newQuestions] } : s);
+    setSections(next); emit(next);
+    showToast(`Added ${bankQuestions.length} question${bankQuestions.length === 1 ? "" : "s"} to ${targetSection.name}`);
+  }
+
   function handleBankReuseConfirm(selectedQuestions) {
     const { bankSection } = bankReuseModal;
     const newSec = {
@@ -1590,32 +1648,13 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
 
   return (
     <div style={{ display: "flex", height: "100%", fontFamily: F, overflow: "hidden" }}>
-      <BanksPanel
-        open={railOpen}
-        onToggle={() => setRailOpen(r => !r)}
-        sections={sections}
-        onAddSectionFromBank={handleAddSectionFromBank}
-        onAddQuestionFromBank={handleAddQuestionFromBank}
-        onToast={showToast}
-      />
-
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px 80px" }}>
 
-          {/* Intro card */}
-          <div style={{ background: C.purpleLt, border: `1px solid ${C.purpleMd}`, borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", alignItems: "flex-start", gap: 12 }}>
-            <div style={{ width: 32, height: 32, borderRadius: "50%", background: C.purpleMd, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.purple} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: C.purple, fontFamily: F, marginBottom: 2 }}>Build your audit structure</div>
-              <div style={{ fontSize: 12, color: "#5b21b6", fontFamily: F, lineHeight: "18px" }}>
-                Add sections to group related questions, then add questions to each section. Drag to reorder. Click a question to edit it.
-              </div>
-            </div>
+          {/* Page title */}
+          <div style={{ marginBottom: 20 }}>
+            <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Sections &amp; Questions</h2>
+            <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Add sections to group related questions, then add questions to each section. Drag to reorder.</p>
           </div>
 
           {/* Header controls */}
@@ -1625,13 +1664,13 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
                 ? (
                   <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                     <button onClick={() => setShowFixMath(true)}
-                      style={{ display:"flex", alignItems:"center", gap:5, background:C.amberBg, border:"1px solid #fcd34d", borderRadius:7, padding:"5px 12px", fontSize:12, fontWeight:600, color:C.amber, fontFamily:F, cursor:"pointer" }}
+                      style={{ display:"flex", alignItems:"center", gap:5, background:C.amberBg, border:"1px solid #fcd34d", borderRadius:8, padding:"5px 12px", fontSize:12, fontWeight:600, color:C.amber, fontFamily:F, cursor:"pointer" }}
                       onMouseEnter={e => e.currentTarget.style.background = "#fef3c7"}
                       onMouseLeave={e => e.currentTarget.style.background = C.amberBg}>
                       <span style={{ width:7, height:7, borderRadius:"50%", background:C.red, display:"inline-block", flexShrink:0 }} />
                       Fix Math
                     </button>
-                    <span style={{ fontSize:11, color:C.amber, fontFamily:F }}>Weights total {totalWeight}% — Fix to 100%</span>
+                    <span style={{ fontSize:12, color:C.amber, fontFamily:F }}>Weights total {totalWeight}% — Fix to 100%</span>
                   </div>
                 ) : (
                   <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, color:C.teal, fontFamily:F, fontWeight:500 }}>
@@ -1646,7 +1685,7 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
             {selectedQs.size > 0 && (
               <div style={{ position:"relative" }}>
                 <button onClick={() => setBulkMenuOpen(o => !o)}
-                  style={{ display:"flex", alignItems:"center", gap:5, background:C.navy, color:C.white, border:"none", borderRadius:7, padding:"5px 12px", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+                  style={{ display:"flex", alignItems:"center", gap:5, background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"5px 12px", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
                   onMouseEnter={e => e.currentTarget.style.background = C.navy2}
                   onMouseLeave={e => e.currentTarget.style.background = C.navy}>
                   Bulk actions ({selectedQs.size})
@@ -1675,7 +1714,9 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
 
             {featureFlags.aiTemplateSearch && (
               <button onClick={() => setAiModal(true)}
-                style={{ display: "flex", alignItems: "center", gap: 5, background: C.purpleLt, border: `1px solid ${C.purpleMd}`, borderRadius: 7, padding: "5px 12px", fontSize: 12, fontWeight: 600, color: C.purple, fontFamily: F, cursor: "pointer" }}>
+                style={{ display: "flex", alignItems: "center", gap: 5, background: "#eef1ff", border: `1px solid #c7cff7`, borderRadius: 8, padding: "5px 12px", fontSize: 12, fontWeight: 600, color: C.navy, fontFamily: F, cursor: "pointer" }}
+                onMouseEnter={e => { e.currentTarget.style.background = "#dde4ff"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "#eef1ff"; }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/>
                 </svg>
@@ -1683,7 +1724,7 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
               </button>
             )}
 
-            <div style={{ display: "flex", border: `1px solid ${C.g2}`, borderRadius: 7, overflow: "hidden" }}>
+            <div style={{ display: "flex", border: `1px solid ${C.g2}`, borderRadius: 8, overflow: "hidden" }}>
               {[["row", <IconRows key="r"/>], ["grid", <IconGrid key="g"/>]].map(([m, icon]) => (
                 <button key={m} onClick={() => handleViewMode(m)}
                   style={{ background: viewMode === m ? C.navy : C.white, color: viewMode === m ? C.white : C.g4, border: "none", padding: "5px 10px", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 0.1s" }}
@@ -1738,7 +1779,7 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
 
               <DragOverlay>
                 {activeSection && (
-                  <div style={{ background: C.white, border: `1px solid ${C.navy}`, borderRadius: 10, padding: "10px 14px", boxShadow: "0 8px 24px rgba(0,0,0,0.14)" }}>
+                  <div style={{ background: C.white, border: `1px solid ${C.navy}`, borderRadius: 12, padding: "10px 14px", boxShadow: "0 8px 24px rgba(0,0,0,0.14)" }}>
                     <span style={{ fontSize: 14, fontWeight: 700, color: C.navy, fontFamily: F }}>{activeSection.name}</span>
                   </div>
                 )}
@@ -1764,25 +1805,17 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
             )
           )}
 
-          {/* Footer */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 32 }}>
-            <button onClick={onBack}
-              style={{ background: "none", border: "none", color: C.g5, fontSize: 13, fontWeight: 500, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 5, padding: "8px 0" }}
-              onMouseEnter={e => e.currentTarget.style.color = C.g6} onMouseLeave={e => e.currentTarget.style.color = C.g5}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-              Back: Scoring
-            </button>
-            <button onClick={onNext}
-              style={{ background: C.navy, color: C.white, border: "none", borderRadius: 8, padding: "10px 24px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
-              onMouseEnter={e => e.currentTarget.style.background = C.navy2} onMouseLeave={e => e.currentTarget.style.background = C.navy}
-            >
-              Next: Schedule
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
         </div>
       </div>
+
+      <BanksPanel
+        sections={sections}
+        onAddSectionFromBank={handleAddSectionFromBank}
+        onAddQuestionFromBank={handleAddQuestionFromBank}
+        onAddManySectionsFromBank={handleAddManySectionsFromBank}
+        onAddManyQuestionsFromBank={handleAddManyQuestionsFromBank}
+        onToast={showToast}
+      />
 
       {editingQ && (() => {
         const allQuestionsFlat = sections.flatMap(s => s.questions);
@@ -1816,14 +1849,14 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:450, fontFamily:F }}>
           <div style={{ background:C.white, borderRadius:12, width:420, boxShadow:"0 8px 32px rgba(0,0,0,0.18)" }}>
             <div style={{ padding:"18px 20px 0" }}>
-              <div style={{ fontSize:15, fontWeight:700, color:C.g6 }}>Apply config?</div>
+              <div style={{ fontSize:16, fontWeight:700, color:C.g6 }}>Apply config?</div>
               <div style={{ fontSize:13, color:C.g5, marginTop:8, lineHeight:"19px" }}>
                 This will overwrite <strong>{[...applyConfigConfirm.fields].map(k => APPLY_FIELDS.find(f => f.key===k)?.label ?? k).join(", ")}</strong> on <strong>{applyConfigConfirm.qIds.size} question{applyConfigConfirm.qIds.size !== 1 ? "s" : ""}</strong>. Other settings stay unchanged.
               </div>
             </div>
             <div style={{ padding:"16px 20px", display:"flex", gap:8, justifyContent:"flex-end", borderTop:`1px solid ${C.g2}`, marginTop:16 }}>
-              <button onClick={() => setApplyConfigConfirm(null)} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
-              <button onClick={handleApplyConfig} style={{ background:C.navy, color:C.white, border:"none", borderRadius:7, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+              <button onClick={() => setApplyConfigConfirm(null)} style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
+              <button onClick={handleApplyConfig} style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"7px 16px", fontSize:13, fontWeight:600, fontFamily:F, cursor:"pointer" }}
                 onMouseEnter={e => e.currentTarget.style.background = C.navy2}
                 onMouseLeave={e => e.currentTarget.style.background = C.navy}>Apply</button>
             </div>

@@ -5,7 +5,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -15,14 +15,14 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  warning:      "#854d0e",
+  warningBg:    "#fef9c3",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -91,7 +91,7 @@ function ClauseRow({ clause, isFirst, driverQ, onChange, onRemove, canRemove }) 
 
   const iStyle = {
     padding: "5px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`,
-    fontSize: 11, fontFamily: F, color: C.navyDeep, background: C.bgSurface, outline: "none",
+    fontSize: 12, fontFamily: F, color: C.navyDeep, background: C.bgSurface, outline: "none",
   };
   const focusBlur = { onFocus: e => (e.target.style.borderColor = C.primary), onBlur: e => (e.target.style.borderColor = C.borderDef) };
 
@@ -103,14 +103,14 @@ function ClauseRow({ clause, isFirst, driverQ, onChange, onRemove, canRemove }) 
           type="button"
           onClick={() => onChange({ joiner: clause.joiner === "OR" ? "AND" : "OR" })}
           aria-label={`Joiner: ${clause.joiner}. Click to toggle.`}
-          style={{ padding: "3px 10px", borderRadius: 999, border: `1px solid ${C.primary}`, background: C.primaryBg, color: C.primary, fontSize: 11, fontWeight: 700, fontFamily: F, cursor: "pointer", outline: "none", minWidth: 40 }}
+          style={{ padding: "3px 10px", borderRadius: 999, border: `1px solid ${C.primary}`, background: C.primaryBg, color: C.primary, fontSize: 12, fontWeight: 700, fontFamily: F, cursor: "pointer", outline: "none", minWidth: 40 }}
           onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
           onBlur={e => (e.currentTarget.style.boxShadow = "none")}
         >
           {clause.joiner || "AND"}
         </button>
       ) : (
-        <span style={{ fontSize: 11, color: C.textMuted, fontFamily: F, fontStyle: "italic", minWidth: 14 }}>if</span>
+        <span style={{ fontSize: 12, color: C.textMuted, fontFamily: F, fontStyle: "italic", minWidth: 14 }}>if</span>
       )}
 
       {/* Operator */}
@@ -134,7 +134,7 @@ function ClauseRow({ clause, isFirst, driverQ, onChange, onRemove, canRemove }) 
         <>
           <input value={clause.value ?? ""} onChange={e => onChange({ value: e.target.value })}
             type="number" placeholder="from" style={{ ...iStyle, width: 72 }} {...focusBlur} aria-label="From value" />
-          <span style={{ fontSize: 11, color: C.textMuted, fontFamily: F }}>and</span>
+          <span style={{ fontSize: 12, color: C.textMuted, fontFamily: F }}>and</span>
           <input value={clause.value2 ?? ""} onChange={e => onChange({ value2: e.target.value })}
             type="number" placeholder="to" style={{ ...iStyle, width: 72 }} {...focusBlur} aria-label="To value" />
         </>
@@ -171,7 +171,7 @@ function ShowQsSelector({ showIds, onChange, allQuestions, driverQuestionId }) {
     <div style={{ position: "relative" }}>
       <div style={{ display: "flex", gap: 5, flexWrap: "wrap", alignItems: "center", minHeight: 28 }}>
         {selectedQs.length === 0 && (
-          <em style={{ fontSize: 11, color: C.textMuted, fontFamily: F }}>No questions selected</em>
+          <em style={{ fontSize: 12, color: C.textMuted, fontFamily: F }}>No questions selected</em>
         )}
         {selectedQs.map(q => (
           <span key={q.id} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "2px 8px", borderRadius: 999, background: C.primaryBg, border: `1px solid ${C.primaryLight}`, fontSize: 10, color: C.navy, fontFamily: F }}>
@@ -184,7 +184,7 @@ function ShowQsSelector({ showIds, onChange, allQuestions, driverQuestionId }) {
         ))}
         <button type="button" onClick={() => setOpen(o => !o)}
           aria-haspopup="listbox" aria-expanded={open}
-          style={{ padding: "3px 10px", borderRadius: 6, border: `1px dashed ${C.primary}`, background: "transparent", color: C.primary, fontSize: 11, fontFamily: F, cursor: "pointer", outline: "none" }}
+          style={{ padding: "3px 10px", borderRadius: 6, border: `1px dashed ${C.primary}`, background: "transparent", color: C.primary, fontSize: 12, fontFamily: F, cursor: "pointer", outline: "none" }}
           onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
           onBlur={e => (e.currentTarget.style.boxShadow = "none")}
         >
@@ -224,19 +224,19 @@ function ShowQsSelector({ showIds, onChange, allQuestions, driverQuestionId }) {
                   onMouseEnter={e => { if (!sel) e.currentTarget.style.background = C.bgApp; }}
                   onMouseLeave={e => { if (!sel) e.currentTarget.style.background = sel ? C.primaryBg : "transparent"; }}
                 >
-                  <div style={{ width: 16, height: 16, borderRadius: 3, border: `2px solid ${sel ? C.primary : C.borderDef}`, background: sel ? C.primary : C.bgSurface, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.1s" }}>
+                  <div style={{ width: 16, height: 16, borderRadius: 4, border: `2px solid ${sel ? C.primary : C.borderDef}`, background: sel ? C.primary : C.bgSurface, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.1s" }}>
                     {sel && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 11, color: C.navyDeep, fontFamily: F, lineHeight: "15px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{q.text}</div>
-                    {q.sectionName && <div style={{ fontSize: 9, color: C.textMuted, fontFamily: F, marginTop: 1 }}>{q.sectionName}</div>}
+                    <div style={{ fontSize: 12, color: C.navyDeep, fontFamily: F, lineHeight: "15px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{q.text}</div>
+                    {q.sectionName && <div style={{ fontSize: 10, color: C.textMuted, fontFamily: F, marginTop: 1 }}>{q.sectionName}</div>}
                   </div>
                 </div>
               );
             })
           )}
           <div style={{ borderTop: `1px solid ${C.borderSubtle}`, padding: "8px 14px" }}>
-            <button type="button" onClick={() => setOpen(false)} style={{ fontSize: 11, color: C.textSec, background: "none", border: "none", cursor: "pointer", fontFamily: F }}>Done</button>
+            <button type="button" onClick={() => setOpen(false)} style={{ fontSize: 12, color: C.textSec, background: "none", border: "none", cursor: "pointer", fontFamily: F }}>Done</button>
           </div>
         </div>
       )}
@@ -250,13 +250,13 @@ function PreviewPanel({ rule, driverQ, allQuestions }) {
   const [answer, setAnswer] = useState("");
   const opts = getOptions(driverQ);
   const fires = answer !== "" && evalRule(rule, { [rule.driverQuestionId]: answer });
-  const iStyle = { padding: "5px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`, fontSize: 11, fontFamily: F, color: C.navyDeep, background: C.bgSurface, outline: "none" };
+  const iStyle = { padding: "5px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`, fontSize: 12, fontFamily: F, color: C.navyDeep, background: C.bgSurface, outline: "none" };
 
   return (
     <div style={{ marginTop: 12, padding: "12px 14px", background: C.bgApp, borderRadius: 8, border: `1px solid ${C.borderSubtle}` }}>
-      <div style={{ fontSize: 11, fontWeight: 600, color: C.textSec, fontFamily: F, marginBottom: 8 }}>Preview — set a mock answer</div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: C.textSec, fontFamily: F, marginBottom: 8 }}>Preview — set a mock answer</div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 10 }}>
-        <span style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>Mock answer:</span>
+        <span style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>Mock answer:</span>
         {opts ? (
           <select value={answer} onChange={e => setAnswer(e.target.value)} style={{ ...iStyle, cursor: "pointer" }}
             onFocus={e => (e.target.style.borderColor = C.primary)} onBlur={e => (e.target.style.borderColor = C.borderDef)}>
@@ -272,7 +272,7 @@ function PreviewPanel({ rule, driverQ, allQuestions }) {
         )}
       </div>
       {answer !== "" && (
-        <div style={{ fontSize: 11, fontFamily: F, lineHeight: "18px" }}>
+        <div style={{ fontSize: 12, fontFamily: F, lineHeight: "18px" }}>
           {fires ? (
             <>
               <span style={{ color: C.success, fontWeight: 600 }}>Rule fires. </span>
@@ -319,20 +319,20 @@ export default function RuleCard({ rule, driverQ, allQuestions, onUpdate, onDele
     }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: C.navy, fontFamily: F }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: C.navy, fontFamily: F }}>
           If this question…
         </span>
         <div style={{ display: "flex", gap: 6 }}>
           <button type="button" onClick={() => setShowPreview(p => !p)}
             aria-pressed={showPreview}
-            style={{ padding: "3px 10px", borderRadius: 6, border: `1px solid ${C.borderDef}`, background: showPreview ? C.primaryBg : C.bgSurface, color: showPreview ? C.primary : C.textSec, fontSize: 11, fontFamily: F, cursor: "pointer", outline: "none" }}
+            style={{ padding: "3px 10px", borderRadius: 6, border: `1px solid ${C.borderDef}`, background: showPreview ? C.primaryBg : C.bgSurface, color: showPreview ? C.primary : C.textSec, fontSize: 12, fontFamily: F, cursor: "pointer", outline: "none" }}
             onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
             onBlur={e => (e.currentTarget.style.boxShadow = "none")}
           >
             Preview
           </button>
           <button type="button" onClick={onDelete} aria-label="Delete rule"
-            style={{ padding: "3px 10px", borderRadius: 6, border: `1px solid ${C.borderSubtle}`, background: "transparent", color: C.error, fontSize: 11, fontFamily: F, cursor: "pointer", outline: "none" }}
+            style={{ padding: "3px 10px", borderRadius: 6, border: `1px solid ${C.borderSubtle}`, background: "transparent", color: C.error, fontSize: 12, fontFamily: F, cursor: "pointer", outline: "none" }}
             onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
             onBlur={e => (e.currentTarget.style.boxShadow = "none")}
           >
@@ -351,7 +351,7 @@ export default function RuleCard({ rule, driverQ, allQuestions, onUpdate, onDele
           />
         ))}
         <button type="button" onClick={addClause}
-          style={{ alignSelf: "flex-start", fontSize: 11, color: C.primary, background: "none", border: "none", cursor: "pointer", padding: "3px 0", fontFamily: F }}
+          style={{ alignSelf: "flex-start", fontSize: 12, color: C.primary, background: "none", border: "none", cursor: "pointer", padding: "3px 0", fontFamily: F }}
           onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
           onBlur={e => (e.currentTarget.style.boxShadow = "none")}
         >
@@ -376,13 +376,13 @@ export default function RuleCard({ rule, driverQ, allQuestions, onUpdate, onDele
       {(hasErrors || hasWarnings) && (
         <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 4 }}>
           {errors.map((e, i) => (
-            <div key={`e${i}`} role="alert" style={{ fontSize: 11, color: C.error, fontFamily: F, display: "flex", alignItems: "flex-start", gap: 5 }}>
+            <div key={`e${i}`} role="alert" style={{ fontSize: 12, color: C.error, fontFamily: F, display: "flex", alignItems: "flex-start", gap: 5 }}>
               <svg style={{ flexShrink: 0, marginTop: 1 }} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
               {e}
             </div>
           ))}
           {warnings.map((w, i) => (
-            <div key={`w${i}`} role="alert" style={{ fontSize: 11, color: C.warning, fontFamily: F, display: "flex", alignItems: "flex-start", gap: 5 }}>
+            <div key={`w${i}`} role="alert" style={{ fontSize: 12, color: C.warning, fontFamily: F, display: "flex", alignItems: "flex-start", gap: 5 }}>
               <svg style={{ flexShrink: 0, marginTop: 1 }} width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               {w}
             </div>

@@ -18,8 +18,8 @@ const C = {
   teal2:   "#ccfbf1",
   red:     "#b6143a",
   red2:    "#fae5e6",
-  green:   "#059669",
-  greenBg: "#ecfdf5",
+  green:   "#115e59",
+  greenBg: "#ccfbf1",
 };
 
 // TODO: [assumption-1] File size limit: 25MB
@@ -288,7 +288,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
           {/* ── Idle / Error state ── */}
           {(uploadState === "idle" || isErrorState) && (
             <>
-              <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: C.g6 }}>
+              <h1 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: C.g6 }}>
                 Upload a document
               </h1>
               <p style={{ margin: "0 0 32px", fontSize: 13, color: C.g4, textAlign: "center" }}>
@@ -327,7 +327,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
                   <polyline points="17 8 12 3 7 8" />
                   <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
-                <div style={{ fontSize: 15, fontWeight: 600, color: C.g6 }}>
+                <div style={{ fontSize: 16, fontWeight: 600, color: C.g6 }}>
                   Drop your file here
                 </div>
                 <div style={{ fontSize: 13, color: C.g4 }}>
@@ -351,7 +351,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
                   }}
                 />
               </div>
-              <div style={{ marginTop: 12, fontSize: 11, color: C.g4 }}>
+              <div style={{ marginTop: 12, fontSize: 12, color: C.g4 }}>
                 Supports .docx, .pdf, .xlsx · Max 25MB
               </div>
             </>
@@ -363,14 +363,14 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: C.g6 }}>{file.name}</div>
-                  <div style={{ fontSize: 11, color: C.g4 }}>{formatFileSize(file.size)}</div>
+                  <div style={{ fontSize: 12, color: C.g4 }}>{formatFileSize(file.size)}</div>
                 </div>
                 <span style={{ fontSize: 12, color: C.g5 }}>Uploading... {uploadProgress}%</span>
               </div>
-              <div style={{ height: 6, borderRadius: 3, background: C.g2, overflow: "hidden" }}>
+              <div style={{ height: 6, borderRadius: 4, background: C.g2, overflow: "hidden" }}>
                 <div style={{
                   height: "100%",
-                  borderRadius: 3,
+                  borderRadius: 4,
                   background: C.ocean,
                   width: `${uploadProgress}%`,
                   transition: "width 0.2s",
@@ -390,10 +390,10 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
           {/* ── Processing state ── */}
           {uploadState === "processing" && (
             <div style={{ width: "100%", maxWidth: 420 }}>
-              <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: C.g6, textAlign: "center" }}>
+              <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: C.g6, textAlign: "center" }}>
                 Processing your document
               </h2>
-              <p style={{ margin: "0 0 28px", fontSize: 11, color: C.g4, textAlign: "center" }}>
+              <p style={{ margin: "0 0 28px", fontSize: 12, color: C.g4, textAlign: "center" }}>
                 This usually takes 30–60 seconds.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -470,7 +470,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <h2 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: C.g6 }}>
+              <h2 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: C.g6 }}>
                 Your template is ready
               </h2>
               <p style={{ margin: "0 0 24px", fontSize: 13, color: C.g5 }}>

@@ -1,34 +1,34 @@
 import { useState, createContext, useContext, useRef, useEffect } from "react";
 import AppSidebar from "./AppSidebar.jsx";
+import { T, F } from "./aegis-tokens.js";
 
 // Insights App style guide — font + color tokens
-const F = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 const C = {
   // Text
-  navy:"#001e76",   // primary text
-  navy2:"#001356",  // hover/dark navy
-  navy3:"#f0f2ff",  // brand tint (selected rows, avatar fills)
+  navy:   T.action1,       // primary text
+  navy2:  T.action2,       // hover/dark navy
+  navy3:  T.actionContainer3, // brand tint (selected rows, avatar fills)
   // Brand interactive
-  ocean:"#2226f7",  // brand blue
-  ocean2:"#1316a8", // pressed brand blue
-  ocean3:"#c7caff", // brand light (AI chip border, typing dots)
+  ocean:  T.actionContainer1,  // brand blue
+  ocean2: T.actionContainer2,  // pressed brand blue
+  ocean3: T.actionContainer3,  // brand light (AI chip border, typing dots)
   // Surfaces & borders
-  white:"#ffffff",
-  g1:"#f4f4f6",     // page / canvas / table header bg
-  g2:"#e2e5e9",     // default border
-  g3:"#c3c8d0",     // input border / disabled
-  g4:"#8692a2",     // muted text / captions
-  g5:"#555f6d",     // secondary text
-  g6:"#16191d",     // high contrast text
-  hover:"#f7f8fa",  // dropdown / row hover
-  nested:"#fafbfc", // nested sub-row
-  ai:"#f8f8ff",     // AI / sparkle surface
+  white:  T.surface1,
+  g1:     T.surface2,      // page / canvas / table header bg
+  g2:     T.border1,       // default border
+  g3:     T.border2,       // input border / disabled
+  g4:     T.disabled1,     // muted text / captions
+  g5:     T.onSurface1,    // secondary text
+  g6:     T.onSurface2,    // high contrast text
+  hover:  "#f7f8fa",       // dropdown / row hover
+  nested: "#fafbfc",       // nested sub-row
+  ai:     "#f8f8ff",       // AI / sparkle surface
   // Status — Resolved / passing
-  teal:"#15803d", teal2:"#dcfce7", teal3:"#f0fdf4",
+  teal:  "#15803d", teal2:"#dcfce7", teal3:"#f0fdf4",
   // Status — Failing / refund
-  red:"#dc2626",  red2:"#fef2f2",  red3:"#fee2e2",
+  red:   T.onError1,  red2: T.errorContainer1,  red3:"#fee2e2",
   // Status — At risk / discount
-  yel:"#a16207",  yel2:"#fef9c3",  yel3:"#fffbeb",
+  yel:   T.warning1,  yel2: T.warningContainer1,  yel3: T.warningContainer1,
 };
 
 const AppContext = createContext();
@@ -443,7 +443,7 @@ const WEEKS = ["W1","W2","W3","W4","W5","W6","W7","W8"];
 const TREND_BY_TEMPLATE = {
   P001: [
     // Health & Safety
-    { name:"Safety Compliance Full", color:"#dc2626", points:[72,68,65,63,58,55,52,50] },
+    { name:"Safety Compliance Full", color:"#b6143a", points:[72,68,65,63,58,55,52,50] },
     { name:"Fire Safety Checklist",  color:"#ef4444", points:[80,78,76,74,71,68,66,64] },
     { name:"Chemical Storage Audit", color:"#f97316", points:[78,74,70,66,63,62,60,58] },
     { name:"Emergency Preparedness", color:"#f59e0b", points:[70,68,65,62,58,55,54,52] },
@@ -453,7 +453,7 @@ const TREND_BY_TEMPLATE = {
     { name:"CCTV Compliance Check",  color:"#0891b2", points:[88,87,86,85,84,83,82,82] },
     // Operations
     { name:"Opening Checklist",      color:"#15803d", points:[90,90,91,91,92,92,93,93] },
-    { name:"Daily Ops Checklist",    color:"#059669", points:[86,87,87,88,88,89,89,90] },
+    { name:"Daily Ops Checklist",    color:"#115e59", points:[86,87,87,88,88,89,89,90] },
   ],
   P002: [
     // Loss Prevention
@@ -465,7 +465,7 @@ const TREND_BY_TEMPLATE = {
     { name:"Emergency Preparedness", color:"#f59e0b", points:[82,81,81,80,80,79,79,79] },
     // Operations
     { name:"Opening Checklist",      color:"#15803d", points:[88,88,89,89,90,90,90,91] },
-    { name:"Daily Ops Checklist",    color:"#059669", points:[85,86,86,87,87,88,88,89] },
+    { name:"Daily Ops Checklist",    color:"#115e59", points:[85,86,86,87,87,88,88,89] },
   ],
   P003: [
     { name:"Ops Standards Full",      color:C.teal,  points:[85,86,86,87,88,89,90,91] },
@@ -803,7 +803,7 @@ const TEMPLATE_TYPES = {
   "Daily Ops Checklist":     "Operations",
 };
 const TYPE_COLOR = {
-  "Health & Safety":  "#dc2626",
+  "Health & Safety":  "#b6143a",
   "Loss Prevention":  "#2226f7",
   "Operations":       "#15803d",
 };
@@ -860,20 +860,20 @@ const AppLauncher = ({ open, onClose }) => {
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div ref={ref} style={{ position:"fixed", top:69, left:52, zIndex:200, width:300, background:"#fff", borderRadius:10, border:"1px solid #e2e5e9", padding:16, boxShadow:"0 8px 30px rgba(0,0,0,0.12)" }}>
+    <div ref={ref} style={{ position:"fixed", top:69, left:52, zIndex:200, width:300, background:"#fff", borderRadius:12, border:"1px solid #e2e5e9", padding:16, boxShadow:"0 8px 30px rgba(0,0,0,0.12)" }}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
         <div style={{ display:"flex", alignItems:"center", gap:6 }}>
           <span style={{ fontSize:13, fontWeight:800, color:"#16191d", fontFamily:"var(--f)", letterSpacing:"-0.5px" }}>think</span>
-          <span style={{ background:"#2226f7", color:"#fff", fontSize:9, fontWeight:700, padding:"2px 4px", borderRadius:3 }}>LP</span>
+          <span style={{ background:"#2226f7", color:"#fff", fontSize:10, fontWeight:700, padding:"2px 4px", borderRadius:4 }}>LP</span>
         </div>
         <button onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", color:"#8692a2", display:"flex", padding:2 }}>{I.close}</button>
       </div>
       <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:6 }}>
         {THINKLP_MODULES.map(mod => (
           <button key={mod.id} onClick={onClose}
-            style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, padding:"12px 6px", borderRadius:8, border:"none", cursor:"pointer", background:mod.active ? "#f0f2ff" : "transparent" }}
+            style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, padding:"12px 6px", borderRadius:8, border:"none", cursor:"pointer", background:mod.active ? "#d4e2ff" : "transparent" }}
             onMouseEnter={e => { if (!mod.active) e.currentTarget.style.background = "#f4f4f6"; }}
-            onMouseLeave={e => { if (!mod.active) e.currentTarget.style.background = mod.active ? "#f0f2ff" : "transparent"; }}>
+            onMouseLeave={e => { if (!mod.active) e.currentTarget.style.background = mod.active ? "#d4e2ff" : "transparent"; }}>
             <div style={{ width:36, height:36, borderRadius:8, background:mod.color, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:14, fontWeight:700, fontFamily:"var(--f)" }}>{mod.label[0]}</div>
             <span style={{ fontSize:10, color:mod.active ? "#2226f7" : "#5c5c5c", fontWeight:mod.active ? 600 : 400, fontFamily:"var(--f)", textAlign:"center", lineHeight:"13px" }}>{mod.label}</span>
           </button>
@@ -956,7 +956,7 @@ const AuditTopHeader = ({ prog, data, compTone }) => (
   <header style={{ height:69, background:"#fff", borderBottom:"1px solid #e2e5e9", padding:"0 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
     <div style={{ display:"flex", alignItems:"center", gap:10, minWidth:0, flex:1 }}>
       <div style={{ minWidth:0 }}>
-        <div style={{ fontSize:9, fontWeight:700, color:"#8692a2", textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:"var(--f)" }}>{prog.id} · Audit Scorecard</div>
+        <div style={{ fontSize:10, fontWeight:700, color:"#8692a2", textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:"var(--f)" }}>{prog.id} · Audit Scorecard</div>
         <div style={{ fontSize:14, fontWeight:700, color:"#16191d", fontFamily:"var(--f)", letterSpacing:"-0.3px", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{prog.name}</div>
       </div>
     </div>
@@ -981,7 +981,7 @@ const AuditTopHeader = ({ prog, data, compTone }) => (
         <svg width="13" height="13" viewBox="0 0 16 16" fill="#fff"><path d="M8 0L9.4 5.2L14.6 3.4L10.8 7.2L16 8L10.8 8.8L14.6 12.6L9.4 10.8L8 16L6.6 10.8L1.4 12.6L5.2 8.8L0 8L5.2 7.2L1.4 3.4L6.6 5.2L8 0Z"/></svg>
         Explore
       </button>
-      <div style={{ width:32, height:32, borderRadius:"50%", background:"#001e76", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:11, fontWeight:700, fontFamily:"var(--f)", cursor:"pointer", flexShrink:0 }}>CA</div>
+      <div style={{ width:32, height:32, borderRadius:"50%", background:"#001e76", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:12, fontWeight:700, fontFamily:"var(--f)", cursor:"pointer", flexShrink:0 }}>CA</div>
     </div>
   </header>
 );
@@ -990,7 +990,7 @@ const AuditTopHeader = ({ prog, data, compTone }) => (
 function Card({ children, pad = 16, style }) {
   return (
     <div style={{
-      background: C.white, border: `1px solid ${C.g2}`, borderRadius: 10,
+      background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12,
       ...(pad !== 0 ? { padding: pad } : { overflow:"hidden" }), ...style,
     }}>{children}</div>
   );
@@ -1000,7 +1000,7 @@ function SectionHeader({ title, eyebrow, right }) {
   return (
     <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom: 12 }}>
       <div>
-        {eyebrow && <div style={{ fontSize:9, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>{eyebrow}</div>}
+        {eyebrow && <div style={{ fontSize:10, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>{eyebrow}</div>}
         <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>{title}</div>
       </div>
       {right}
@@ -1041,7 +1041,7 @@ function Avatar({ initials, color = C.navy3, fg = C.ocean }) {
     <div style={{
       width:32, height:32, borderRadius:"50%", background:color, color:fg,
       display:"flex", alignItems:"center", justifyContent:"center",
-      fontSize:11, fontWeight:700, fontFamily:F, flexShrink:0,
+      fontSize:12, fontWeight:700, fontFamily:F, flexShrink:0,
     }}>{initials}</div>
   );
 }
@@ -1111,7 +1111,7 @@ function TrendChart({ series, labels, height = 180, selected = null, onSelect, s
                 opacity: isDim ? 0.45 : 1, transition:"opacity .15s",
               }}>
               <span style={{ width:10, height:2, background:s.color, borderRadius:2 }}/>
-              <span style={{ fontSize:11, color: isSel ? s.color : C.g6, fontWeight: isSel ? 700 : 600 }}>{s.name}</span>
+              <span style={{ fontSize:12, color: isSel ? s.color : C.g6, fontWeight: isSel ? 700 : 600 }}>{s.name}</span>
               <span style={{ fontSize:10, color: delta > 0 ? C.teal : delta < 0 ? C.red : C.g4, fontWeight:700 }}>
                 {delta > 0 ? "▲" : delta < 0 ? "▼" : "—"} {Math.abs(delta)}
               </span>
@@ -1169,21 +1169,21 @@ function KpiCard({ label, value, suffix, tone = "gray", sub, trend }) {
       onMouseEnter={() => setH(true)}
       onMouseLeave={() => setH(false)}
       style={{
-        background:C.white, borderRadius:10,
+        background:C.white, borderRadius:12,
         border:`1px solid ${C.g2}`, borderTop:`3px solid ${borderColor}`,
         padding:"13px 14px", minWidth:0,
         boxShadow: h ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
         transition:"box-shadow 0.15s",
       }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:8 }}>
-        <span style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>{label}</span>
+        <span style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>{label}</span>
         {trendIcon && <span style={{ fontSize:10, fontWeight:700, color:trendIcon.color, fontFamily:F }}>{trendIcon.arrow}</span>}
       </div>
       <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:5 }}>
         <span style={{ fontSize:24, fontWeight:700, color:C.g6, lineHeight:1, fontFamily:F }}>{value}</span>
         {suffix && <span style={{ fontSize:13, color:C.g4, fontFamily:F }}>{suffix}</span>}
       </div>
-      {sub && <div style={{ fontSize:11, fontWeight:600, color:subColor, fontFamily:F }}>{sub}</div>}
+      {sub && <div style={{ fontSize:12, fontWeight:600, color:subColor, fontFamily:F }}>{sub}</div>}
     </div>
   );
 }
@@ -1266,7 +1266,7 @@ function MultiDrop({ label, sel, onToggle, opts }) {
                 style={{ display:"flex", alignItems:"center", gap:10, width:"100%", padding:"8px 12px", background: ck ? C.ocean3 : "transparent", border:"none", color:C.navy, fontSize:12, fontFamily:F, cursor:"pointer", textAlign:"left" }}
                 onMouseEnter={e => { if (!ck) e.currentTarget.style.background = C.hover; }}
                 onMouseLeave={e => { if (!ck) e.currentTarget.style.background = "transparent"; }}>
-                <div style={{ width:14, height:14, borderRadius:3, border:`1.5px solid ${ck ? C.navy : C.g3}`, background: ck ? C.navy : C.white, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <div style={{ width:14, height:14, borderRadius:4, border:`1.5px solid ${ck ? C.navy : C.g3}`, background: ck ? C.navy : C.white, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   {ck && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
                 <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{x}</span>
@@ -1298,17 +1298,17 @@ function FilterBar() {
   };
   const clearAll = () => { setDate("Last 30 days"); setTemplates(new Set()); setLocations(new Set()); };
   return (
-    <div style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}`, padding:"14px 16px" }}>
+    <div style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}`, padding:"14px 16px" }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
         <span style={{ fontSize:13, fontWeight:700, color:C.navy, fontFamily:F }}>Filters</span>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           {pills.length > 0 && (
             <button onClick={clearAll}
-              style={{ fontSize:11, color:C.g4, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>
+              style={{ fontSize:12, color:C.g4, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>
               Clear all
             </button>
           )}
-          <button style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, fontWeight:500, color:C.navy, background:"none", border:`1px solid ${C.g3}`, borderRadius:7, cursor:"pointer", fontFamily:F, padding:"5px 10px" }}>
+          <button style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, fontWeight:500, color:C.navy, background:"none", border:`1px solid ${C.g3}`, borderRadius:8, cursor:"pointer", fontFamily:F, padding:"5px 10px" }}>
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
             Advanced filters
           </button>
@@ -1316,22 +1316,22 @@ function FilterBar() {
       </div>
       <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
         <div>
-          <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Date range</div>
+          <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Date range</div>
           <Drop value={date} onChange={setDate} opts={["Last 7 days","Last 30 days","Last 90 days","This month","This quarter","Fiscal year"]} />
         </div>
         <div>
-          <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Template</div>
+          <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Template</div>
           <MultiDrop label="All templates" sel={templates} onToggle={toggleT} opts={TEMPLATE_OPTS} />
         </div>
         <div>
-          <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Location</div>
+          <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Location</div>
           <MultiDrop label="All locations" sel={locations} onToggle={toggleL} opts={LOCATION_OPTS} />
         </div>
       </div>
       {pills.length > 0 && (
         <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:12, paddingTop:12, borderTop:`1px solid ${C.g1}` }}>
           {pills.map((p, i) => (
-            <div key={i} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 8px 4px 10px", borderRadius:999, background:C.navy3, border:`1px solid ${C.navy}`, fontSize:11, fontWeight:500, color:C.navy, fontFamily:F }}>
+            <div key={i} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 8px 4px 10px", borderRadius:999, background:C.navy3, border:`1px solid ${C.navy}`, fontSize:12, fontWeight:500, color:C.navy, fontFamily:F }}>
               <span style={{ maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.val}</span>
               <button onClick={() => clearOne(p.type, p.val)}
                 style={{ display:"flex", alignItems:"center", justifyContent:"center", width:14, height:14, borderRadius:"50%", background:C.navy, border:"none", cursor:"pointer", padding:0, flexShrink:0 }}>
@@ -1558,11 +1558,11 @@ export default function Scorecard({
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16 }}>
               <div>
                 <div style={{ fontSize:14, fontWeight:700, color:C.g6, fontFamily:F }}>Audit templates</div>
-                <div style={{ fontSize:11, color:C.g4, fontFamily:F, marginTop:2 }}>Templates assigned to this program</div>
+                <div style={{ fontSize:12, color:C.g4, fontFamily:F, marginTop:2 }}>Templates assigned to this program</div>
               </div>
               <button
                 onClick={() => onNav("template_wizard", {})}
-                style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px", borderRadius:7, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+                style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px", borderRadius:8, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
                 onMouseEnter={e => (e.currentTarget.style.background = C.ocean2)}
                 onMouseLeave={e => (e.currentTarget.style.background = C.ocean)}
               >
@@ -1608,7 +1608,7 @@ export default function Scorecard({
                     <div style={{ fontSize:12, color:C.g4, marginBottom:20 }}>Create a template to start running audits for this program.</div>
                     <button
                       onClick={() => onNav("template_wizard", {})}
-                      style={{ padding:"9px 20px", borderRadius:7, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+                      style={{ padding:"9px 20px", borderRadius:8, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
                       onMouseEnter={e => (e.currentTarget.style.background = C.ocean2)}
                       onMouseLeave={e => (e.currentTarget.style.background = C.ocean)}
                     >
@@ -1620,25 +1620,25 @@ export default function Scorecard({
               return (
                 <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                   {templates.map(t => (
-                    <div key={t.id} style={{ display:"flex", alignItems:"center", gap:16, background:C.white, border:`1px solid ${C.g2}`, borderRadius:10, padding:"14px 18px" }}>
+                    <div key={t.id} style={{ display:"flex", alignItems:"center", gap:16, background:C.white, border:`1px solid ${C.g2}`, borderRadius:12, padding:"14px 18px" }}>
                       {/* Icon */}
-                      <div style={{ width:38, height:38, borderRadius:9, background:"#f0f2ff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      <div style={{ width:38, height:38, borderRadius:8, background:"#d4e2ff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.ocean} strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                       </div>
                       {/* Info */}
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ fontSize:13, fontWeight:600, color:C.g6, fontFamily:F, marginBottom:3 }}>{t.name}</div>
-                        <div style={{ fontSize:11, color:C.g4, fontFamily:F }}>{t.sections} sections · {t.questions} questions · Last used {t.lastUsed}</div>
+                        <div style={{ fontSize:12, color:C.g4, fontFamily:F }}>{t.sections} sections · {t.questions} questions · Last used {t.lastUsed}</div>
                       </div>
                       {/* Status */}
-                      <span style={{ padding:"3px 10px", borderRadius:999, background:"#ecfdf5", border:"1px solid #86efac", fontSize:11, fontWeight:600, color:"#15803d", fontFamily:F, flexShrink:0 }}>
+                      <span style={{ padding:"3px 10px", borderRadius:999, background:"#ccfbf1", border:"1px solid #86efac", fontSize:12, fontWeight:600, color:"#15803d", fontFamily:F, flexShrink:0 }}>
                         Active
                       </span>
                       {/* Edit button */}
                       <button
                         onClick={() => onNav("template_wizard", { templateId: t.id })}
-                        style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${C.g2}`, background:C.white, color:C.ocean, fontSize:11, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0 }}
-                        onMouseEnter={e => (e.currentTarget.style.background = "#f0f2ff")}
+                        style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${C.g2}`, background:C.white, color:C.ocean, fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0 }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "#d4e2ff")}
                         onMouseLeave={e => (e.currentTarget.style.background = C.white)}
                       >
                         Edit
@@ -1667,10 +1667,10 @@ export default function Scorecard({
             { lbl:"Overdue",           val:`${data.overdue}`, meta: data.overdue === 0 ? "On track" : `${data.overdue} past due date`, dn: data.overdue > 0, red: overdueTone === "red" },
           ].map((k, i) => (
             <div key={i}
-              style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}`, padding:"13px 14px", cursor:"pointer" }}
+              style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}`, padding:"13px 14px", cursor:"pointer" }}
               onMouseEnter={e => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"}
               onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:5 }}>{k.lbl}</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:5 }}>{k.lbl}</div>
               <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:4 }}>
                 <span style={{ fontSize:22, fontWeight:700, color: k.red ? C.red : C.g6, lineHeight:1, fontFamily:F }}>{k.val}</span>
                 {k.den && <span style={{ fontSize:13, color:C.g4, fontFamily:F }}>{k.den}</span>}
@@ -1689,9 +1689,9 @@ export default function Scorecard({
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>
                 {selectedType ? `Overall Compliance Score: ${selectedType}` : "Overall Compliance Score by Templates"}
               </div>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginTop:2 }}>8-Week Trend</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginTop:2 }}>8-Week Trend</div>
             </div>
-            <span style={{ fontSize:11, color:C.g4, fontFamily:F }}>
+            <span style={{ fontSize:12, color:C.g4, fontFamily:F }}>
               {!selectedType ? "Click a type to see its templates" : selectedTemplate ? "Click the line again to clear" : "Click a line to filter failing questions below"}
             </span>
           </div>
@@ -1700,7 +1700,7 @@ export default function Scorecard({
           <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:12 }}>
             {selectedType && (
               <button onClick={() => setSelectedType(null)}
-                style={{ display:"flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:999, border:`1px solid ${C.navy}`, background:C.navy3, cursor:"pointer", fontSize:11, fontWeight:600, color:C.navy, fontFamily:F }}>
+                style={{ display:"flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:999, border:`1px solid ${C.navy}`, background:C.navy3, cursor:"pointer", fontSize:12, fontWeight:600, color:C.navy, fontFamily:F }}>
                 ← All types
               </button>
             )}
@@ -1720,7 +1720,7 @@ export default function Scorecard({
                   onMouseEnter={e => { if (!active) { e.currentTarget.style.borderColor = color; e.currentTarget.style.color = color; } }}
                   onMouseLeave={e => { if (!active) { e.currentTarget.style.borderColor = C.g2; e.currentTarget.style.color = C.g6; } }}>
                   <span style={{ width:7, height:7, borderRadius:"50%", background:color }} />
-                  <span style={{ fontSize:11, fontWeight: active ? 700 : 600, color: active ? color : C.g6 }}>{t}</span>
+                  <span style={{ fontSize:12, fontWeight: active ? 700 : 600, color: active ? color : C.g6 }}>{t}</span>
                   <span style={{ fontSize:10, fontWeight:700, color: active ? color : C.g5, background: active ? C.navy3 : C.g2, padding:"1px 6px", borderRadius:999 }}>{count}</span>
                   {!active && <span style={{ fontSize:10, color: C.g4 }}>→</span>}
                 </button>
@@ -1760,14 +1760,14 @@ export default function Scorecard({
               <div style={{ marginTop:16, paddingTop:14, borderTop:`1px solid ${C.g2}` }}>
                 <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:10, gap:12, flexWrap:"wrap" }}>
                   <div>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.g4, letterSpacing:"0.4px", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>Affected Locations</div>
+                    <div style={{ fontSize:10, fontWeight:700, color:C.g4, letterSpacing:"0.4px", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>Affected Locations</div>
                     <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>
                       {selQ.locations} location{selQ.locations === 1 ? "" : "s"} failing:
                       <span style={{ color:C.g5, fontWeight:500, marginLeft:6 }}>{selectedQuestion}</span>
                     </div>
                   </div>
                   <button onClick={() => { setSelectedQuestion(null); }}
-                    style={{ fontSize:11, color:C.g5, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>
+                    style={{ fontSize:12, color:C.g5, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>
                     Clear selection
                   </button>
                 </div>
@@ -1789,7 +1789,7 @@ export default function Scorecard({
                         </svg>
                       )}
                       <span>{loc.name}</span>
-                      <span style={{ fontSize:11, fontWeight:700, color:C.g5 }}>{loc.score}%</span>
+                      <span style={{ fontSize:12, fontWeight:700, color:C.g5 }}>{loc.score}%</span>
                     </span>
                   ))}
                 </div>
@@ -1804,14 +1804,14 @@ export default function Scorecard({
           <Card>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, marginBottom:12, flexWrap:"wrap" }}>
               <div>
-                <div style={{ fontSize:9, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>Critical Focus</div>
+                <div style={{ fontSize:10, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>Critical Focus</div>
                 <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Failing Questions</div>
               </div>
               <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
                 {selectedTemplate && (() => {
                   const color = (trendSeries.find(s => s.name === selectedTemplate)?.color) || C.ocean;
                   return (
-                    <span style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"3px 8px 3px 10px", borderRadius:999, background:C.navy3, border:`1px solid ${color}`, fontSize:11, fontWeight:500, color:C.navy, fontFamily:F }}>
+                    <span style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"3px 8px 3px 10px", borderRadius:999, background:C.navy3, border:`1px solid ${color}`, fontSize:12, fontWeight:500, color:C.navy, fontFamily:F }}>
                       <span style={{ width:7, height:7, borderRadius:"50%", background:color }}/>
                       {selectedTemplate}
                       <button onClick={() => setSelectedTemplate(null)}
@@ -1882,7 +1882,7 @@ export default function Scorecard({
                           <span style={{
                             position:"absolute", top:0, bottom:0, display:"flex", alignItems:"center",
                             left: pct > 18 ? 8 : `calc(${pct}% + 8px)`,
-                            fontSize:11, fontWeight:700, fontFamily:F,
+                            fontSize:12, fontWeight:700, fontFamily:F,
                             color: pct > 18 ? C.white : barColor,
                           }}>{q.failRate}% fail</span>
                         </div>
@@ -1899,7 +1899,7 @@ export default function Scorecard({
             {/* Pagination — 5 questions per page */}
             {failing.length > FAILING_PAGE_SIZE && (
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:14, paddingTop:12, borderTop:`1px solid ${C.g2}` }}>
-                <div style={{ fontSize:11, color:C.g4, fontFamily:F }}>
+                <div style={{ fontSize:12, color:C.g4, fontFamily:F }}>
                   Showing <span style={{ color:C.g6, fontWeight:600 }}>{safePage * FAILING_PAGE_SIZE + 1}–{Math.min((safePage + 1) * FAILING_PAGE_SIZE, failing.length)}</span> of <span style={{ color:C.g6, fontWeight:600 }}>{failing.length}</span>
                 </div>
                 <div style={{ display:"flex", alignItems:"center", gap:4 }}>
@@ -1957,7 +1957,7 @@ export default function Scorecard({
           {/* Score by Auditor — single view (Locations moved into merged table below) */}
           <Card>
             <div style={{ marginBottom:12 }}>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>Accountability</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, letterSpacing:"0.05em", textTransform:"uppercase", fontFamily:F, marginBottom:2 }}>Accountability</div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Score by Auditor</div>
             </div>
             {auditors.length === 0 ? (
@@ -1989,14 +1989,14 @@ export default function Scorecard({
         <Card pad={0}>
           <div style={{ padding:"13px 16px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Ranked</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Ranked</div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Avg Score by Question</div>
             </div>
             <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>Worst performers first</span>
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"24px 1fr 160px 64px 76px", gap:8, padding:"0 16px", background:C.g1, borderBottom:`1px solid ${C.g2}`, alignItems:"center" }}>
             {["#","Question","Score","%","Status"].map((h, i) => (
-              <span key={i} style={{ fontSize:9, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, padding:"7px 0", textAlign: i >= 3 ? "right" : "left" }}>{h}</span>
+              <span key={i} style={{ fontSize:10, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, padding:"7px 0", textAlign: i >= 3 ? "right" : "left" }}>{h}</span>
             ))}
           </div>
           {avgQSorted.length === 0 ? (
@@ -2025,7 +2025,7 @@ export default function Scorecard({
         <Card pad={0}>
           <div style={{ padding:"13px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Performance</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Performance</div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Locations</div>
             </div>
             <span style={{ fontSize:12, color:C.g5, fontFamily:F }}>
@@ -2062,7 +2062,7 @@ export default function Scorecard({
         <div style={{ display:"grid", gridTemplateColumns:"minmax(0, 1fr) minmax(0, 1fr)", gap:12 }}>
           <Card pad={0}>
             <div style={{ padding:"13px 16px" }}>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Latest Activity</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Latest Activity</div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Recent Audits</div>
             </div>
             <Table
@@ -2087,7 +2087,7 @@ export default function Scorecard({
 
           <Card pad={0}>
             <div style={{ padding:"13px 16px" }}>
-              <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Outstanding</div>
+              <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Outstanding</div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Missed Audits</div>
             </div>
             <Table
@@ -2111,7 +2111,7 @@ export default function Scorecard({
         {/* 7. OVERDUE ACTION PLANS — table */}
         <Card pad={0}>
           <div style={{ padding:"13px 16px" }}>
-            <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Past Due</div>
+            <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Past Due</div>
             <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Overdue Action Plans</div>
           </div>
           <Table
@@ -2130,7 +2130,7 @@ export default function Scorecard({
         {/* 8. BEHIND ON ASSIGNMENTS — table with phone + email */}
         <Card pad={0}>
           <div style={{ padding:"13px 16px" }}>
-            <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Team Workload</div>
+            <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:2 }}>Team Workload</div>
             <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Behind on Assignments</div>
           </div>
           <Table

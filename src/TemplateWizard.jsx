@@ -10,24 +10,25 @@ import Step3Scoring from "./TemplateWizard/Step3Scoring.jsx";
 import Step4Logic from "./TemplateWizard/Step4Logic.jsx";
 import Step5Activation from "./TemplateWizard/Step5Activation.jsx";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
+import { T, F } from "./aegis-tokens.js";
+
 const C = {
-  primary:      "#2226f7",
-  primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
-  primaryLight: "#d4e2ff",
-  navy:         "#001e76",
-  navyDeep:     "#16191d",
-  textSec:      "#555f6d",
-  textMuted:    "#8692a2",
-  bgApp:        "#f4f4f6",
-  bgSurface:    "#ffffff",
-  borderSubtle: "#e2e5e9",
-  borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
+  primary:      T.actionContainer1,
+  primaryHover: T.actionContainer2,
+  primaryBg:    T.actionContainer3,
+  primaryLight: T.actionContainer3,
+  navy:         T.action1,
+  navyDeep:     T.onSurface2,
+  textSec:      T.onSurface1,
+  textMuted:    T.disabled1,
+  bgApp:        T.surface2,
+  bgSurface:    T.surface1,
+  borderSubtle: T.border1,
+  borderDef:    T.border2,
+  success:      T.success1,
+  successBg:    T.successContainer1,
+  warning:      T.warning1,
+  warningBg:    T.warningContainer1,
 };
 
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
@@ -288,7 +289,7 @@ function StatusBadge({ status, onChange }) {
           padding: "3px 9px", borderRadius: 999,
           border: `1px solid ${s.color}20`,
           background: s.bg, color: s.color,
-          fontSize: 11, fontWeight: 600, fontFamily: F,
+          fontSize: 12, fontWeight: 600, fontFamily: F,
           cursor: "pointer",
         }}
         onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
@@ -450,7 +451,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
         }}
         onClick={e => e.stopPropagation()}
       >
-        <div id="confirm-dialog-title" style={{ fontSize: 15, fontWeight: 700, color: C.navyDeep, fontFamily: F, marginBottom: 8 }}>
+        <div id="confirm-dialog-title" style={{ fontSize: 16, fontWeight: 700, color: C.navyDeep, fontFamily: F, marginBottom: 8 }}>
           Unsaved changes
         </div>
         <div style={{ fontSize: 13, color: C.textSec, fontFamily: F, marginBottom: 20, lineHeight: "19px" }}>
@@ -460,7 +461,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
           <button
             onClick={onCancel}
             style={{
-              padding: "7px 14px", borderRadius: 7, border: `1px solid ${C.borderDef}`,
+              padding: "7px 14px", borderRadius: 8, border: `1px solid ${C.borderDef}`,
               background: C.bgSurface, color: C.textSec,
               fontSize: 12, fontFamily: F, cursor: "pointer", fontWeight: 500, outline: "none",
             }}
@@ -472,7 +473,7 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
           <button
             onClick={onConfirm}
             style={{
-              padding: "7px 14px", borderRadius: 7, border: "none",
+              padding: "7px 14px", borderRadius: 8, border: "none",
               background: C.primary, color: "#fff",
               fontSize: 12, fontFamily: F, cursor: "pointer", fontWeight: 600, outline: "none",
             }}
@@ -619,7 +620,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
             display: "flex", alignItems: "center", gap: 5,
             background: "none", border: "none", cursor: "pointer",
             color: C.textSec, fontSize: 12, fontFamily: F, fontWeight: 500,
-            padding: "4px 6px", borderRadius: 5, flexShrink: 0,
+            padding: "4px 6px", borderRadius: 4, flexShrink: 0,
           }}
           onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
           onBlur={e => (e.currentTarget.style.boxShadow = "none")}
@@ -686,8 +687,8 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
               display: "inline-flex", alignItems: "center", gap: 5,
               padding: "3px 9px", borderRadius: 999,
               border: "1px solid #d97706",
-              background: "#fffbeb", color: "#b45309",
-              fontSize: 11, fontWeight: 600, fontFamily: F,
+              background: "#fef9c3", color: "#854d0e",
+              fontSize: 12, fontWeight: 600, fontFamily: F,
               cursor: "pointer", flexShrink: 0,
             }}
             onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
@@ -711,7 +712,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
           onClick={handleSaveDraft}
           aria-label="Save as draft"
           style={{
-            padding: "6px 14px", borderRadius: 7,
+            padding: "6px 14px", borderRadius: 8,
             border: `1px solid ${C.borderDef}`,
             background: C.bgSurface, color: C.textSec,
             fontSize: 12, fontFamily: F, cursor: "pointer", fontWeight: 500,
@@ -730,7 +731,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
           onClick={() => attemptLeave("exit")}
           aria-label="Exit wizard"
           style={{
-            padding: "6px 14px", borderRadius: 7,
+            padding: "6px 14px", borderRadius: 8,
             border: `1px solid ${C.borderSubtle}`,
             background: "transparent", color: C.primary,
             fontSize: 12, fontFamily: F, cursor: "pointer", fontWeight: 500,
@@ -882,7 +883,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
           disabled={state.currentStep === 1}
           aria-label="Go to previous step"
           style={{
-            padding: "8px 20px", borderRadius: 7,
+            padding: "8px 20px", borderRadius: 8,
             border: `1px solid ${state.currentStep === 1 ? C.borderSubtle : C.borderDef}`,
             background: C.bgSurface,
             color: state.currentStep === 1 ? C.textMuted : C.textSec,
@@ -907,7 +908,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
             onClick={() => { handleSaveDraft(); onBack(); }}
             aria-label="Save as draft and return to Catalog"
             style={{
-              padding: "8px 20px", borderRadius: 7,
+              padding: "8px 20px", borderRadius: 8,
               border: `1px solid ${C.borderDef}`,
               background: C.bgSurface, color: C.textSec,
               fontSize: 13, fontFamily: F, fontWeight: 500,
@@ -925,7 +926,7 @@ export default function TemplateWizard({ templateId, onBack, onPublish, seymourM
             onClick={handleNext}
             aria-label="Go to next step"
             style={{
-              padding: "8px 20px", borderRadius: 7,
+              padding: "8px 20px", borderRadius: 8,
               border: "none",
               background: C.primary, color: "#fff",
               fontSize: 13, fontFamily: F, fontWeight: 600,

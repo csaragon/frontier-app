@@ -13,7 +13,7 @@ import LocationRecordPage from "./records/LocationRecordPage.jsx";
 import EmployeesListPage from "./records/EmployeesListPage.jsx";
 import EmployeeRecordPage from "./records/EmployeeRecordPage.jsx";
 import Settings from "./Settings.jsx";
-import AuditBuilderHome from "./AuditBuilderHome.jsx";
+//import AuditBuilderHome from "./AuditBuilderHome.jsx";
 import TemplateBuilderFlow from "./TemplateBuilderFlow/index.jsx";
 
 const seedTemplates   = () => TEMPLATES.map(t => ({ ...t }));
@@ -155,10 +155,12 @@ export default function App() {
         entryPoint={templateBuilderEntryPoint}
         onExit={() => handleNav(templateBuilderEntryPoint || "catalog")}
         onNav={handleNav}
+        templates={templates}
+        categories={categories}
       />
     );
   }
-
+/*
   if (view === "audit_builder") {
     return (
       <AuditBuilderHome
@@ -167,6 +169,7 @@ export default function App() {
       />
     );
   }
+*/
 
   if (view === "catalog") {
     return (

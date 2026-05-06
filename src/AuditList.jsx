@@ -1,21 +1,21 @@
 import { useState } from "react";
 import AppSidebar from "./AppSidebar.jsx";
+import { T, F } from "./aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:      "#001e76",
-  navyDeep:  "#16191d",
-  textSec:   "#555f6d",
-  textMuted: "#8692a2",
-  bgApp:     "#f4f4f6",
-  bgSurf:    "#ffffff",
-  border:    "#e2e5e9",
-  primary:   "#2226f7",
-  primaryBg: "#f0f2ff",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
   success:   "#15803d", successBg: "#f0fdf4",
-  warning:   "#a16207", warningBg: "#fef9c3",
-  error:     "#dc2626", errorBg:   "#fef2f2",
-  info:      "#0369a1", infoBg:    "#f0f9ff",
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
+  info:      T.onInfo1,  infoBg:    T.infoContainer1,
 };
 
 export const AUDITS = [
@@ -91,7 +91,7 @@ export default function AuditList({ onNav, density = "condensed" }) {
               const active = filter === opt;
               return (
                 <button key={opt} onClick={() => setFilter(opt)}
-                  style={{ padding:"4px 10px", borderRadius:6, border:`1px solid ${active ? C.primary : C.border}`, background: active ? C.primaryBg : "transparent", color: active ? C.primary : C.textSec, fontSize:11, fontWeight: active ? 600 : 400, fontFamily:F, cursor:"pointer" }}>
+                  style={{ padding:"4px 10px", borderRadius:6, border:`1px solid ${active ? C.primary : C.border}`, background: active ? C.primaryBg : "transparent", color: active ? C.primary : C.textSec, fontSize:12, fontWeight: active ? 600 : 400, fontFamily:F, cursor:"pointer" }}>
                   {opt}
                 </button>
               );
@@ -103,7 +103,7 @@ export default function AuditList({ onNav, density = "condensed" }) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search audits…"
-              style={{ padding:"6px 10px 6px 30px", borderRadius:7, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:220, background:C.bgSurf }}
+              style={{ padding:"6px 10px 6px 30px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:220, background:C.bgSurf }}
               onFocus={e => (e.target.style.borderColor = C.primary)}
               onBlur={e => (e.target.style.borderColor = C.border)}
             />
@@ -129,7 +129,7 @@ export default function AuditList({ onNav, density = "condensed" }) {
                         <span style={{ fontSize:ROW.scorePc, fontWeight:600, color:sm.color, fontFamily:F, marginTop:1 }}>%</span>
                       </>
                     ) : (
-                      <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>—</span>
+                      <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>—</span>
                     )}
                   </div>
 
@@ -145,19 +145,19 @@ export default function AuditList({ onNav, density = "condensed" }) {
 
                   {/* Location */}
                   <div style={{ flexShrink:0, minWidth:ROW.locW }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:ROW.labelMb }}>Location</div>
+                    <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:ROW.labelMb }}>Location</div>
                     <div style={{ fontSize:ROW.valFs, color:C.navyDeep, fontFamily:F }}>{a.location}</div>
                   </div>
 
                   {/* Auditor */}
                   <div style={{ flexShrink:0, minWidth:ROW.audW }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:ROW.labelMb }}>Auditor</div>
+                    <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:ROW.labelMb }}>Auditor</div>
                     <div style={{ fontSize:ROW.valFs, color:C.navyDeep, fontFamily:F }}>{a.auditor}</div>
                   </div>
 
                   {/* Due */}
                   <div style={{ flexShrink:0, minWidth:ROW.dueW }}>
-                    <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:ROW.labelMb }}>Due</div>
+                    <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F, marginBottom:ROW.labelMb }}>Due</div>
                     <div style={{ fontSize:ROW.valFs, color: a.status === "overdue" ? C.error : C.navyDeep, fontWeight: a.status === "overdue" ? 600 : 400, fontFamily:F }}>{a.due}</div>
                   </div>
 

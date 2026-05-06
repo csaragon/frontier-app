@@ -7,7 +7,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -17,12 +17,12 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
+  warning:      "#854d0e",
+  warningBg:    "#fef9c3",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -75,7 +75,7 @@ function InfoTooltip({ tip }) {
       {show && (
         <span style={{
           position: "absolute", bottom: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)",
-          zIndex: 700, background: C.navyDeep, color: "#fff", fontSize: 11, fontFamily: F,
+          zIndex: 700, background: C.navyDeep, color: "#fff", fontSize: 12, fontFamily: F,
           padding: "6px 10px", borderRadius: 6, whiteSpace: "nowrap", maxWidth: 240,
           boxShadow: "0 4px 12px rgba(0,0,0,0.2)", pointerEvents: "none", lineHeight: "15px",
         }}>
@@ -90,7 +90,7 @@ function FieldLabel({ label, help, tooltip }) {
   return (
     <div style={{ marginBottom: 4 }}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        <label style={{ fontSize: 11, fontWeight: 600, color: C.textSec, fontFamily: F }}>{label}</label>
+        <label style={{ fontSize: 12, fontWeight: 600, color: C.textSec, fontFamily: F }}>{label}</label>
         {tooltip && <InfoTooltip tip={tooltip} />}
       </div>
       {help && <div style={{ fontSize: 10, color: C.textMuted, fontFamily: F, marginTop: 1 }}>{help}</div>}
@@ -101,7 +101,7 @@ function FieldLabel({ label, help, tooltip }) {
 function FieldError({ msg }) {
   if (!msg) return null;
   return (
-    <div role="alert" style={{ fontSize: 11, color: C.error, fontFamily: F, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+    <div role="alert" style={{ fontSize: 12, color: C.error, fontFamily: F, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
       {msg}
     </div>
@@ -298,7 +298,7 @@ const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymou
           <div style={{ height:1, background:C.borderSubtle, margin:"28px 0 24px" }} />
           <div style={{ marginBottom:8 }}>
             <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:3 }}>Scoring model</div>
-            <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+            <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
               Controls how question responses contribute to the audit result.
             </div>
           </div>
@@ -317,7 +317,7 @@ const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymou
                 />
                 <div>
                   <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>{m.label}</div>
-                  <div style={{ fontSize:11, color:C.textSec, fontFamily:F, marginTop:2, lineHeight:"15px" }}>{m.help}</div>
+                  <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginTop:2, lineHeight:"15px" }}>{m.help}</div>
                 </div>
               </label>
             ))}
@@ -332,7 +332,7 @@ const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymou
 
       {/* OOTB prefill callout */}
       <div style={{
-        marginTop: 28, padding: "14px 16px", borderRadius: 10,
+        marginTop: 28, padding: "14px 16px", borderRadius: 12,
         border: `1px solid #bae6fd`, background: C.infoBg,
         display: "flex", alignItems: "flex-start", gap: 12,
       }}>
@@ -341,7 +341,7 @@ const Step1Basics = forwardRef(function Step1Basics({ basics, onChange, onSeymou
           <div style={{ fontSize: 12, fontWeight: 600, color: C.info, fontFamily: F, marginBottom: 2 }}>
             Start from OOTB defaults
           </div>
-          <div style={{ fontSize: 11, color: C.textSec, fontFamily: F, marginBottom: 10 }}>
+          <div style={{ fontSize: 12, color: C.textSec, fontFamily: F, marginBottom: 10 }}>
             Prefill sensible defaults from a starter template. You can override any field after applying.
           </div>
           <select

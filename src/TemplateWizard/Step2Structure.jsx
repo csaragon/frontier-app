@@ -6,7 +6,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -16,9 +16,9 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669", successBg: "#ecfdf5",
-  error:        "#dc2626", errorBg:   "#fef2f2",
-  warning:      "#b45309", warningBg: "#fffbeb",
+  success:      "#115e59", successBg: "#ccfbf1",
+  error:        "#b6143a", errorBg:   "#fae5e6",
+  warning:      "#854d0e", warningBg: "#fef9c3",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -42,7 +42,7 @@ function questionFromBank(q) {
 
 function Badge({ label, color, bg }) {
   return (
-    <span style={{ display:"inline-flex", alignItems:"center", padding:"2px 6px", borderRadius:4, fontSize:9, fontWeight:600, fontFamily:F, background:bg, color, whiteSpace:"nowrap" }}>
+    <span style={{ display:"inline-flex", alignItems:"center", padding:"2px 6px", borderRadius:4, fontSize:10, fontWeight:600, fontFamily:F, background:bg, color, whiteSpace:"nowrap" }}>
       {label}
     </span>
   );
@@ -112,26 +112,26 @@ function InlineQuestionForm({ sectionIdx, onSave, onCancel }) {
         <select
           value={type}
           onChange={e => setType(e.target.value)}
-          style={{ flex:1, padding:"5px 8px", borderRadius:6, border:`1px solid ${C.borderDef}`, fontSize:11, fontFamily:F, color:C.navyDeep, background:"#fff", outline:"none" }}
+          style={{ flex:1, padding:"5px 8px", borderRadius:6, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:"#fff", outline:"none" }}
         >
           {Q_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
         {/* Required toggle */}
-        <label style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, color:C.textSec, fontFamily:F, cursor:"pointer", flexShrink:0 }}>
+        <label style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, color:C.textSec, fontFamily:F, cursor:"pointer", flexShrink:0 }}>
           <input type="checkbox" checked={required} onChange={e => setRequired(e.target.checked)} style={{ cursor:"pointer" }} />
           Required
         </label>
         {/* Actions */}
         <button
           onClick={onCancel}
-          style={{ padding:"5px 10px", borderRadius:6, border:`1px solid ${C.borderDef}`, background:"transparent", color:C.textSec, fontSize:11, fontFamily:F, cursor:"pointer" }}
+          style={{ padding:"5px 10px", borderRadius:6, border:`1px solid ${C.borderDef}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}
         >
           Cancel
         </button>
         <button
           onClick={save}
           disabled={!text.trim()}
-          style={{ padding:"5px 10px", borderRadius:6, border:"none", background: text.trim() ? C.primary : C.borderDef, color:"#fff", fontSize:11, fontWeight:600, fontFamily:F, cursor: text.trim() ? "pointer" : "not-allowed" }}
+          style={{ padding:"5px 10px", borderRadius:6, border:"none", background: text.trim() ? C.primary : C.borderDef, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor: text.trim() ? "pointer" : "not-allowed" }}
         >
           Add
         </button>
@@ -159,12 +159,12 @@ function QuestionRow({ q, sectionIdx, qIdx, dragRef, onRemove, isConditional }) 
         <circle cx="3" cy="7" r="1.2"/><circle cx="7" cy="7" r="1.2"/>
         <circle cx="3" cy="11.5" r="1.2"/><circle cx="7" cy="11.5" r="1.2"/>
       </svg>
-      <div style={{ flex:1, fontSize:11, color:C.navyDeep, fontFamily:F, lineHeight:"15px", overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>
+      <div style={{ flex:1, fontSize:12, color:C.navyDeep, fontFamily:F, lineHeight:"15px", overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>
         {q.text}
       </div>
       <Badge label={q.type} color={tm.color} bg={tm.bg} />
-      {q.required && <span style={{ fontSize:9, fontWeight:700, color:C.error, fontFamily:F, flexShrink:0 }}>REQ</span>}
-      {isConditional && <span style={{ padding:"1px 5px", borderRadius:3, background:"#fffbeb", border:"1px solid #fde68a", fontSize:9, fontWeight:700, color:"#b45309", fontFamily:F, flexShrink:0 }}>COND</span>}
+      {q.required && <span style={{ fontSize:10, fontWeight:700, color:C.error, fontFamily:F, flexShrink:0 }}>REQ</span>}
+      {isConditional && <span style={{ padding:"1px 5px", borderRadius:4, background:"#fef9c3", border:"1px solid #fde68a", fontSize:10, fontWeight:700, color:"#854d0e", fontFamily:F, flexShrink:0 }}>COND</span>}
       <button
         onClick={() => onRemove(sectionIdx, qIdx)}
         style={{ background:"none", border:"none", cursor:"pointer", color:C.textMuted, padding:3, borderRadius:4, flexShrink:0, display:"flex", alignItems:"center" }}
@@ -192,7 +192,7 @@ function SectionCard({ section, idx, dragRef, dropZone, setDropZone, onDropQuest
       draggable
       onDragStart={e => { dragRef.current = { type:"canvas-section", sectionIdx:idx, data:section }; e.dataTransfer.effectAllowed = "move"; }}
       onDragEnd={() => { dragRef.current = null; }}
-      style={{ background:C.bgSurface, borderRadius:10, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}
+      style={{ background:C.bgSurface, borderRadius:12, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}
     >
       {/* Section header */}
       <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 12px", background:C.bgApp, borderBottom:section.collapsed ? "none" : `1px solid ${C.borderSubtle}` }}>
@@ -209,13 +209,13 @@ function SectionCard({ section, idx, dragRef, dropZone, setDropZone, onDropQuest
             onChange={e => onUpdate(idx, { name:e.target.value })}
             onBlur={() => setEditingName(false)}
             onKeyDown={e => { if (e.key === "Enter" || e.key === "Escape") setEditingName(false); }}
-            style={{ flex:1, fontSize:12, fontWeight:600, fontFamily:F, color:C.navyDeep, border:`1px solid ${C.primary}`, borderRadius:5, padding:"3px 7px", outline:"none", background:C.bgSurface }}
+            style={{ flex:1, fontSize:12, fontWeight:600, fontFamily:F, color:C.navyDeep, border:`1px solid ${C.primary}`, borderRadius:4, padding:"3px 7px", outline:"none", background:C.bgSurface }}
           />
         ) : (
           <button
             onClick={() => setEditingName(true)}
             title="Click to rename"
-            style={{ flex:1, textAlign:"left", fontSize:12, fontWeight:600, fontFamily:F, color:C.navy, background:"none", border:"1px solid transparent", borderRadius:5, padding:"3px 7px", cursor:"text", outline:"none" }}
+            style={{ flex:1, textAlign:"left", fontSize:12, fontWeight:600, fontFamily:F, color:C.navy, background:"none", border:"1px solid transparent", borderRadius:4, padding:"3px 7px", cursor:"text", outline:"none" }}
           >
             {section.name}
           </button>
@@ -268,7 +268,7 @@ function SectionCard({ section, idx, dragRef, dropZone, setDropZone, onDropQuest
           style={{ padding:"6px 8px", background:dropZone?.kind === "section-body" && dropZone?.sectionIdx === idx ? (dropZone.valid ? C.primaryBg : C.errorBg) : "transparent", minHeight:40, transition:"background 0.1s" }}
         >
           {section.questions.length === 0 && !isCreatingQ && !(dropZone?.kind === "section-body" && dropZone?.sectionIdx === idx) && (
-            <div style={{ padding:"10px 0", textAlign:"center", fontSize:11, color:C.textMuted, fontFamily:F }}>
+            <div style={{ padding:"10px 0", textAlign:"center", fontSize:12, color:C.textMuted, fontFamily:F }}>
               No questions yet — add one below or pick from the catalog →
             </div>
           )}
@@ -300,7 +300,7 @@ function SectionCard({ section, idx, dragRef, dropZone, setDropZone, onDropQuest
             <div style={{ position:"relative", marginTop:4 }}>
               <button
                 onClick={() => setAddQuestionMenu(addQuestionMenu === idx ? null : idx)}
-                style={{ width:"100%", padding:"6px 0", borderRadius:6, border:`1px dashed ${C.borderDef}`, background:"transparent", color:C.textSec, fontSize:11, fontFamily:F, cursor:"pointer", outline:"none" }}
+                style={{ width:"100%", padding:"6px 0", borderRadius:6, border:`1px dashed ${C.borderDef}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer", outline:"none" }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = C.primary; e.currentTarget.style.color = C.primary; }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = C.borderDef; e.currentTarget.style.color = C.textSec; }}
               >
@@ -357,14 +357,14 @@ function PanelSectionCard({ section, dragRef, onAdd }) {
           <circle cx="3" cy="11.5" r="1.2"/><circle cx="7" cy="11.5" r="1.2"/>
         </svg>
         <div style={{ flex:1 }}>
-          <div style={{ fontSize:11, fontWeight:600, color:C.navy, fontFamily:F }}>{section.name}</div>
+          <div style={{ fontSize:12, fontWeight:600, color:C.navy, fontFamily:F }}>{section.name}</div>
           <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:1 }}>{section.qCount} questions</div>
         </div>
         <Badge label={section.cat} color={catStyle.color} bg={catStyle.bg} />
         {hov && (
           <button
             onClick={() => onAdd(section)}
-            style={{ padding:"3px 10px", borderRadius:5, border:"none", background:C.primary, color:"#fff", fontSize:10, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}
+            style={{ padding:"3px 10px", borderRadius:4, border:"none", background:C.primary, color:"#fff", fontSize:10, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}
           >
             + Add
           </button>
@@ -387,7 +387,7 @@ function PanelQuestionCard({ question, dragRef, targetSection, onAdd }) {
       onMouseLeave={() => setHov(false)}
       style={{ padding:"9px 12px", borderRadius:8, border:`1px solid ${hov ? C.borderDef : C.borderSubtle}`, background:C.bgSurface, marginBottom:6, transition:"border-color 0.1s" }}
     >
-      <div style={{ fontSize:11, color:C.navyDeep, fontFamily:F, lineHeight:"15px", marginBottom:6, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>
+      <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, lineHeight:"15px", marginBottom:6, overflow:"hidden", display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical" }}>
         {question.text}
       </div>
       <div style={{ display:"flex", alignItems:"center", gap:5, flexWrap:"wrap" }}>
@@ -396,7 +396,7 @@ function PanelQuestionCard({ question, dragRef, targetSection, onAdd }) {
         {hov && (
           <button
             onClick={() => onAdd(question)}
-            style={{ marginLeft:"auto", padding:"2px 8px", borderRadius:5, border:"none", background: targetSection !== null ? C.primary : C.navy, color:"#fff", fontSize:10, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}
+            style={{ marginLeft:"auto", padding:"2px 8px", borderRadius:4, border:"none", background: targetSection !== null ? C.primary : C.navy, color:"#fff", fontSize:10, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0, whiteSpace:"nowrap" }}
           >
             {targetSection !== null ? "Add to section" : "+ Add"}
           </button>
@@ -488,8 +488,8 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
 
         {/* Header */}
         <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-          <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Template structure</div>
-          <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>{sections.length} section{sections.length !== 1 ? "s" : ""} · {totalQuestions} question{totalQuestions !== 1 ? "s" : ""}</span>
+          <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Template structure</div>
+          <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>{sections.length} section{sections.length !== 1 ? "s" : ""} · {totalQuestions} question{totalQuestions !== 1 ? "s" : ""}</span>
         </div>
 
         {/* Section overview pills */}
@@ -500,7 +500,7 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
               return (
                 <div key={s.id} style={{ display:"flex", alignItems:"center", gap:5, padding:"3px 10px", borderRadius:999, background:cs.bg, border:`1px solid ${cs.color}30` }}>
                   <span style={{ fontSize:10, fontWeight:600, color:cs.color, fontFamily:F }}>{s.name}</span>
-                  <span style={{ fontSize:9, color:cs.color, fontFamily:F, opacity:0.7 }}>{s.questions.length}q</span>
+                  <span style={{ fontSize:10, color:cs.color, fontFamily:F, opacity:0.7 }}>{s.questions.length}q</span>
                 </div>
               );
             })}
@@ -509,7 +509,7 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
 
         {/* Empty state */}
         {sections.length === 0 && (
-          <div style={{ textAlign:"center", padding:"48px 24px", color:C.textMuted, fontFamily:F, background:C.bgSurface, borderRadius:10, border:`1px solid ${C.borderSubtle}` }}>
+          <div style={{ textAlign:"center", padding:"48px 24px", color:C.textMuted, fontFamily:F, background:C.bgSurface, borderRadius:12, border:`1px solid ${C.borderSubtle}` }}>
             <div style={{ fontSize:13, fontWeight:600, color:C.textSec, marginBottom:6 }}>No sections yet</div>
             <div style={{ fontSize:12 }}>Click "+ Add section" below, or use the catalog panel on the right to add a pre-built section.</div>
           </div>
@@ -555,7 +555,7 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
                 <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:2 }}>Start with an empty section</div>
               </button>
               <div style={{ borderTop:`1px solid ${C.borderSubtle}` }}>
-                <div style={{ fontSize:9, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", padding:"8px 16px 4px", fontFamily:F }}>From catalog</div>
+                <div style={{ fontSize:10, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", padding:"8px 16px 4px", fontFamily:F }}>From catalog</div>
                 {SECTIONS.slice(0, 5).map(s => (
                   <button
                     key={s.id}
@@ -579,16 +579,16 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
 
         {/* Panel header */}
         <div style={{ padding:"10px 12px 0", borderBottom:`1px solid ${C.borderSubtle}`, flexShrink:0 }}>
-          <div style={{ fontSize:11, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:8 }}>Catalog</div>
+          <div style={{ fontSize:12, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:8 }}>Catalog</div>
           {/* Tabs */}
           <div style={{ display:"flex", gap:0 }}>
             {[{ key:"sections", label:"Sections", count:panelSections.length }, { key:"questions", label:"Questions", count:panelQuestions.length }].map(t => {
               const active = panelTab === t.key;
               return (
                 <button key={t.key} onClick={() => setPanelTab(t.key)}
-                  style={{ flex:1, padding:"8px 0", border:"none", borderBottom:active ? `2px solid ${C.primary}` : "2px solid transparent", background:"transparent", color:active ? C.primary : C.textSec, fontSize:11, fontWeight:active ? 600 : 400, fontFamily:F, cursor:"pointer" }}
+                  style={{ flex:1, padding:"8px 0", border:"none", borderBottom:active ? `2px solid ${C.primary}` : "2px solid transparent", background:"transparent", color:active ? C.primary : C.textSec, fontSize:12, fontWeight:active ? 600 : 400, fontFamily:F, cursor:"pointer" }}
                 >
-                  {t.label} <span style={{ marginLeft:4, padding:"1px 5px", borderRadius:999, background:active ? C.primaryLight : C.bgApp, color:active ? C.primaryHover : C.textMuted, fontSize:9, fontWeight:600 }}>{t.count}</span>
+                  {t.label} <span style={{ marginLeft:4, padding:"1px 5px", borderRadius:999, background:active ? C.primaryLight : C.bgApp, color:active ? C.primaryHover : C.textMuted, fontSize:10, fontWeight:600 }}>{t.count}</span>
                 </button>
               );
             })}
@@ -597,12 +597,12 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
 
         {/* Catalog target indicator */}
         {catalogTarget !== null && panelTab === "questions" && (
-          <div style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", background:"#fffbeb", borderBottom:`1px solid #fde68a`, flexShrink:0 }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-            <span style={{ flex:1, fontSize:10, color:"#b45309", fontFamily:F, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", background:"#fef9c3", borderBottom:`1px solid #fde68a`, flexShrink:0 }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#854d0e" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span style={{ flex:1, fontSize:10, color:"#854d0e", fontFamily:F, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
               Adding to: {sections[catalogTarget]?.name ?? "section"}
             </span>
-            <button onClick={() => setCatalogTarget(null)} style={{ fontSize:10, color:"#b45309", fontFamily:F, background:"none", border:"none", cursor:"pointer", padding:"0 2px", fontWeight:600 }}>✕</button>
+            <button onClick={() => setCatalogTarget(null)} style={{ fontSize:10, color:"#854d0e", fontFamily:F, background:"none", border:"none", cursor:"pointer", padding:"0 2px", fontWeight:600 }}>✕</button>
           </div>
         )}
 
@@ -611,7 +611,7 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
           <div style={{ position:"relative" }}>
             <svg style={{ position:"absolute", left:9, top:"50%", transform:"translateY(-50%)", pointerEvents:"none" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.textMuted} strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder={panelTab === "sections" ? "Search sections…" : "Search questions…"}
-              style={{ width:"100%", padding:"6px 8px 6px 28px", borderRadius:7, border:`1px solid ${C.borderDef}`, fontSize:11, fontFamily:F, color:C.navyDeep, background:C.bgSurface, outline:"none", boxSizing:"border-box" }}
+              style={{ width:"100%", padding:"6px 8px 6px 28px", borderRadius:8, border:`1px solid ${C.borderDef}`, fontSize:12, fontFamily:F, color:C.navyDeep, background:C.bgSurface, outline:"none", boxSizing:"border-box" }}
               onFocus={e => (e.target.style.borderColor = C.primary)}
               onBlur={e => (e.target.style.borderColor = C.borderDef)}
             />
@@ -619,7 +619,7 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
           <div style={{ display:"flex", gap:4, flexWrap:"wrap", marginTop:8 }}>
             {["All", ...MODULES].map(m => (
               <button key={m} onClick={() => setModFilter(m)}
-                style={{ padding:"2px 8px", borderRadius:999, fontSize:9, border:`1px solid ${modFilter === m ? C.primary : C.borderDef}`, background:modFilter === m ? C.primaryLight : C.bgSurface, color:modFilter === m ? C.primaryHover : C.textSec, fontWeight:modFilter === m ? 600 : 400, fontFamily:F, cursor:"pointer" }}
+                style={{ padding:"2px 8px", borderRadius:999, fontSize:10, border:`1px solid ${modFilter === m ? C.primary : C.borderDef}`, background:modFilter === m ? C.primaryLight : C.bgSurface, color:modFilter === m ? C.primaryHover : C.textSec, fontWeight:modFilter === m ? 600 : 400, fontFamily:F, cursor:"pointer" }}
               >{m}</button>
             ))}
           </div>
@@ -644,7 +644,7 @@ export default function Step2Structure({ sections, dispatch, conditionalIds = ne
                 ))
           )}
           {sections.length === 0 && panelTab === "questions" && (
-            <div style={{ marginTop:8, padding:"8px 10px", borderRadius:6, background:"#fffbeb", border:"1px solid #fde68a", fontSize:10, color:"#b45309", fontFamily:F }}>
+            <div style={{ marginTop:8, padding:"8px 10px", borderRadius:6, background:"#fef9c3", border:"1px solid #fde68a", fontSize:10, color:"#854d0e", fontFamily:F }}>
               Add a section first, then pick questions.
             </div>
           )}

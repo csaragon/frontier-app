@@ -3,7 +3,7 @@ import { LOCATIONS_ALL } from "./auditStubData.js";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = { navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9", primary:"#2226f7", primaryBg:"#f0f2ff" };
+  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9", primary:"#2226f7", primaryBg:"#d4e2ff" };
 
 export default function LocationRecordStub({ locationId, locationName, fromAudit, onNav }) {
   const loc = LOCATIONS_ALL.find(l => l.id === locationId) || { name: locationName || "Location", city:"—", state:"—", region:"—" };
@@ -35,14 +35,14 @@ export default function LocationRecordStub({ locationId, locationName, fromAudit
             <div style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"4px 12px",
               background:"#fef9c3", borderRadius:20, marginTop:16, marginBottom:20 }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a16207" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span style={{ fontSize:11, fontWeight:600, color:"#a16207", fontFamily:F }}>Location Record · Full view available in R1</span>
+              <span style={{ fontSize:12, fontWeight:600, color:"#a16207", fontFamily:F }}>Location Record · Full view available in R1</span>
             </div>
             <div style={{ fontSize:12, color:C.textSec, fontFamily:F, lineHeight:1.7 }}>
               The Location Record page (R1) will include audit history, open action plans, compliance trends, team roster, and facility details for this location.
             </div>
             {fromAudit && (
               <button onClick={() => onNav("audit_record", { auditId: fromAudit })}
-                style={{ marginTop:24, padding:"8px 20px", borderRadius:7, border:`1px solid ${C.border}`,
+                style={{ marginTop:24, padding:"8px 20px", borderRadius:8, border:`1px solid ${C.border}`,
                   background:C.bgSurf, color:C.navy, fontSize:12, fontFamily:F, cursor:"pointer", fontWeight:600 }}>
                 ← Back to Audit
               </button>

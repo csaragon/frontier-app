@@ -111,18 +111,18 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
       {/* Config bar */}
       <div style={{
         display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-        padding: "10px 14px", background: C.g1, borderRadius: 7, marginBottom: 12,
+        padding: "10px 14px", background: C.g1, borderRadius: 8, marginBottom: 12,
         border: `1px solid ${C.g2}`,
       }}>
         {/* Cell answer type */}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Cell type:</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Cell type:</span>
           <select
             value={cellAnswerType}
             onChange={e => handleCellTypeChange(e.target.value)}
             style={{
               fontSize: 12, fontFamily: F, color: C.g6,
-              border: `1px solid ${C.g3}`, borderRadius: 5,
+              border: `1px solid ${C.g3}`, borderRadius: 4,
               padding: "4px 8px", background: C.white,
               cursor: "pointer", outline: "none",
             }}
@@ -134,7 +134,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
         {/* Points per cell (points methodology) */}
         {methodology === "points" && (
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Points per cell:</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Points per cell:</span>
             <input
               type="number"
               min={0}
@@ -142,7 +142,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
               onChange={e => handlePointsChange(e.target.value)}
               style={{
                 width: 56, fontSize: 12, fontFamily: F, color: C.g6,
-                border: `1px solid ${C.g3}`, borderRadius: 5,
+                border: `1px solid ${C.g3}`, borderRadius: 4,
                 padding: "4px 8px", outline: "none", textAlign: "center",
               }}
               onFocus={e => e.currentTarget.style.borderColor = C.navy}
@@ -154,17 +154,17 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
         {/* Weight per cell (weighted methodology) */}
         {methodology === "weighted" && (
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Cell weight:</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Cell weight:</span>
             <span style={{
-              fontSize: 11, fontWeight: 600, fontFamily: F,
-              color: "#0369a1", background: "#e0f2fe",
+              fontSize: 12, fontWeight: 600, fontFamily: F,
+              color: "#001e76", background: "#e0f2fe",
               borderRadius: 4, padding: "2px 8px", whiteSpace: "nowrap",
             }}>~{weightPerCell}% each, distributed across {totalCells} cells</span>
           </div>
         )}
 
         {/* Helper text */}
-        <span style={{ fontSize: 11, color: C.g4, fontFamily: F, fontStyle: "italic", marginLeft: "auto" }}>
+        <span style={{ fontSize: 12, color: C.g4, fontFamily: F, fontStyle: "italic", marginLeft: "auto" }}>
           Grid sections use one shared question structure across all rows and columns.
         </span>
       </div>
@@ -199,7 +199,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
                         style={{
                           background: "none", border: "none", cursor: "pointer",
                           color: C.g3, fontSize: 14, lineHeight: 1,
-                          padding: "0 2px", borderRadius: 3, flexShrink: 0,
+                          padding: "0 2px", borderRadius: 4, flexShrink: 0,
                           display: "flex", alignItems: "center",
                         }}
                         onMouseEnter={e => e.currentTarget.style.color = C.red ?? "#b6143a"}
@@ -216,7 +216,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
                   title="Add column"
                   style={{
                     background: "none", border: `1px dashed ${C.g3}`, color: C.g4,
-                    borderRadius: 5, padding: "4px 8px", cursor: "pointer",
+                    borderRadius: 4, padding: "4px 8px", cursor: "pointer",
                     fontSize: 13, fontFamily: F, lineHeight: 1,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; }}
@@ -250,7 +250,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
                     padding: "8px", textAlign: "center",
                   }}>
                     <span style={{
-                      fontSize: 11, color: C.g4, fontFamily: F,
+                      fontSize: 12, color: C.g4, fontFamily: F,
                       display: "block", userSelect: "none",
                     }}>{placeholder}</span>
                   </td>
@@ -264,7 +264,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
                       style={{
                         background: "none", border: "none", cursor: "pointer",
                         color: C.g3, fontSize: 14, lineHeight: 1,
-                        padding: "0 2px", borderRadius: 3,
+                        padding: "0 2px", borderRadius: 4,
                         display: "flex", alignItems: "center",
                       }}
                       onMouseEnter={e => e.currentTarget.style.color = "#b6143a"}
@@ -281,7 +281,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
                   onClick={handleAddRow}
                   style={{
                     background: "none", border: `1px dashed ${C.g3}`, color: C.g4,
-                    borderRadius: 5, padding: "4px 12px", cursor: "pointer",
+                    borderRadius: 4, padding: "4px 12px", cursor: "pointer",
                     fontSize: 12, fontFamily: F,
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; }}
@@ -299,7 +299,7 @@ export default function GridSection({ section, methodology, onUpdate, onToggleOf
           onClick={onToggleOff}
           style={{
             background: "none", border: "none", cursor: "pointer",
-            fontSize: 11, fontFamily: F, color: C.g4,
+            fontSize: 12, fontFamily: F, color: C.g4,
             textDecoration: "underline", padding: 0,
           }}
           onMouseEnter={e => e.currentTarget.style.color = C.g6}

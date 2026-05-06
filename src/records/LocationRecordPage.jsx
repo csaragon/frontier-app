@@ -2,15 +2,21 @@ import { useState, useMemo } from "react";
 import AppSidebar from "../AppSidebar.jsx";
 import { getLocationDetail } from "./locationStubData.js";
 import { AVATAR_COLORS } from "./employeeStubData.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9",
-  primary:"#2226f7", primaryBg:"#f0f2ff",
-  success:"#15803d", successBg:"#f0fdf4",
-  warning:"#a16207", warningBg:"#fef9c3",
-  error:"#dc2626",   errorBg:"#fef2f2",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   T.success1, successBg: T.successContainer1,
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
 };
 
 const STATUS_META = {
@@ -66,18 +72,25 @@ function Pill({ label, color, bg, sm }) {
   );
 }
 
-function SectionCard({ title, action, helper, children }) {
+function SectionCard({ title, action, helper, children, collapsible, defaultOpen=true }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:10,overflow:"hidden",marginBottom:12 }}>
-      <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
-        padding:"13px 20px",borderBottom:`1px solid ${C.border}` }}>
-        <div>
+    <div style={{ background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:12,overflow:"hidden",marginBottom:12 }}>
+      <div onClick={collapsible?()=>setOpen(o=>!o):undefined}
+        style={{ display:"flex",alignItems:"center",justifyContent:"space-between",
+          padding:"13px 20px",borderBottom:open?`1px solid ${C.border}`:"none",
+          cursor:collapsible?"pointer":"default" }}>
+        <div style={{ display:"flex",alignItems:"center",gap:6 }}>
+          {collapsible && (
+            <span style={{ fontSize:10,color:C.textMuted,lineHeight:1,flexShrink:0 }}>{open?"▾":"▸"}</span>
+          )}
           <span style={{ fontSize:13,fontWeight:700,color:C.navyDeep,fontFamily:F }}>{title}</span>
-          {helper && <div style={{ fontSize:11,color:C.textMuted,fontFamily:F,marginTop:2 }}>{helper}</div>}
+          {helper && <div style={{ fontSize:12,color:C.textMuted,fontFamily:F,marginTop:2 }}>{helper}</div>}
         </div>
-        {action}
+        {!collapsible && action}
+        {collapsible && <div onClick={e=>e.stopPropagation()}>{action}</div>}
       </div>
-      <div style={{ padding:20 }}>{children}</div>
+      {open && <div style={{ padding:20 }}>{children}</div>}
     </div>
   );
 }
@@ -93,14 +106,14 @@ function EditableField({ label, value, fieldKey, canEdit, onSave }) {
       {editing ? (
         <div style={{ display:"flex",alignItems:"center",gap:6 }}>
           <input value={draft} onChange={e=>setDraft(e.target.value)} autoFocus
-            style={{ padding:"4px 8px",borderRadius:5,border:`1.5px solid ${C.primary}`,
+            style={{ padding:"4px 8px",borderRadius:4,border:`1.5px solid ${C.primary}`,
               fontSize:12,fontFamily:F,color:C.navyDeep,outline:"none",flex:1 }} />
           <button onClick={()=>{onSave(fieldKey,draft);setEditing(false);}}
             style={{ padding:"3px 8px",borderRadius:4,border:"none",background:C.primary,
-              color:"white",fontSize:11,fontFamily:F,cursor:"pointer" }}>Save</button>
+              color:"white",fontSize:12,fontFamily:F,cursor:"pointer" }}>Save</button>
           <button onClick={()=>{setDraft(value);setEditing(false);}}
             style={{ padding:"3px 8px",borderRadius:4,border:`1px solid ${C.border}`,
-              background:"transparent",color:C.textSec,fontSize:11,fontFamily:F,cursor:"pointer" }}>✕</button>
+              background:"transparent",color:C.textSec,fontSize:12,fontFamily:F,cursor:"pointer" }}>✕</button>
         </div>
       ) : (
         <div style={{ display:"flex",alignItems:"center",gap:6 }}>
@@ -109,7 +122,7 @@ function EditableField({ label, value, fieldKey, canEdit, onSave }) {
           </span>
           {canEdit && hov && (
             <button onClick={()=>{setDraft(value||"");setEditing(true);}}
-              style={{ width:18,height:18,borderRadius:3,border:`1px solid ${C.border}`,background:C.bgApp,
+              style={{ width:18,height:18,borderRadius:4,border:`1px solid ${C.border}`,background:C.bgApp,
                 cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
                 color:C.textMuted,padding:0 }}>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -201,11 +214,11 @@ function HBarChart({ items, barColor }) {
     <div style={{display:"flex",flexDirection:"column",gap:8}}>
       {items.map(item=>(
         <div key={item.label} style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{fontSize:11,color:C.textSec,fontFamily:F,width:80,flexShrink:0,textAlign:"right"}}>{item.label}</div>
-          <div style={{flex:1,height:16,background:C.bgApp,borderRadius:3,overflow:"hidden"}}>
-            <div style={{width:`${(item.count/max)*100}%`,height:"100%",background:barColor||C.primary,borderRadius:3}}/>
+          <div style={{fontSize:12,color:C.textSec,fontFamily:F,width:80,flexShrink:0,textAlign:"right"}}>{item.label}</div>
+          <div style={{flex:1,height:16,background:C.bgApp,borderRadius:4,overflow:"hidden"}}>
+            <div style={{width:`${(item.count/max)*100}%`,height:"100%",background:barColor||C.primary,borderRadius:4}}/>
           </div>
-          <div style={{fontSize:11,fontWeight:600,color:C.navyDeep,fontFamily:F,width:24,flexShrink:0}}>{item.count}</div>
+          <div style={{fontSize:12,fontWeight:600,color:C.navyDeep,fontFamily:F,width:24,flexShrink:0}}>{item.count}</div>
         </div>
       ))}
     </div>
@@ -218,7 +231,7 @@ function PeerBars({ peers }) {
     <div style={{display:"flex",flexDirection:"column",gap:10}}>
       {peers.map(p=>(
         <div key={p.name} style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{fontSize:11,color:p.isThis?C.primary:C.textSec,fontFamily:F,fontWeight:p.isThis?700:400,width:160,flexShrink:0}}>{p.name}{p.isThis?" (this location)":""}</div>
+          <div style={{fontSize:12,color:p.isThis?C.primary:C.textSec,fontFamily:F,fontWeight:p.isThis?700:400,width:160,flexShrink:0}}>{p.name}{p.isThis?" (this location)":""}</div>
           <div style={{flex:1,height:20,background:C.bgApp,borderRadius:4,overflow:"hidden"}}>
             <div style={{width:`${(p.score/max)*100}%`,height:"100%",
               background:p.isThis?C.primary:scoreColor(p.score),borderRadius:4}}/>
@@ -261,7 +274,7 @@ function MapModal({ loc, onClose }) {
 // ── Main component ────────────────────────────────────────────────────────────
 export default function LocationRecordPage({ locationId, onNav }) {
   const [viewerRole, setViewerRole] = useState("Program Owner");
-  const [activeTab,  setActiveTab]  = useState("info");
+  const [activeTab,  setActiveTab]  = useState("scorecard");
   const [dateRange,  setDateRange]  = useState("This Quarter");
   const [showMap,    setShowMap]    = useState(false);
   const [edits,      setEdits]      = useState({});
@@ -289,7 +302,9 @@ export default function LocationRecordPage({ locationId, onNav }) {
   );
 
   const { loc: rawLoc, recentAudits, actionPlans, employees, programs,
-          criticalPatterns, perfTrend, districtAvg, regionAvg, topPeerScore, topPeerName, reportData } = detail;
+          criticalPatterns, perfTrend, districtAvg, regionAvg, topPeerScore, topPeerName, reportData,
+          openDate, division, locationTypes, squareFootage, hasSelfCheckout,
+          alarm, cctv, guard, keyHolders, shrink, shippingAddress } = detail;
   const loc = { ...rawLoc, ...edits };
 
   function handleSave(field, val) { setEdits(e => ({ ...e, [field]: val })); }
@@ -352,7 +367,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
             style={{ padding:"3px 10px",borderRadius:999,border:`1px solid ${selected===val?C.primary:C.border}`,
               background:selected===val?C.primaryBg:C.bgSurf,
               color:selected===val?C.primary:C.textSec,
-              fontSize:11,fontFamily:F,cursor:"pointer",fontWeight:selected===val?600:400 }}>
+              fontSize:12,fontFamily:F,cursor:"pointer",fontWeight:selected===val?600:400 }}>
             {label}
           </button>
         ))}
@@ -376,9 +391,9 @@ export default function LocationRecordPage({ locationId, onNav }) {
               All Locations
             </button>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
+              <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
               <select value={viewerRole} onChange={e => setViewerRole(e.target.value)}
-                style={{ padding:"4px 8px", borderRadius:5, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
+                style={{ padding:"4px 8px", borderRadius:4, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
                 {VIEWER_ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -387,7 +402,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
           <div style={{ paddingBottom:14, display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16 }}>
             <div>
               {/* Breadcrumb */}
-              <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginBottom:4 }}>
+              <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:4 }}>
                 {loc.region}
                 <span style={{ margin:"0 5px", color:C.border }}>→</span>
                 {loc.district}
@@ -402,7 +417,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
                   <span style={{ display:"inline-flex",alignItems:"center",gap:4,padding:"3px 9px",borderRadius:999,
                     background:C.errorBg,border:`1px solid ${C.error}30` }}>
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.error} strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    <span style={{ fontSize:11,fontWeight:700,color:C.error,fontFamily:F }}>Critical</span>
+                    <span style={{ fontSize:12,fontWeight:700,color:C.error,fontFamily:F }}>Critical</span>
                   </span>
                 )}
               </div>
@@ -413,16 +428,16 @@ export default function LocationRecordPage({ locationId, onNav }) {
             {/* Actions */}
             <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, paddingTop:4 }}>
               {loc.complianceScore != null && (
-                <div style={{ textAlign:"center", background:scoreBg(loc.complianceScore), borderRadius:10,
+                <div style={{ textAlign:"center", background:scoreBg(loc.complianceScore), borderRadius:12,
                   padding:"8px 16px", border:`1px solid ${scoreColor(loc.complianceScore)}30` }}>
                   <div style={{ fontSize:28,fontWeight:800,color:scoreColor(loc.complianceScore),fontFamily:F,lineHeight:1 }}>
                     {loc.complianceScore}
                   </div>
-                  <div style={{ fontSize:9,color:C.textMuted,fontFamily:F,marginTop:2 }}>Compliance Score</div>
+                  <div style={{ fontSize:10,color:C.textMuted,fontFamily:F,marginTop:2 }}>Compliance Score</div>
                 </div>
               )}
               {canEdit("address") && (
-                <button style={{ padding:"7px 14px",borderRadius:7,border:`1px solid ${C.border}`,
+                <button style={{ padding:"7px 14px",borderRadius:8,border:`1px solid ${C.border}`,
                   background:C.bgSurf,color:C.navy,fontSize:12,fontFamily:F,cursor:"pointer",fontWeight:600 }}>
                   Edit
                 </button>
@@ -430,7 +445,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
               {/* Kebab */}
               <div style={{ position:"relative" }}>
                 <button onClick={() => {}} title="More"
-                  style={{ width:32,height:32,borderRadius:7,border:`1px solid ${C.border}`,background:C.bgSurf,
+                  style={{ width:32,height:32,borderRadius:8,border:`1px solid ${C.border}`,background:C.bgSurf,
                     cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",color:C.textMuted }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
                 </button>
@@ -439,18 +454,26 @@ export default function LocationRecordPage({ locationId, onNav }) {
           </div>
 
           {/* Tab nav */}
-          <div style={{ display:"flex", gap:0 }}>
-            {[["info","Info Card"],["reports","Reports"]].map(([id,label]) => (
+          <div style={{ display:"flex", gap:0, overflowX:"auto" }}>
+            {[
+              ["scorecard","Scorecard"],
+              ["details",  "Details"],
+              ["related",  "Related"],
+              ["employees","Employees"],
+              ["assets",   "Assets"],
+              ["activity", "Activity"],
+              ["reports",  "Reports"],
+            ].map(([id,label]) => (
               <button key={id} onClick={() => setActiveTab(id)}
                 style={{ padding:"8px 18px", border:"none", background:"none", cursor:"pointer",
                   fontSize:13, fontFamily:F, fontWeight:activeTab===id?700:400,
                   color:activeTab===id?C.primary:C.textSec,
                   borderBottom: activeTab===id?`2px solid ${C.primary}`:"2px solid transparent",
-                  display:"flex",alignItems:"center",gap:6 }}>
+                  display:"flex",alignItems:"center",gap:6,whiteSpace:"nowrap" }}>
                 {label}
                 {id==="reports" && (
-                  <span style={{ fontSize:9,fontWeight:700,color:"#fff",background:C.primary,
-                    padding:"1px 5px",borderRadius:3,letterSpacing:"0.02em" }}>INSIGHTS</span>
+                  <span style={{ fontSize:10,fontWeight:700,color:"#fff",background:C.primary,
+                    padding:"1px 5px",borderRadius:4,letterSpacing:"0.02em" }}>INSIGHTS</span>
                 )}
               </button>
             ))}
@@ -461,8 +484,8 @@ export default function LocationRecordPage({ locationId, onNav }) {
         <div style={{ flex:1, overflowY:"auto" }}>
           {showMap && <MapModal loc={loc} onClose={()=>setShowMap(false)} />}
 
-          {/* ════════════════════ INFO CARD TAB ════════════════════════════ */}
-          {activeTab === "info" && (
+          {/* ════════════════════ SCORECARD TAB ════════════════════════════ */}
+          {activeTab === "scorecard" && (
             <div style={{ maxWidth:920, margin:"0 auto", padding:"20px 24px" }}>
 
               {/* ── Section 1: Location Basics ──────────────────────────── */}
@@ -519,7 +542,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
                         style={{padding:"3px 10px",borderRadius:999,border:`1px solid ${dateRange===r?C.primary:C.border}`,
                           background:dateRange===r?C.primaryBg:C.bgSurf,
                           color:dateRange===r?C.primary:C.textSec,
-                          fontSize:11,fontFamily:F,cursor:"pointer",fontWeight:dateRange===r?600:400}}>
+                          fontSize:12,fontFamily:F,cursor:"pointer",fontWeight:dateRange===r?600:400}}>
                         {r}
                       </button>
                     ))}
@@ -541,24 +564,24 @@ export default function LocationRecordPage({ locationId, onNav }) {
                       <div style={{ display:"flex",alignItems:"baseline",gap:6 }}>
                         <span style={{ fontSize:24,fontWeight:800,color:tile.color,fontFamily:F,lineHeight:1 }}>{tile.value}</span>
                         {tile.showDelta && tile.delta !== 0 && (
-                          <span style={{ fontSize:11,fontWeight:600,color:tile.delta>0?C.success:C.error,fontFamily:F }}>
+                          <span style={{ fontSize:12,fontWeight:600,color:tile.delta>0?C.success:C.error,fontFamily:F }}>
                             {tile.delta>0?"+":""}{tile.delta}
                           </span>
                         )}
                       </div>
-                      {tile.showDelta && <div style={{fontSize:9,color:C.textMuted,fontFamily:F,marginTop:2}}>vs prev period</div>}
+                      {tile.showDelta && <div style={{fontSize:10,color:C.textMuted,fontFamily:F,marginTop:2}}>vs prev period</div>}
                     </div>
                   ))}
                 </div>
                 {/* Trend metric toggle */}
                 <div style={{display:"flex",gap:8,marginBottom:10,alignItems:"center"}}>
-                  <span style={{fontSize:11,color:C.textMuted,fontFamily:F}}>Show:</span>
+                  <span style={{fontSize:12,color:C.textMuted,fontFamily:F}}>Show:</span>
                   {[["compliance","Compliance Score"],["volume","Audit Volume"]].map(([v,l])=>(
                     <button key={v} onClick={()=>setTrendMetric(v)}
                       style={{padding:"3px 10px",borderRadius:999,border:`1px solid ${trendMetric===v?C.primary:C.border}`,
                         background:trendMetric===v?C.primaryBg:C.bgSurf,
                         color:trendMetric===v?C.primary:C.textSec,
-                        fontSize:11,fontFamily:F,cursor:"pointer",fontWeight:trendMetric===v?600:400}}>
+                        fontSize:12,fontFamily:F,cursor:"pointer",fontWeight:trendMetric===v?600:400}}>
                       {l}
                     </button>
                   ))}
@@ -577,7 +600,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
                     { label:"vs. Region avg", val:regionAvg },
                     { label:`vs. Top in district (${topPeerName})`, val:topPeerScore },
                   ].map(c=>(
-                    <div key={c.label} style={{fontSize:11,fontFamily:F,color:C.textSec}}>
+                    <div key={c.label} style={{fontSize:12,fontFamily:F,color:C.textSec}}>
                       <span>{c.label}: </span>
                       <span style={{fontWeight:700,color:scoreColor(c.val)}}>{c.val}</span>
                     </div>
@@ -599,13 +622,13 @@ export default function LocationRecordPage({ locationId, onNav }) {
                         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
                           {[["Type",prog.type],["Templates",`${prog.templateCount}`],["Cadence",prog.cadence],["Last Audit",prog.lastAuditDate]].map(([k,v])=>(
                             <div key={k}>
-                              <div style={{fontSize:9,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F}}>{k}</div>
-                              <div style={{fontSize:11,color:C.textSec,fontFamily:F}}>{v}</div>
+                              <div style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F}}>{k}</div>
+                              <div style={{fontSize:12,color:C.textSec,fontFamily:F}}>{v}</div>
                             </div>
                           ))}
                         </div>
                         <div style={{marginTop:10,display:"flex",alignItems:"center",gap:6}}>
-                          <div style={{fontSize:9,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F}}>Location Score</div>
+                          <div style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F}}>Location Score</div>
                           <div style={{fontSize:13,fontWeight:700,color:scoreColor(prog.locationScore),fontFamily:F}}>
                             {prog.locationScore}
                           </div>
@@ -648,19 +671,19 @@ export default function LocationRecordPage({ locationId, onNav }) {
                             </span>
                             <div style={{fontSize:10,color:C.textMuted,fontFamily:F}}>{sm.label}</div>
                           </div>
-                          <div style={{fontSize:11,color:C.textSec,fontFamily:F,paddingRight:8}}>{a.templateName}</div>
+                          <div style={{fontSize:12,color:C.textSec,fontFamily:F,paddingRight:8}}>{a.templateName}</div>
                           <div>
                             <span onClick={()=>onNav("employee_record",{employeeId:a.auditorId,employeeName:a.auditorName})}
-                              style={{fontSize:11,color:C.primary,cursor:"pointer",fontFamily:F}}>
+                              style={{fontSize:12,color:C.primary,cursor:"pointer",fontFamily:F}}>
                               {a.auditorName}
                             </span>
                           </div>
-                          <div style={{fontSize:11,color:C.textSec,fontFamily:F}}>{a.date}</div>
+                          <div style={{fontSize:12,color:C.textSec,fontFamily:F}}>{a.date}</div>
                           <div style={{fontSize:12,fontWeight:700,color:sc!=null?scoreColor(sc):C.textMuted,fontFamily:F}}>
                             {sc!=null?sc:"—"}
                           </div>
                           <div style={{fontSize:12,fontWeight:600,color:a.cf>0?C.error:C.textMuted,fontFamily:F}}>{a.cf||0}</div>
-                          <div style={{fontSize:11,color:C.textSec,fontFamily:F}}>{a.ap||0}</div>
+                          <div style={{fontSize:12,color:C.textSec,fontFamily:F}}>{a.ap||0}</div>
                         </div>
                       );
                     })}
@@ -669,14 +692,14 @@ export default function LocationRecordPage({ locationId, onNav }) {
                 {auditPages > 1 && (
                   <div style={{display:"flex",gap:8,alignItems:"center",justifyContent:"center",marginTop:14}}>
                     <button onClick={()=>setAuditPage(p=>Math.max(1,p-1))} disabled={auditPage===1}
-                      style={{padding:"4px 10px",borderRadius:5,border:`1px solid ${C.border}`,
-                        background:C.bgSurf,color:auditPage===1?C.textMuted:C.navyDeep,cursor:auditPage===1?"default":"pointer",fontSize:11,fontFamily:F}}>
+                      style={{padding:"4px 10px",borderRadius:4,border:`1px solid ${C.border}`,
+                        background:C.bgSurf,color:auditPage===1?C.textMuted:C.navyDeep,cursor:auditPage===1?"default":"pointer",fontSize:12,fontFamily:F}}>
                       ← Prev
                     </button>
-                    <span style={{fontSize:11,color:C.textSec,fontFamily:F}}>{auditPage} / {auditPages}</span>
+                    <span style={{fontSize:12,color:C.textSec,fontFamily:F}}>{auditPage} / {auditPages}</span>
                     <button onClick={()=>setAuditPage(p=>Math.min(auditPages,p+1))} disabled={auditPage===auditPages}
-                      style={{padding:"4px 10px",borderRadius:5,border:`1px solid ${C.border}`,
-                        background:C.bgSurf,color:auditPage===auditPages?C.textMuted:C.navyDeep,cursor:auditPage===auditPages?"default":"pointer",fontSize:11,fontFamily:F}}>
+                      style={{padding:"4px 10px",borderRadius:4,border:`1px solid ${C.border}`,
+                        background:C.bgSurf,color:auditPage===auditPages?C.textMuted:C.navyDeep,cursor:auditPage===auditPages?"default":"pointer",fontSize:12,fontFamily:F}}>
                       Next →
                     </button>
                   </div>
@@ -710,20 +733,20 @@ export default function LocationRecordPage({ locationId, onNav }) {
                           <div>
                             {ap.originAuditId && (
                               <span onClick={()=>onNav("audit_record",{auditId:ap.originAuditId})}
-                                style={{fontSize:11,color:C.primary,cursor:"pointer",fontFamily:F}}>
+                                style={{fontSize:12,color:C.primary,cursor:"pointer",fontFamily:F}}>
                                 {ap.originAuditName?.split(" — ")[0]||ap.originAuditName}
                               </span>
                             )}
                           </div>
                           <div>
                             <span onClick={()=>onNav("employee_record",{employeeId:ap.assignedToId,employeeName:ap.assignedToName})}
-                              style={{fontSize:11,color:C.primary,cursor:"pointer",fontFamily:F}}>
+                              style={{fontSize:12,color:C.primary,cursor:"pointer",fontFamily:F}}>
                               {ap.assignedToName}
                             </span>
                           </div>
-                          <div style={{fontSize:11,color:C.textSec,fontFamily:F}}>{ap.dueDate}</div>
+                          <div style={{fontSize:12,color:C.textSec,fontFamily:F}}>{ap.dueDate}</div>
                           <div><Pill label={sm.label} color={sm.color} bg={sm.bg} sm/></div>
-                          <div style={{fontSize:11,fontWeight:600,color:PRIORITY_COLOR[ap.priority]||C.textSec,fontFamily:F,textTransform:"capitalize"}}>{ap.priority}</div>
+                          <div style={{fontSize:12,fontWeight:600,color:PRIORITY_COLOR[ap.priority]||C.textSec,fontFamily:F,textTransform:"capitalize"}}>{ap.priority}</div>
                         </div>
                       );
                     })}
@@ -748,19 +771,19 @@ export default function LocationRecordPage({ locationId, onNav }) {
                     return (
                       <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 70px 80px 160px 80px",
                         gap:0,padding:"9px 0",borderBottom:i<criticalPatterns.length-1?`1px solid ${C.border}`:"none",alignItems:"center"}}>
-                        <div style={{fontSize:11,color:C.navyDeep,fontFamily:F,paddingRight:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+                        <div style={{fontSize:12,color:C.navyDeep,fontFamily:F,paddingRight:8,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
                           {p.question}
                         </div>
                         <div style={{fontSize:12,fontWeight:700,color:p.failCount>=3?C.error:C.navyDeep,fontFamily:F}}>{p.failCount}</div>
-                        <div style={{fontSize:11,color:C.textSec,fontFamily:F}}>{p.failRate}%</div>
+                        <div style={{fontSize:12,color:C.textSec,fontFamily:F}}>{p.failRate}%</div>
                         <div>
                           <span onClick={()=>p.lastFailAuditId&&onNav("audit_record",{auditId:p.lastFailAuditId})}
-                            style={{fontSize:11,color:C.primary,cursor:"pointer",fontFamily:F}}>
+                            style={{fontSize:12,color:C.primary,cursor:"pointer",fontFamily:F}}>
                             {p.lastFailDate}
                           </span>
                         </div>
                         <div style={{fontSize:16,color:trendCol,fontWeight:700}}>{trendIcon}
-                          <span style={{fontSize:9,color:C.textMuted,fontFamily:F,marginLeft:4}}>{p.trend}</span>
+                          <span style={{fontSize:10,color:C.textMuted,fontFamily:F,marginLeft:4}}>{p.trend}</span>
                         </div>
                       </div>
                     );
@@ -794,26 +817,323 @@ export default function LocationRecordPage({ locationId, onNav }) {
                           <div style={{display:"flex",alignItems:"center",gap:8}}>
                             <div style={{width:26,height:26,borderRadius:"50%",background:col,flexShrink:0,
                               display:"flex",alignItems:"center",justifyContent:"center"}}>
-                              <span style={{fontSize:9,fontWeight:700,color:"white",fontFamily:F}}>{emp.initials}</span>
+                              <span style={{fontSize:10,fontWeight:700,color:"white",fontFamily:F}}>{emp.initials}</span>
                             </div>
                             <span onClick={()=>onNav("employee_record",{employeeId:emp.id,employeeName:emp.name})}
                               style={{fontSize:12,fontWeight:600,color:C.primary,cursor:"pointer",fontFamily:F}}>
                               {emp.name}
                             </span>
                           </div>
-                          <div style={{fontSize:11,color:C.textSec,fontFamily:F,paddingRight:8}}>{emp.role}</div>
+                          <div style={{fontSize:12,color:C.textSec,fontFamily:F,paddingRight:8}}>{emp.role}</div>
                           <div>
                             <Pill label={emp.status==="active"?"Active":"Inactive"}
                               color={emp.status==="active"?C.success:C.textMuted}
                               bg={emp.status==="active"?C.successBg:C.bgApp} sm/>
                           </div>
                           <div style={{fontSize:12,fontWeight:600,color:C.navyDeep,fontFamily:F}}>{emp.auditsQ||0}</div>
-                          <div style={{fontSize:11,color:C.textSec,fontFamily:F}}>{emp.lastActivity}</div>
+                          <div style={{fontSize:12,color:C.textSec,fontFamily:F}}>{emp.lastActivity}</div>
                         </div>
                       );
                     })}
                   </div>
                 )}
+              </SectionCard>
+            </div>
+          )}
+
+          {/* ════════════════════ DETAILS TAB ══════════════════════════════ */}
+          {activeTab === "details" && (
+            <div style={{ maxWidth:920, margin:"0 auto", padding:"20px 24px" }}>
+
+              {/* 1. Location Information */}
+              <SectionCard title="Location Information" collapsible defaultOpen={true}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32 }}>
+                  <div>
+                    <EditableField label="Location Name"   value={loc.name}       fieldKey="name"       canEdit={canEdit("address")} onSave={handleSave}/>
+                    <EditableField label="Location Number" value={loc.storeNum}   fieldKey="storeNum"   canEdit={canEdit("address")} onSave={handleSave}/>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Region</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.primary,cursor:"pointer" }} onClick={()=>alert("Region view coming in V2.")}>{loc.region}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>District</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.primary,cursor:"pointer" }} onClick={()=>alert("District view coming in V2.")}>{loc.district}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Division</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{division||"—"}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Location Record Type</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{loc.type||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Active</div>
+                      {loc.status==="active"
+                        ? <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:600 }}>Yes</span>
+                        : <span style={{ fontSize:12,fontFamily:F,color:C.textMuted }}>No</span>}
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Open Date</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{openDate||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Location Types</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{locationTypes?.join(", ")||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Phone</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.primary }}>{loc.phone||"—"}</span>
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+
+              {/* 2. Store-Specific Attributes */}
+              <SectionCard title="Store-Specific Attributes" collapsible defaultOpen={true}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32 }}>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Square Footage</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>{squareFootage?.toLocaleString()||"—"}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Has Self-Checkout</div>
+                      {hasSelfCheckout
+                        ? <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:600 }}>Yes</span>
+                        : <span style={{ fontSize:12,fontFamily:F,color:C.textMuted }}>No</span>}
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+
+              {/* 3. Alarm Details */}
+              <SectionCard title="Alarm Details" collapsible defaultOpen={false}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32 }}>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Alarm Authorized People</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,whiteSpace:"pre-line" }}>{alarm?.authorizedPeople||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Alarm Contract Date</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{alarm?.contractDate||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Alarm Monthly Fee</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>${alarm?.monthlyFee||"—"}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Alarm Contact Phone</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.primary }}>{alarm?.contactPhone||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Alarm Contract Expiration</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{alarm?.contractExpiration||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Alarm Vendor</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{alarm?.vendor||"—"}</span>
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+
+              {/* 4. CCTV Details */}
+              <SectionCard title="CCTV Details" collapsible defaultOpen={false}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32 }}>
+                  <div>
+                    {[["CCTV Recorder Type",cctv?.recorderType],["CCTV Recorder Brand",cctv?.recorderBrand],
+                      ["CCTV Recorder Serial Number",cctv?.recorderSerialNumber],["CCTV Number of Cameras",cctv?.numberOfCameras]
+                    ].map(([lbl,val])=>(
+                      <div key={lbl} style={{ marginBottom:12 }}>
+                        <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>{lbl}</div>
+                        <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{val||"—"}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    {[["CCTV Install Date",cctv?.installDate],["CCTV Date of Last Update",cctv?.dateOfLastUpdate],
+                      ["CCTV License Date",cctv?.licenseDate],["CCTV License Expiration",cctv?.licenseExpiration]
+                    ].map(([lbl,val])=>(
+                      <div key={lbl} style={{ marginBottom:12 }}>
+                        <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>{lbl}</div>
+                        <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{val||"—"}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </SectionCard>
+
+              {/* 5. Guard Details */}
+              <SectionCard title="Guard Details" collapsible defaultOpen={false}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32 }}>
+                  <div>
+                    {[["Vendor",guard?.vendor],["Industry",guard?.industry],["Guard Vendor",guard?.vendorName]].map(([lbl,val])=>(
+                      <div key={lbl} style={{ marginBottom:12 }}>
+                        <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>{lbl}</div>
+                        <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{val||"—"}</span>
+                      </div>
+                    ))}
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard Vendor Contact Phone</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.primary }}>{guard?.vendorContactPhone||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard Vendor Supervisor Name</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{guard?.vendorSupervisorName||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard Vendor Supervisor Phone</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.primary }}>{guard?.vendorSupervisorPhone||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard Schedule</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{guard?.schedule||"—"}</span>
+                    </div>
+                  </div>
+                  <div>
+                    {[["Type",guard?.type],["Contract Type",guard?.contractType],
+                      ["Guard Contract Date",guard?.contractDate],["Guard Contract Expiration",guard?.contractExpiration]
+                    ].map(([lbl,val])=>(
+                      <div key={lbl} style={{ marginBottom:12 }}>
+                        <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>{lbl}</div>
+                        <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{val||"—"}</span>
+                      </div>
+                    ))}
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard – Number of Guards</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{guard?.numberOfGuards||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard Hourly Rate</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>${guard?.hourlyRate||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Guard Hours per Week</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{guard?.hoursPerWeek||"—"}</span>
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+
+              {/* 6. Key Holder List */}
+              <SectionCard title="Key Holder List" collapsible defaultOpen={false}>
+                <div style={{ whiteSpace:"pre-line",fontSize:12,color:C.navyDeep,fontFamily:F,marginBottom:8 }}>
+                  {keyHolders?.list||"—"}
+                </div>
+                <div style={{ fontSize:11,color:C.textMuted,fontFamily:F }}>
+                  Last reviewed: {keyHolders?.lastReviewedDate||"—"} · Reviewed by: {keyHolders?.lastReviewedBy||"—"}
+                </div>
+              </SectionCard>
+
+              {/* 7. Shrink Details */}
+              <SectionCard title="Shrink Details" collapsible defaultOpen={false}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:32 }}>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Shrink Dollars</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>${shrink?.shrinkDollars||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Annual Revenue</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>${shrink?.annualRevenue||"—"}</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Risk Tolerance</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{shrink?.riskTolerance||"—"}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Shrink Percent</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>{shrink?.shrinkPercent||"—"}%</span>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Shrink Icon Color</div>
+                      <div style={{ display:"flex",alignItems:"center",gap:6 }}>
+                        <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500 }}>{shrink?.iconColor||"—"}</span>
+                        {shrink?.iconColor && (
+                          <div style={{ width:12,height:12,borderRadius:3,background:shrink.iconColor,flexShrink:0,border:`1px solid ${C.border}` }}/>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ marginBottom:12 }}>
+                      <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:3 }}>Inv Period Sales</div>
+                      <span style={{ fontSize:12,fontFamily:F,color:C.navyDeep,fontWeight:500,fontVariantNumeric:"tabular-nums" }}>${shrink?.invPeriodSales||"—"}</span>
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+
+              {/* 8. Address Details */}
+              <SectionCard title="Address Details" collapsible defaultOpen={true}>
+                <div style={{ marginBottom:6 }}>
+                  <div style={{ fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:"0.04em",fontFamily:F,marginBottom:6 }}>Shipping Address</div>
+                  <div onClick={()=>setShowMap(true)} style={{ cursor:"pointer" }}>
+                    <div style={{ fontSize:12,fontFamily:F,color:C.primary,lineHeight:1.8 }}>
+                      {shippingAddress?.street}<br/>
+                      {shippingAddress?.city}, {shippingAddress?.state} {shippingAddress?.zip}<br/>
+                      {shippingAddress?.country}
+                    </div>
+                  </div>
+                  <button onClick={()=>setShowMap(true)}
+                    style={{ marginTop:8,padding:"2px 8px",borderRadius:4,border:`1px solid ${C.border}`,
+                      background:"none",fontSize:10,color:C.primary,cursor:"pointer",fontFamily:F }}>
+                    View map
+                  </button>
+                </div>
+              </SectionCard>
+
+            </div>
+          )}
+
+          {/* ════════════════════ RELATED TAB ══════════════════════════════ */}
+          {activeTab === "related" && (
+            <div style={{ maxWidth:920, margin:"0 auto", padding:"20px 24px" }}>
+              <SectionCard title="Related Records">
+                <div style={{ padding:"24px 0",textAlign:"center",color:C.textMuted,fontSize:12,fontFamily:F }}>
+                  Related records — programs, templates, parent/child locations, vendors — coming soon.
+                </div>
+              </SectionCard>
+            </div>
+          )}
+
+          {/* ════════════════════ EMPLOYEES TAB ════════════════════════════ */}
+          {activeTab === "employees" && (
+            <div style={{ maxWidth:920, margin:"0 auto", padding:"20px 24px" }}>
+              <SectionCard title="Employee Roster">
+                <div style={{ padding:"24px 0",textAlign:"center",color:C.textMuted,fontSize:12,fontFamily:F }}>
+                  Full employee roster with roles, audit counts, and activity feed — coming soon.
+                </div>
+              </SectionCard>
+            </div>
+          )}
+
+          {/* ════════════════════ ASSETS TAB ═══════════════════════════════ */}
+          {activeTab === "assets" && (
+            <div style={{ maxWidth:920, margin:"0 auto", padding:"20px 24px" }}>
+              <SectionCard title="Asset Inventory">
+                <div style={{ padding:"24px 0",textAlign:"center",color:C.textMuted,fontSize:12,fontFamily:F }}>
+                  Equipment, fixtures, and safety device inventory with inspection due dates — coming soon.
+                </div>
+              </SectionCard>
+            </div>
+          )}
+
+          {/* ════════════════════ ACTIVITY TAB ═════════════════════════════ */}
+          {activeTab === "activity" && (
+            <div style={{ maxWidth:920, margin:"0 auto", padding:"20px 24px" }}>
+              <SectionCard title="Activity Feed">
+                <div style={{ padding:"24px 0",textAlign:"center",color:C.textMuted,fontSize:12,fontFamily:F }}>
+                  Chronological feed of audits, action plans, comments, and escalations — coming soon.
+                </div>
               </SectionCard>
             </div>
           )}
@@ -858,8 +1178,8 @@ export default function LocationRecordPage({ locationId, onNav }) {
                     <span style={{fontSize:14,fontWeight:700,color:C.navyDeep,fontFamily:F}}>
                       {DEFAULT_REPORTS.find(r=>r.id===selectedReport)?.label}
                     </span>
-                    <span style={{fontSize:9,fontWeight:700,color:"#fff",background:C.primary,
-                      padding:"2px 6px",borderRadius:3,letterSpacing:"0.02em"}}>INSIGHTS</span>
+                    <span style={{fontSize:10,fontWeight:700,color:"#fff",background:C.primary,
+                      padding:"2px 6px",borderRadius:4,letterSpacing:"0.02em"}}>INSIGHTS</span>
                   </div>
                   <div style={{display:"flex",gap:8}}>
                     {DATE_RANGES.map(r=>(
@@ -867,13 +1187,13 @@ export default function LocationRecordPage({ locationId, onNav }) {
                         style={{padding:"3px 10px",borderRadius:999,border:`1px solid ${dateRange===r?C.primary:C.border}`,
                           background:dateRange===r?C.primaryBg:C.bgSurf,
                           color:dateRange===r?C.primary:C.textSec,
-                          fontSize:11,fontFamily:F,cursor:"pointer",fontWeight:dateRange===r?600:400}}>
+                          fontSize:12,fontFamily:F,cursor:"pointer",fontWeight:dateRange===r?600:400}}>
                         {r}
                       </button>
                     ))}
                     <button onClick={()=>alert("Export coming in Insights V2.")}
                       style={{padding:"3px 12px",borderRadius:999,border:`1px solid ${C.border}`,
-                        background:C.bgSurf,color:C.textSec,fontSize:11,fontFamily:F,cursor:"pointer"}}>
+                        background:C.bgSurf,color:C.textSec,fontSize:12,fontFamily:F,cursor:"pointer"}}>
                       Export
                     </button>
                   </div>
@@ -881,7 +1201,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
 
                 {/* Report 1: Compliance Score Trend */}
                 {selectedReport === "trend" && (
-                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:10,padding:20}}>
+                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:12,padding:20}}>
                     <div style={{fontSize:12,color:C.textSec,fontFamily:F,marginBottom:16}}>
                       {loc.name}'s compliance score trend vs. district and region averages.
                     </div>
@@ -903,7 +1223,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
 
                 {/* Report 2: Audit Volume by Template */}
                 {selectedReport === "volume" && (
-                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:10,padding:20}}>
+                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:12,padding:20}}>
                     <div style={{fontSize:12,color:C.textSec,fontFamily:F,marginBottom:16}}>
                       Number of audits completed per month at this location.
                     </div>
@@ -913,7 +1233,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
 
                 {/* Report 3: AP Resolution Time */}
                 {selectedReport === "apresol" && (
-                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:10,padding:20}}>
+                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:12,padding:20}}>
                     <div style={{fontSize:12,color:C.textSec,fontFamily:F,marginBottom:16}}>
                       Distribution of time to close action plans at this location.
                     </div>
@@ -923,7 +1243,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
 
                 {/* Report 4: Top Missed Questions */}
                 {selectedReport === "missed" && (
-                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:10,padding:20}}>
+                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:12,padding:20}}>
                     <div style={{fontSize:12,color:C.textSec,fontFamily:F,marginBottom:16}}>
                       Questions most frequently failed at this location across all audits.
                     </div>
@@ -933,7 +1253,7 @@ export default function LocationRecordPage({ locationId, onNav }) {
 
                 {/* Report 5: Compliance vs Peers */}
                 {selectedReport === "peers" && (
-                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:10,padding:20}}>
+                  <div style={{background:C.bgSurf,border:`1px solid ${C.border}`,borderRadius:12,padding:20}}>
                     <div style={{fontSize:12,color:C.textSec,fontFamily:F,marginBottom:16}}>
                       Compliance score comparison with similar locations (same type, same region).
                     </div>

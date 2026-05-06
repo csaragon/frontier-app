@@ -5,7 +5,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -15,9 +15,9 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
+  success:      "#115e59",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -86,7 +86,7 @@ function SmSel({ value, options, onChange, width, "aria-label": ariaLabel }) {
       value={value}
       onChange={e => onChange(e.target.value)}
       aria-label={ariaLabel}
-      style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`, fontSize: 11, fontFamily: F, color: C.navyDeep, background: C.bgSurface, cursor: "pointer", outline: "none", width: width || "auto" }}
+      style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${C.borderDef}`, fontSize: 12, fontFamily: F, color: C.navyDeep, background: C.bgSurface, cursor: "pointer", outline: "none", width: width || "auto" }}
       onFocus={e => (e.target.style.borderColor = C.primary)}
       onBlur={e => (e.target.style.borderColor = C.borderDef)}
     >
@@ -107,7 +107,7 @@ function SmInput({ value, onChange, type = "number", placeholder, width, hasErro
       type={type}
       placeholder={placeholder}
       aria-label={ariaLabel}
-      style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${hasError ? C.error : C.borderDef}`, fontSize: 11, fontFamily: F, color: C.navyDeep, background: C.bgSurface, outline: "none", width: width || 72, boxSizing: "border-box" }}
+      style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${hasError ? C.error : C.borderDef}`, fontSize: 12, fontFamily: F, color: C.navyDeep, background: C.bgSurface, outline: "none", width: width || 72, boxSizing: "border-box" }}
       onFocus={e => { if (!hasError) e.target.style.borderColor = C.primary; }}
       onBlur={e => { if (!hasError) e.target.style.borderColor = C.borderDef; }}
     />
@@ -127,7 +127,7 @@ function MultiChip({ values, options, onChange }) {
             type="button"
             onClick={() => toggle(o)}
             aria-pressed={sel}
-            style={{ padding: "3px 9px", borderRadius: 999, border: `1px solid ${sel ? C.primary : C.borderDef}`, background: sel ? C.primaryBg : C.bgSurface, color: sel ? C.primaryHover : C.navyDeep, fontSize: 11, fontFamily: F, cursor: "pointer", outline: "none", fontWeight: sel ? 600 : 400 }}
+            style={{ padding: "3px 9px", borderRadius: 999, border: `1px solid ${sel ? C.primary : C.borderDef}`, background: sel ? C.primaryBg : C.bgSurface, color: sel ? C.primaryHover : C.navyDeep, fontSize: 12, fontFamily: F, cursor: "pointer", outline: "none", fontWeight: sel ? 600 : 400 }}
             onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
             onBlur={e => (e.currentTarget.style.boxShadow = "none")}
           >
@@ -172,7 +172,7 @@ function ConditionBuilder({ conditions, onChange, withPoints, maxPoints }) {
       })}
       <button
         onClick={add}
-        style={{ fontSize: 11, color: C.primary, background: "none", border: "none", cursor: "pointer", padding: "3px 0", fontFamily: F }}
+        style={{ fontSize: 12, color: C.primary, background: "none", border: "none", cursor: "pointer", padding: "3px 0", fontFamily: F }}
         onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
         onBlur={e => (e.currentTarget.style.boxShadow = "none")}
       >
@@ -233,9 +233,9 @@ function WF_MultiSelect({ sc, upd }) {
   return (
     <FieldGroup label="Passing value/s">
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-        <span style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>Pass if</span>
+        <span style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>Pass if</span>
         <SmSel value={logic} options={[{ value: "ALL", label: "ALL of" }, { value: "ANY", label: "ANY of" }]} onChange={v => upd({ logic: v })} />
-        <span style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>these are selected:</span>
+        <span style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>these are selected:</span>
       </div>
       <MultiChip values={conditions} options={choices} onChange={v => upd({ conditions: v })} />
     </FieldGroup>
@@ -335,7 +335,7 @@ function PB_Choice({ sc, upd, type }) {
             const over = pts > maxPts;
             return (
               <div key={ch} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 11, color: C.navyDeep, fontFamily: F, minWidth: 110 }}>{ch}</span>
+                <span style={{ fontSize: 12, color: C.navyDeep, fontFamily: F, minWidth: 110 }}>{ch}</span>
                 <SmInput value={cp[ch] ?? 0} onChange={v => upd({ choicePoints: { ...cp, [ch]: parseFloat(v) || 0 } })} width={56} hasError={over} />
                 <span style={{ fontSize: 10, color: over ? C.error : C.textMuted, fontFamily: F }}>{over ? "exceeds max" : "pts"}</span>
               </div>
@@ -400,12 +400,12 @@ export default function QuestionScoringRow({ q, model, scoring, onChange, sectio
     >
       {/* Left — question identity */}
       <div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: C.navyDeep, fontFamily: F, lineHeight: "15px", marginBottom: 5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+        <div style={{ fontSize: 12, fontWeight: 500, color: C.navyDeep, fontFamily: F, lineHeight: "15px", marginBottom: 5, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
           {q.text}
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", padding: "1px 6px", borderRadius: 4, fontSize: 9, fontWeight: 600, fontFamily: F, background: tm.bg, color: tm.color }}>{q.type}</span>
-          {isConditional && <em style={{ fontSize: 9, color: C.textMuted, fontFamily: F }}>Conditional — excluded from scoring</em>}
+          <span style={{ display: "inline-flex", alignItems: "center", padding: "1px 6px", borderRadius: 4, fontSize: 10, fontWeight: 600, fontFamily: F, background: tm.bg, color: tm.color }}>{q.type}</span>
+          {isConditional && <em style={{ fontSize: 10, color: C.textMuted, fontFamily: F }}>Conditional — excluded from scoring</em>}
         </div>
       </div>
 
@@ -429,14 +429,14 @@ export default function QuestionScoringRow({ q, model, scoring, onChange, sectio
 
         {/* Conditional — excluded from scoring */}
         {isConditional && model !== "informational" && (
-          <em title="Conditional questions are excluded from scoring in V1" style={{ fontSize: 11, color: C.textMuted, fontFamily: F, alignSelf: "center", cursor: "help" }}>
+          <em title="Conditional questions are excluded from scoring in V1" style={{ fontSize: 12, color: C.textMuted, fontFamily: F, alignSelf: "center", cursor: "help" }}>
             Excluded from scoring
           </em>
         )}
 
         {/* Informational note */}
         {model === "informational" && (
-          <em style={{ fontSize: 11, color: C.textMuted, fontFamily: F, alignSelf: "center" }}>Data collection only</em>
+          <em style={{ fontSize: 12, color: C.textMuted, fontFamily: F, alignSelf: "center" }}>Data collection only</em>
         )}
       </div>
     </div>

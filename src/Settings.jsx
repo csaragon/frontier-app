@@ -1,28 +1,28 @@
 import { useState } from "react";
 import AppSidebar from "./AppSidebar.jsx";
+import { T, F } from "./aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:      "#001e76",
-  navyDeep:  "#16191d",
-  textSec:   "#555f6d",
-  textMuted: "#8692a2",
-  bgApp:     "#f4f4f6",
-  bgSurf:    "#ffffff",
-  border:    "#e2e5e9",
-  primary:   "#2226f7",
-  primaryBg: "#f0f2ff",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
 };
 
 const COLOR_PALETTE = [
-  { color:"#2226f7", bg:"#f0f2ff" },
-  { color:"#059669", bg:"#ecfdf5" },
-  { color:"#dc2626", bg:"#fef2f2" },
-  { color:"#b45309", bg:"#fffbeb" },
+  { color:"#2226f7", bg:"#d4e2ff" },
+  { color:"#115e59", bg:"#ccfbf1" },
+  { color:"#b6143a", bg:"#fae5e6" },
+  { color:"#854d0e", bg:"#fef9c3" },
   { color:"#7c3aed", bg:"#faf5ff" },
-  { color:"#0369a1", bg:"#f0f9ff" },
+  { color:"#001e76", bg:"#d4e2ff" },
   { color:"#c2410c", bg:"#fff7ed" },
-  { color:"#0f766e", bg:"#ecfdf5" },
+  { color:"#0f766e", bg:"#ccfbf1" },
   { color:"#6d28d9", bg:"#ede9fe" },
   { color:"#be185d", bg:"#fdf2f8" },
 ];
@@ -54,7 +54,7 @@ function CategoryRow({ cat, onRename, onDelete }) {
           onChange={e => setDraft(e.target.value)}
           onBlur={commit}
           onKeyDown={e => { if (e.key === "Enter") commit(); if (e.key === "Escape") { setDraft(cat.name); setEditing(false); } }}
-          style={{ flex:1, fontSize:12, fontWeight:500, fontFamily:F, color:C.navyDeep, border:`1px solid ${C.primary}`, borderRadius:5, padding:"3px 7px", outline:"none", background:C.bgSurf }}
+          style={{ flex:1, fontSize:12, fontWeight:500, fontFamily:F, color:C.navyDeep, border:`1px solid ${C.primary}`, borderRadius:4, padding:"3px 7px", outline:"none", background:C.bgSurf }}
         />
       ) : (
         <span style={{ flex:1, fontSize:12, fontWeight:500, color:C.navyDeep, fontFamily:F }}>{cat.name}</span>
@@ -62,7 +62,7 @@ function CategoryRow({ cat, onRename, onDelete }) {
 
       {/* Built-in badge */}
       {cat.builtIn && (
-        <span style={{ fontSize:9, fontWeight:700, color:C.textMuted, fontFamily:F, textTransform:"uppercase", letterSpacing:"0.05em", padding:"2px 6px", borderRadius:4, background:C.bgApp, border:`1px solid ${C.border}`, flexShrink:0 }}>
+        <span style={{ fontSize:10, fontWeight:700, color:C.textMuted, fontFamily:F, textTransform:"uppercase", letterSpacing:"0.05em", padding:"2px 6px", borderRadius:4, background:C.bgApp, border:`1px solid ${C.border}`, flexShrink:0 }}>
           System
         </span>
       )}
@@ -71,15 +71,15 @@ function CategoryRow({ cat, onRename, onDelete }) {
       {!cat.builtIn && !editing && (
         <div style={{ display:"flex", gap:4, flexShrink:0 }}>
           <button onClick={() => { setDraft(cat.name); setEditing(true); }}
-            style={{ padding:"3px 8px", borderRadius:5, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:11, fontFamily:F, cursor:"pointer" }}
+            style={{ padding:"3px 8px", borderRadius:4, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}
             onMouseEnter={e => (e.currentTarget.style.background = C.bgApp)}
             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
           >
             Rename
           </button>
           <button onClick={() => onDelete(cat.id)}
-            style={{ padding:"3px 8px", borderRadius:5, border:"1px solid #fca5a5", background:"transparent", color:"#dc2626", fontSize:11, fontFamily:F, cursor:"pointer" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#fef2f2")}
+            style={{ padding:"3px 8px", borderRadius:4, border:"1px solid #fca5a5", background:"transparent", color:"#b6143a", fontSize:12, fontFamily:F, cursor:"pointer" }}
+            onMouseEnter={e => (e.currentTarget.style.background = "#fae5e6")}
             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
           >
             Delete
@@ -110,7 +110,7 @@ function CategoriesSection({ categories, onCategoriesChange }) {
 
   return (
     <div>
-      <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", fontFamily:F, marginBottom:4 }}>Template Categories</div>
+      <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, textTransform:"uppercase", letterSpacing:"0.06em", fontFamily:F, marginBottom:4 }}>Template Categories</div>
       <div style={{ fontSize:13, color:C.textSec, fontFamily:F, marginBottom:16 }}>
         Organize audit templates into groups. System categories cannot be deleted.
       </div>
@@ -132,7 +132,7 @@ function CategoriesSection({ categories, onCategoriesChange }) {
             onChange={e => setNewName(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") add(); if (e.key === "Escape") { setAdding(false); setNewName(""); } }}
             placeholder="Category name…"
-            style={{ width:"100%", padding:"7px 10px", borderRadius:7, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", background:"#fff", boxSizing:"border-box", marginBottom:12 }}
+            style={{ width:"100%", padding:"7px 10px", borderRadius:8, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", background:"#fff", boxSizing:"border-box", marginBottom:12 }}
             onFocus={e => (e.target.style.borderColor = C.primary)}
             onBlur={e => (e.target.style.borderColor = C.border)}
           />
@@ -140,29 +140,29 @@ function CategoriesSection({ categories, onCategoriesChange }) {
           <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:12 }}>
             {COLOR_PALETTE.map((p, i) => (
               <button key={i} onClick={() => setNewColor(i)}
-                style={{ width:24, height:24, borderRadius:5, background:p.bg, border:`2px solid ${newColor === i ? p.color : p.color + "50"}`, cursor:"pointer", position:"relative", flexShrink:0 }}
+                style={{ width:24, height:24, borderRadius:4, background:p.bg, border:`2px solid ${newColor === i ? p.color : p.color + "50"}`, cursor:"pointer", position:"relative", flexShrink:0 }}
               >
                 <div style={{ width:10, height:10, borderRadius:"50%", background:p.color, position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)" }} />
                 {newColor === i && (
-                  <div style={{ position:"absolute", inset:-3, borderRadius:7, border:`2px solid ${p.color}`, pointerEvents:"none" }} />
+                  <div style={{ position:"absolute", inset:-3, borderRadius:8, border:`2px solid ${p.color}`, pointerEvents:"none" }} />
                 )}
               </button>
             ))}
           </div>
           <div style={{ display:"flex", gap:8 }}>
             <button onClick={() => { setAdding(false); setNewName(""); }}
-              style={{ padding:"6px 12px", borderRadius:6, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:11, fontFamily:F, cursor:"pointer" }}>
+              style={{ padding:"6px 12px", borderRadius:6, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>
               Cancel
             </button>
             <button onClick={add} disabled={!newName.trim()}
-              style={{ padding:"6px 14px", borderRadius:6, border:"none", background:newName.trim() ? C.primary : C.border, color:"#fff", fontSize:11, fontWeight:600, fontFamily:F, cursor:newName.trim() ? "pointer" : "not-allowed" }}>
+              style={{ padding:"6px 14px", borderRadius:6, border:"none", background:newName.trim() ? C.primary : C.border, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:newName.trim() ? "pointer" : "not-allowed" }}>
               Add category
             </button>
           </div>
         </div>
       ) : (
         <button onClick={() => setAdding(true)}
-          style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:7, border:`1px dashed ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer", width:"100%" }}
+          style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 14px", borderRadius:8, border:`1px dashed ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer", width:"100%" }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = C.primary; e.currentTarget.style.color = C.primary; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSec; }}
         >
@@ -180,14 +180,14 @@ function DensityOption({ id, label, description, preview, selected, onSelect }) 
       onClick={() => onSelect(id)}
       style={{
         display: "flex", flexDirection: "column", gap: 12,
-        padding: 16, borderRadius: 10, border: `2px solid ${selected ? C.primary : C.border}`,
+        padding: 16, borderRadius: 12, border: `2px solid ${selected ? C.primary : C.border}`,
         background: selected ? C.primaryBg : C.bgSurf,
         cursor: "pointer", textAlign: "left", width: "100%",
         transition: "border-color 0.12s, background 0.12s",
       }}
     >
       {/* Preview mockup */}
-      <div style={{ borderRadius: 7, border: `1px solid ${C.border}`, overflow: "hidden", background: C.bgApp }}>
+      <div style={{ borderRadius: 8, border: `1px solid ${C.border}`, overflow: "hidden", background: C.bgApp }}>
         {preview}
       </div>
 
@@ -203,7 +203,7 @@ function DensityOption({ id, label, description, preview, selected, onSelect }) 
         </div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 600, color: C.navyDeep, fontFamily: F, marginBottom: 2 }}>{label}</div>
-          <div style={{ fontSize: 11, color: C.textMuted, fontFamily: F, lineHeight: "16px" }}>{description}</div>
+          <div style={{ fontSize: 12, color: C.textMuted, fontFamily: F, lineHeight: "16px" }}>{description}</div>
         </div>
       </div>
     </button>
@@ -213,17 +213,17 @@ function DensityOption({ id, label, description, preview, selected, onSelect }) 
 function CondensedPreview() {
   const rows = [
     { name: "LP Standard Compliance Check", loc: "Boston Newbury", status: "In Progress", statusColor: "#a16207", statusBg: "#fef9c3" },
-    { name: "Retail Store Safety Walkthrough", loc: "New York Central", status: "Overdue", statusColor: "#dc2626", statusBg: "#fef2f2" },
+    { name: "Retail Store Safety Walkthrough", loc: "New York Central", status: "Overdue", statusColor: "#b6143a", statusBg: "#fae5e6" },
     { name: "Ops Standards Verification", loc: "Chicago Wacker", status: "Complete", statusColor: "#15803d", statusBg: "#f0fdf4" },
-    { name: "PPE Station Inspection", loc: "LA Westside", status: "Scheduled", statusColor: "#0369a1", statusBg: "#f0f9ff" },
+    { name: "PPE Station Inspection", loc: "LA Westside", status: "Scheduled", statusColor: "#001e76", statusBg: "#d4e2ff" },
   ];
   return (
     <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 3 }}>
       {rows.map((r, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: "1px solid #e2e5e9", borderRadius: 5, padding: "5px 8px" }}>
-          <div style={{ width: 24, height: 24, borderRadius: 5, background: r.statusBg, border: `1px solid ${r.statusColor}30`, flexShrink: 0 }} />
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: "1px solid #e2e5e9", borderRadius: 4, padding: "5px 8px" }}>
+          <div style={{ width: 24, height: 24, borderRadius: 4, background: r.statusBg, border: `1px solid ${r.statusColor}30`, flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, color: "#16191d", fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, color: "#16191d", fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</div>
             <div style={{ fontSize: 8, color: "#8692a2", fontFamily: F }}>{r.loc}</div>
           </div>
           <div style={{ padding: "2px 6px", borderRadius: 999, background: r.statusBg, fontSize: 7, fontWeight: 600, color: r.statusColor, fontFamily: F, flexShrink: 0 }}>{r.status}</div>
@@ -236,17 +236,17 @@ function CondensedPreview() {
 function ComfortPreview() {
   const rows = [
     { name: "LP Standard Compliance Check", loc: "Boston Newbury", status: "In Progress", statusColor: "#a16207", statusBg: "#fef9c3" },
-    { name: "Retail Store Safety Walkthrough", loc: "New York Central", status: "Overdue", statusColor: "#dc2626", statusBg: "#fef2f2" },
+    { name: "Retail Store Safety Walkthrough", loc: "New York Central", status: "Overdue", statusColor: "#b6143a", statusBg: "#fae5e6" },
     { name: "Ops Standards Verification", loc: "Chicago Wacker", status: "Complete", statusColor: "#15803d", statusBg: "#f0fdf4" },
   ];
   return (
     <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
       {rows.map((r, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "1px solid #e2e5e9", borderRadius: 7, padding: "9px 12px" }}>
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: "1px solid #e2e5e9", borderRadius: 8, padding: "9px 12px" }}>
           <div style={{ width: 34, height: 34, borderRadius: 8, background: r.statusBg, border: `1px solid ${r.statusColor}30`, flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 10, fontWeight: 600, color: "#16191d", fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 2 }}>{r.name}</div>
-            <div style={{ fontSize: 9, color: "#8692a2", fontFamily: F }}>{r.loc}</div>
+            <div style={{ fontSize: 10, color: "#8692a2", fontFamily: F }}>{r.loc}</div>
           </div>
           <div style={{ padding: "3px 8px", borderRadius: 999, background: r.statusBg, fontSize: 8, fontWeight: 600, color: r.statusColor, fontFamily: F, flexShrink: 0 }}>{r.status}</div>
         </div>
@@ -272,7 +272,7 @@ export default function Settings({ onNav, density, onDensityChange, categories =
 
             {/* Display section */}
             <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: F, marginBottom: 4 }}>Display</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: F, marginBottom: 4 }}>Display</div>
               <div style={{ fontSize: 13, color: C.textSec, fontFamily: F, marginBottom: 16 }}>
                 Choose how list views are displayed across the portal.
               </div>
@@ -313,7 +313,7 @@ export default function Settings({ onNav, density, onDensityChange, categories =
               { label: "Accessibility", desc: "Adjust contrast, motion, and other accessibility preferences." },
             ].map(s => (
               <div key={s.label} style={{ marginBottom: 32 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: F, marginBottom: 4 }}>{s.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: C.textMuted, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: F, marginBottom: 4 }}>{s.label}</div>
                 <div style={{ fontSize: 13, color: C.textSec, fontFamily: F, marginBottom: 12 }}>{s.desc}</div>
                 <div style={{ padding: "14px 16px", borderRadius: 8, border: `1px dashed ${C.border}`, background: C.bgSurf }}>
                   <span style={{ fontSize: 12, color: C.textMuted, fontFamily: F, fontStyle: "italic" }}>Coming soon</span>

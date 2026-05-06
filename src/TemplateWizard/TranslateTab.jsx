@@ -5,7 +5,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
   textSec:      "#555f6d",
@@ -14,13 +14,13 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
-  warning:      "#b45309",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
+  warning:      "#854d0e",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -93,10 +93,10 @@ function ProgressBar({ done, total }) {
   const color = pct === 100 ? C.success : pct > 50 ? C.primary : C.warning;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <div style={{ flex: 1, height: 6, borderRadius: 3, background: C.borderSubtle, overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 3, transition: "width 0.25s" }} />
+      <div style={{ flex: 1, height: 6, borderRadius: 4, background: C.borderSubtle, overflow: "hidden" }}>
+        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 4, transition: "width 0.25s" }} />
       </div>
-      <span style={{ fontSize: 11, fontWeight: 600, fontFamily: F, color, flexShrink: 0, minWidth: 90, textAlign: "right" }}>
+      <span style={{ fontSize: 12, fontWeight: 600, fontFamily: F, color, flexShrink: 0, minWidth: 90, textAlign: "right" }}>
         {done} of {total} strings
       </span>
     </div>
@@ -130,7 +130,7 @@ function BaseEditor({ strings, dispatch }) {
               placeholder="(empty)"
               aria-label={str.context}
               style={{
-                width: "100%", padding: "7px 10px", borderRadius: 7,
+                width: "100%", padding: "7px 10px", borderRadius: 8,
                 border: `1px solid ${C.borderDef}`, fontSize: 13, fontFamily: F,
                 color: C.navyDeep, background: C.bgSurface, outline: "none",
                 boxSizing: "border-box",
@@ -180,7 +180,7 @@ function TranslationRow({ str, value, locale, hasError, onChange }) {
           aria-label={`${locale.label} translation for: ${str.context}`}
           aria-invalid={hasError}
           style={{
-            width: "100%", padding: "7px 10px", borderRadius: 7,
+            width: "100%", padding: "7px 10px", borderRadius: 8,
             border: `1px solid ${hasError ? C.error : C.borderDef}`,
             fontSize: 13, fontFamily: F, color: C.navyDeep,
             background: hasError ? C.errorBg : C.bgSurface,
@@ -213,7 +213,7 @@ function LocaleChips({ locales, selected, allTranslations, strings, submittedLoc
             key={l.key}
             onClick={() => onSelect(l.key)}
             style={{
-              padding: "4px 12px", borderRadius: 999, fontSize: 11, fontFamily: F, fontWeight: 600,
+              padding: "4px 12px", borderRadius: 999, fontSize: 12, fontFamily: F, fontWeight: 600,
               border: `1px solid ${isSelected ? C.primary : C.borderSubtle}`,
               background: isSelected ? C.primaryBg : C.bgSurface,
               color: isSelected ? C.primary : C.textSec,
@@ -319,7 +319,7 @@ export default function TranslateTab({ state, dispatch }) {
       {/* Locale selector + chips */}
       <div style={{
         background: C.bgSurface, border: `1px solid ${C.borderSubtle}`,
-        borderRadius: 10, padding: "14px 18px", marginBottom: 20,
+        borderRadius: 12, padding: "14px 18px", marginBottom: 20,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
           <label style={{ fontSize: 12, fontWeight: 600, color: C.textSec, fontFamily: F, flexShrink: 0 }}>
@@ -373,23 +373,23 @@ export default function TranslateTab({ state, dispatch }) {
           {/* Progress + action bar */}
           <div style={{
             background: C.bgSurface, border: `1px solid ${C.borderSubtle}`,
-            borderRadius: 10, padding: "14px 18px", marginBottom: 16,
+            borderRadius: 12, padding: "14px 18px", marginBottom: 16,
           }}>
             <div style={{ marginBottom: 12 }}>
               <ProgressBar done={done} total={strings.length} />
             </div>
             {submitErrors.size > 0 && (
               <div role="alert" style={{
-                background: C.errorBg, border: "1px solid #fca5a5", borderRadius: 7,
+                background: C.errorBg, border: "1px solid #fca5a5", borderRadius: 8,
                 padding: "8px 12px", marginBottom: 12,
-                fontSize: 11, color: C.error, fontFamily: F,
+                fontSize: 12, color: C.error, fontFamily: F,
               }}>
                 {submitErrors.size} string{submitErrors.size !== 1 ? "s" : ""} missing translation — fill all rows before submitting.
               </div>
             )}
             <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
               {isSubmitted && (
-                <span style={{ fontSize: 11, fontWeight: 600, color: C.success, fontFamily: F, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.success, fontFamily: F, display: "flex", alignItems: "center", gap: 4 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                   Submitted
                 </span>
@@ -399,7 +399,7 @@ export default function TranslateTab({ state, dispatch }) {
                 onClick={handleAutoTranslate}
                 aria-label="Auto-translate missing strings"
                 style={{
-                  padding: "6px 14px", borderRadius: 7,
+                  padding: "6px 14px", borderRadius: 8,
                   border: `1px solid ${C.borderDef}`,
                   background: C.bgSurface, color: C.textSec,
                   fontSize: 12, fontFamily: F, fontWeight: 500, cursor: "pointer",
@@ -415,7 +415,7 @@ export default function TranslateTab({ state, dispatch }) {
                 onClick={handleSaveDraft}
                 aria-label="Save translation draft"
                 style={{
-                  padding: "6px 14px", borderRadius: 7,
+                  padding: "6px 14px", borderRadius: 8,
                   border: `1px solid ${C.borderDef}`,
                   background: C.bgSurface, color: C.textSec,
                   fontSize: 12, fontFamily: F, fontWeight: 500, cursor: "pointer",
@@ -432,7 +432,7 @@ export default function TranslateTab({ state, dispatch }) {
                 aria-label="Submit translation"
                 title={done < strings.length ? `${strings.length - done} string${strings.length - done !== 1 ? "s" : ""} still empty` : "Submit this locale's translation"}
                 style={{
-                  padding: "6px 14px", borderRadius: 7, border: "none",
+                  padding: "6px 14px", borderRadius: 8, border: "none",
                   background: C.primary, color: "#fff",
                   fontSize: 12, fontFamily: F, fontWeight: 600, cursor: "pointer",
                 }}

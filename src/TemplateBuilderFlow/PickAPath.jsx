@@ -1,19 +1,19 @@
 import { useState } from "react";
 import { featureFlags, STUB_TEMPLATES } from "./shared.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:    "#001e76",
-  navy2:   "#001356",
-  navy3:   "#e8ecf8",
-  ocean:   "#2226f7",
-  white:   "#ffffff",
-  g1:      "#f4f4f6",
-  g2:      "#e2e5e9",
-  g3:      "#c3c8d0",
-  g4:      "#8692a2",
-  g5:      "#555f6d",
-  g6:      "#16191d",
+  navy:  T.action1,
+  navy2: T.action2,
+  navy3: T.actionContainer3,
+  ocean: T.actionContainer1,
+  white: T.surface1,
+  g1:    T.surface2,
+  g2:    T.border1,
+  g3:    T.border2,
+  g4:    T.disabled1,
+  g5:    T.onSurface1,
+  g6:    T.onSurface2,
 };
 
 // Icon: stacked rectangles with lines (template/document grid)
@@ -60,7 +60,7 @@ function RouteCard({ routeKey, icon, title, description, estTime, disabled, disa
         flex: 1,
         minWidth: 200,
         padding: 24,
-        borderRadius: 10,
+        borderRadius: 12,
         border: `1px solid ${hover ? C.navy : C.g2}`,
         background: C.white,
         cursor: disabled ? "not-allowed" : "pointer",
@@ -75,7 +75,7 @@ function RouteCard({ routeKey, icon, title, description, estTime, disabled, disa
       <div style={{
         width: 40,
         height: 40,
-        borderRadius: 10,
+        borderRadius: 12,
         background: C.g1,
         display: "flex",
         alignItems: "center",
@@ -85,10 +85,10 @@ function RouteCard({ routeKey, icon, title, description, estTime, disabled, disa
       }}>
         {icon}
       </div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: C.g6, marginTop: 16 }}>{title}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: C.g6, marginTop: 16 }}>{title}</div>
       <div style={{ fontSize: 12, color: C.g5, marginTop: 6, lineHeight: "18px" }}>{description}</div>
       {disabled && disabledText && (
-        <div style={{ fontSize: 11, color: C.g4, marginTop: 6, fontStyle: "italic" }}>{disabledText}</div>
+        <div style={{ fontSize: 12, color: C.g4, marginTop: 6, fontStyle: "italic" }}>{disabledText}</div>
       )}
       <div style={{
         marginTop: 16,
@@ -107,8 +107,90 @@ function RouteCard({ routeKey, icon, title, description, estTime, disabled, disa
   );
 }
 
-export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog" }) {
+// Module category color map for the draft row icons
+const MODULE_META = {
+  "Fire Safety":     { color: "#b6143a", bg: "#fae5e6" },
+  "Health & Safety": { color: "#854d0e", bg: "#fef9c3" },
+  "Loss Prevention": { color: "#2226f7", bg: "#d4e2ff" },
+  "PPE":             { color: "#115e59", bg: "#ccfbf1" },
+  "OSHA":            { color: "#7c3aed", bg: "#faf5ff" },
+  "Operations":      { color: "#001e76", bg: "#d4e2ff" },
+};
+
+function DraftRow({ t, onResume }) {
+  const [hov, setHov] = useState(false);
+  const mod = MODULE_META[t.cat] || { color: C.g4, bg: C.g1 };
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 14,
+        background: C.white,
+        border: `1px solid ${hov ? C.g3 : C.g2}`,
+        borderRadius: 8,
+        padding: "11px 16px",
+        transition: "border-color 0.12s, box-shadow 0.12s",
+        boxShadow: hov ? "0 2px 8px rgba(0,0,0,0.05)" : "none",
+      }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+    >
+      {/* Module pip */}
+      <div style={{
+        width: 36, height: 36, borderRadius: 8,
+        background: mod.bg,
+        border: `1.5px solid ${mod.color}30`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0,
+      }}>
+        <span style={{ fontSize: 10, fontWeight: 800, color: mod.color, fontFamily: F, textAlign: "center", lineHeight: "11px" }}>
+          {t.cat.split(" ").map(w => w[0]).join("").slice(0, 2)}
+        </span>
+      </div>
+
+      {/* Name + meta */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: C.g6, fontFamily: F, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</div>
+        <div style={{ fontSize: 12, color: C.g4, fontFamily: F }}>
+          {t.sections} section{t.sections !== 1 ? "s" : ""} · {t.questions} question{t.questions !== 1 ? "s" : ""} · Updated {t.updated}
+        </div>
+      </div>
+
+      {/* Draft pill */}
+      <div style={{
+        padding: "3px 8px", borderRadius: 999,
+        background: "#fef9c3", border: "1px solid #854d0e30",
+        fontSize: 10, fontWeight: 600, color: "#854d0e",
+        fontFamily: F, flexShrink: 0,
+      }}>
+        Draft
+      </div>
+
+      <button
+        onClick={() => onResume(t.id)}
+        style={{
+          padding: "5px 12px", borderRadius: 6,
+          border: `1px solid ${C.ocean}`,
+          background: "#d4e2ff",
+          color: C.ocean,
+          fontSize: 12, fontWeight: 600, fontFamily: F,
+          cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap",
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = "#dde4ff"; }}
+        onMouseLeave={e => { e.currentTarget.style.background = "#d4e2ff"; }}
+      >
+        Resume
+      </button>
+    </div>
+  );
+}
+
+export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog", templates = [], onResumeDraft }) {
   const catalogIsEmpty = STUB_TEMPLATES.length === 0;
+  const drafts = templates
+    .filter(t => t.state === "draft")
+    .sort((a, b) => new Date(b.updated) - new Date(a.updated));
 
   return (
     <div style={{
@@ -161,7 +243,7 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
         width: "100%",
         boxSizing: "border-box",
       }}>
-        <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: C.g6 }}>
+        <h1 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: C.g6 }}>
           New audit template
         </h1>
         <p style={{ margin: "0 0 40px", fontSize: 13, color: C.g4 }}>
@@ -194,7 +276,7 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
               transform: "translateY(-50%)",
               background: C.ocean,
               color: C.white,
-              fontSize: 9,
+              fontSize: 10,
               fontWeight: 700,
               padding: "2px 5px",
               borderRadius: 4,
@@ -231,6 +313,31 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
             onPickRoute={onPickRoute}
           />
         </div>
+
+        {/* Continue where you left off */}
+        {drafts.length > 0 && onResumeDraft && (
+          <div style={{
+            marginTop: 40,
+            background: C.white,
+            border: `1px solid ${C.g2}`,
+            borderRadius: 12,
+            padding: "18px 20px",
+          }}>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.g6, fontFamily: F }}>
+                Continue where you left off
+              </div>
+              <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 2 }}>
+                {drafts.length} draft{drafts.length !== 1 ? "s" : ""} waiting to be published
+              </div>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {drafts.map(t => (
+                <DraftRow key={t.id} t={t} onResume={onResumeDraft} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Footer cancel */}
         <div style={{ marginTop: 48, textAlign: "center" }}>

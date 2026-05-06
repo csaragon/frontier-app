@@ -7,7 +7,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -17,14 +17,14 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  warning:      "#854d0e",
+  warningBg:    "#fef9c3",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -42,14 +42,14 @@ const CONF_META = {
 };
 
 const TYPE_META = {
-  "Pass/Fail":       { color: "#059669", bg: "#ecfdf5" },
-  "Yes/No":          { color: "#0369a1", bg: "#f0f9ff" },
+  "Pass/Fail":       { color: "#115e59", bg: "#ccfbf1" },
+  "Yes/No":          { color: "#001e76", bg: "#d4e2ff" },
   "Rating":          { color: "#7c3aed", bg: "#faf5ff" },
-  "Multiple Choice": { color: "#b45309", bg: "#fffbeb" },
-  "Multi-Select":    { color: "#b45309", bg: "#fff7ed" },
+  "Multiple Choice": { color: "#854d0e", bg: "#fef9c3" },
+  "Multi-Select":    { color: "#854d0e", bg: "#fff7ed" },
   "Dropdown":        { color: "#555f6d", bg: "#f4f4f6" },
   "Text":            { color: "#555f6d", bg: "#f4f4f6" },
-  "Number":          { color: "#0284c7", bg: "#f0f9ff" },
+  "Number":          { color: "#0284c7", bg: "#d4e2ff" },
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -57,7 +57,7 @@ const TYPE_META = {
 function ConfBadge({ conf }) {
   const m = CONF_META[conf] || CONF_META.Low;
   return (
-    <span style={{ padding:"1px 6px", borderRadius:3, fontSize:9, fontWeight:700, fontFamily:F, background:m.bg, color:m.color, letterSpacing:"0.03em", textTransform:"uppercase", flexShrink:0 }}>
+    <span style={{ padding:"1px 6px", borderRadius:4, fontSize:10, fontWeight:700, fontFamily:F, background:m.bg, color:m.color, letterSpacing:"0.03em", textTransform:"uppercase", flexShrink:0 }}>
       {m.label}
     </span>
   );
@@ -66,7 +66,7 @@ function ConfBadge({ conf }) {
 function TypeBadge({ type }) {
   const m = TYPE_META[type] || { color:C.textSec, bg:C.bgApp };
   return (
-    <span style={{ padding:"1px 6px", borderRadius:3, fontSize:9, fontWeight:600, fontFamily:F, background:m.bg, color:m.color, flexShrink:0 }}>
+    <span style={{ padding:"1px 6px", borderRadius:4, fontSize:10, fontWeight:600, fontFamily:F, background:m.bg, color:m.color, flexShrink:0 }}>
       {type}
     </span>
   );
@@ -95,7 +95,7 @@ function TemplateTree({ sections, mappings }) {
               <span style={{ fontSize:12, fontWeight:700, color:C.navy, fontFamily:F, flex:1 }}>{section.name}</span>
               <span style={{ fontSize:10, color:C.textMuted, fontFamily:F }}>{section.questions.length}q</span>
               {flagged > 0 && (
-                <span style={{ padding:"1px 6px", borderRadius:3, background:C.warningBg, color:C.warning, fontSize:9, fontWeight:700, fontFamily:F }}>{flagged} flagged</span>
+                <span style={{ padding:"1px 6px", borderRadius:4, background:C.warningBg, color:C.warning, fontSize:10, fontWeight:700, fontFamily:F }}>{flagged} flagged</span>
               )}
             </button>
 
@@ -109,7 +109,7 @@ function TemplateTree({ sections, mappings }) {
                   return (
                     <div key={q.id} style={{ display:"flex", alignItems:"flex-start", gap:8, padding:"6px 10px", borderRadius:6, background: m?.flag ? C.warningBg : C.bgSurface, border:`1px solid ${m?.flag ? "#fde68a" : C.borderSubtle}` }}>
                       {conf !== "High" && <span style={{ width:6, height:6, borderRadius:"50%", background: CONF_META[conf].color, flexShrink:0, marginTop:3 }} />}
-                      <span style={{ fontSize:11, color:C.navyDeep, fontFamily:F, flex:1, lineHeight:"15px" }}>{q.text}</span>
+                      <span style={{ fontSize:12, color:C.navyDeep, fontFamily:F, flex:1, lineHeight:"15px" }}>{q.text}</span>
                       <TypeBadge type={q.type} />
                     </div>
                   );
@@ -147,7 +147,7 @@ function MappingReview({ sections, mappings }) {
             border:`1px solid ${isFlagged ? "#fde68a" : C.borderSubtle}`,
           }}>
             {/* Question text + section */}
-            <div style={{ fontSize:11, fontWeight:500, color:C.navyDeep, fontFamily:F, marginBottom:5, lineHeight:"15px" }}>
+            <div style={{ fontSize:12, fontWeight:500, color:C.navyDeep, fontFamily:F, marginBottom:5, lineHeight:"15px" }}>
               {q.text}
             </div>
             <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginBottom:6 }}>{q.sectionName}</div>
@@ -195,7 +195,7 @@ function ReviewModal({ result, onAccept, onEditStructure, onStartOver }) {
       <div style={{ height:60, flexShrink:0, background:C.bgSurface, borderBottom:`1px solid ${C.borderSubtle}`, display:"flex", alignItems:"center", padding:"0 24px", gap:16 }}>
         {/* Seymour logo / title */}
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:28, height:28, borderRadius:7, background:C.primary, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:28, height:28, borderRadius:8, background:C.primary, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
           </div>
           <span id="seymour-review-title" style={{ fontSize:13, fontWeight:700, color:C.navyDeep }}>Seymour Review</span>
@@ -208,7 +208,7 @@ function ReviewModal({ result, onAccept, onEditStructure, onStartOver }) {
           Generated <strong style={{ color:C.navyDeep }}>{result.sections.length}</strong> sections,{" "}
           <strong style={{ color:C.navyDeep }}>{totalQs}</strong> questions
           {result.flaggedCount > 0 && (
-            <span style={{ marginLeft:8, padding:"2px 8px", borderRadius:4, background:C.warningBg, color:C.warning, fontSize:11, fontWeight:600 }}>
+            <span style={{ marginLeft:8, padding:"2px 8px", borderRadius:4, background:C.warningBg, color:C.warning, fontSize:12, fontWeight:600 }}>
               {result.flaggedCount} flagged for review
             </span>
           )}
@@ -216,7 +216,7 @@ function ReviewModal({ result, onAccept, onEditStructure, onStartOver }) {
 
         {/* Template name chip */}
         <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:6 }}>
-          <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>Proposed name:</span>
+          <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>Proposed name:</span>
           <span style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F, background:C.primaryBg, padding:"3px 10px", borderRadius:6, border:`1px solid ${C.primaryLight}` }}>
             {result.templateName}
           </span>
@@ -225,19 +225,19 @@ function ReviewModal({ result, onAccept, onEditStructure, onStartOver }) {
         {/* Actions */}
         <div style={{ display:"flex", gap:8, marginLeft:16 }}>
           <button type="button" onClick={onStartOver}
-            style={{ padding:"7px 14px", borderRadius:7, border:`1px solid ${C.borderDef}`, background:C.bgSurface, color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}
+            style={{ padding:"7px 14px", borderRadius:8, border:`1px solid ${C.borderDef}`, background:C.bgSurface, color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}
             onFocus={e => e.currentTarget.style.boxShadow = FOCUS_RING}
             onBlur={e => e.currentTarget.style.boxShadow = "none"}>
             Start over
           </button>
           <button type="button" onClick={onEditStructure}
-            style={{ padding:"7px 14px", borderRadius:7, border:`1px solid ${C.borderDef}`, background:C.bgSurface, color:C.primary, fontSize:12, fontFamily:F, fontWeight:500, cursor:"pointer" }}
+            style={{ padding:"7px 14px", borderRadius:8, border:`1px solid ${C.borderDef}`, background:C.bgSurface, color:C.primary, fontSize:12, fontFamily:F, fontWeight:500, cursor:"pointer" }}
             onFocus={e => e.currentTarget.style.boxShadow = FOCUS_RING}
             onBlur={e => e.currentTarget.style.boxShadow = "none"}>
             Edit structure
           </button>
           <button type="button" onClick={onAccept}
-            style={{ padding:"7px 16px", borderRadius:7, border:"none", background:C.primary, color:"#fff", fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer" }}
+            style={{ padding:"7px 16px", borderRadius:8, border:"none", background:C.primary, color:"#fff", fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer" }}
             onFocus={e => e.currentTarget.style.boxShadow = FOCUS_RING}
             onBlur={e => e.currentTarget.style.boxShadow = "none"}>
             Accept all as-is
@@ -252,7 +252,7 @@ function ReviewModal({ result, onAccept, onEditStructure, onStartOver }) {
         <div style={{ width:360, flexShrink:0, borderRight:`1px solid ${C.borderSubtle}`, display:"flex", flexDirection:"column", overflow:"hidden" }}>
           <div style={{ padding:"14px 16px", borderBottom:`1px solid ${C.borderSubtle}`, flexShrink:0 }}>
             <div style={{ fontSize:12, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Proposed structure</div>
-            <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:2 }}>Sections and questions Seymour detected</div>
+            <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:2 }}>Sections and questions Seymour detected</div>
           </div>
           <div style={{ flex:1, overflowY:"auto", padding:"14px 16px" }}>
             <TemplateTree sections={result.sections} mappings={result.mappings} />
@@ -264,12 +264,12 @@ function ReviewModal({ result, onAccept, onEditStructure, onStartOver }) {
           <div style={{ padding:"14px 20px", borderBottom:`1px solid ${C.borderSubtle}`, flexShrink:0, display:"flex", alignItems:"center", gap:10 }}>
             <div>
               <div style={{ fontSize:12, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Mapping review</div>
-              <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:2 }}>Flagged and uncertain items appear first</div>
+              <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:2 }}>Flagged and uncertain items appear first</div>
             </div>
             {result.flaggedCount > 0 && (
               <div style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", background:C.warningBg, border:`1px solid #fde68a`, borderRadius:8, marginLeft:"auto" }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.warning} strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <span style={{ fontSize:11, fontWeight:600, color:C.warning, fontFamily:F }}>
+                <span style={{ fontSize:12, fontWeight:600, color:C.warning, fontFamily:F }}>
                   {result.flaggedCount} item{result.flaggedCount !== 1 ? "s" : ""} need review
                 </span>
               </div>
@@ -322,7 +322,7 @@ function AnalysisProgress({ filename, onComplete }) {
         <div style={{ fontSize:12, color:C.primary, fontFamily:F, fontWeight:500, minHeight:18 }}>
           {step < ANALYSIS_STEPS.length ? ANALYSIS_STEPS[step] : "Done!"}
         </div>
-        <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:4 }}>{filename}</div>
+        <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:4 }}>{filename}</div>
       </div>
       {/* Progress bar */}
       <div style={{ width:"100%", maxWidth:260, height:4, borderRadius:2, background:C.borderSubtle }}>
@@ -373,7 +373,7 @@ function UploadTrigger({ onFile, error }) {
           }
         }}
         style={{
-          border:`2px dashed ${error ? C.error : C.borderDef}`, borderRadius:10, padding:"22px 20px",
+          border:`2px dashed ${error ? C.error : C.borderDef}`, borderRadius:12, padding:"22px 20px",
           textAlign:"center", cursor:"pointer", background:C.bgSurface, transition:"all 0.15s", outline:"none",
         }}
         onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
@@ -383,10 +383,10 @@ function UploadTrigger({ onFile, error }) {
         <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>
           Drop an Excel file or <span style={{ color:C.primary, textDecoration:"underline" }}>browse</span>
         </div>
-        <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:4 }}>.xlsx and .xls only</div>
+        <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:4 }}>.xlsx and .xls only</div>
       </div>
       {error && (
-        <div style={{ marginTop:8, display:"flex", alignItems:"flex-start", gap:6, fontSize:11, color:C.error, fontFamily:F, lineHeight:"15px" }}>
+        <div style={{ marginTop:8, display:"flex", alignItems:"flex-start", gap:6, fontSize:12, color:C.error, fontFamily:F, lineHeight:"15px" }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ flexShrink:0, marginTop:1 }}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
           {error}
         </div>
@@ -449,7 +449,7 @@ export function SeymourCard({ onApply, onCancel }) {
 
   return (
     <>
-      <div style={{ marginTop:20, padding:"14px 16px", borderRadius:10, border:`1px solid ${C.primaryLight}`, background:C.primaryBg, display:"flex", alignItems:"flex-start", gap:12 }}>
+      <div style={{ marginTop:20, padding:"14px 16px", borderRadius:12, border:`1px solid ${C.primaryLight}`, background:C.primaryBg, display:"flex", alignItems:"flex-start", gap:12 }}>
         {/* Icon */}
         <div style={{ width:32, height:32, borderRadius:8, background:C.primary, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
@@ -458,13 +458,13 @@ export function SeymourCard({ onApply, onCancel }) {
           <div style={{ fontSize:12, fontWeight:700, color:C.primary, fontFamily:F, marginBottom:2 }}>
             Start from Excel
           </div>
-          <div style={{ fontSize:11, color:C.textSec, fontFamily:F, marginBottom:10, lineHeight:"16px" }}>
+          <div style={{ fontSize:12, color:C.textSec, fontFamily:F, marginBottom:10, lineHeight:"16px" }}>
             Upload an Excel audit checklist. Seymour will auto-generate sections, questions, and conditional logic for your review.
           </div>
           <button
             type="button"
             onClick={() => setOpen(true)}
-            style={{ padding:"6px 14px", borderRadius:7, border:"none", background:C.primary, color:"#fff", fontSize:11, fontWeight:600, fontFamily:F, cursor:"pointer" }}
+            style={{ padding:"6px 14px", borderRadius:8, border:"none", background:C.primary, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
             onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
             onBlur={e => (e.currentTarget.style.boxShadow = "none")}
           >

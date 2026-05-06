@@ -22,10 +22,10 @@ const C = {
   red2:    "#fae5e6",
   yel:     "#854d0e",
   yel2:    "#fef9c3",
-  amber:   "#b45309",
-  amberBg: "#fffbeb",
-  green:   "#059669",
-  greenBg: "#ecfdf5",
+  amber:   "#854d0e",
+  amberBg: "#fef9c3",
+  green:   "#115e59",
+  greenBg: "#ccfbf1",
 };
 
 // Per-category static section/question data for PreviewModal
@@ -194,7 +194,7 @@ function ModalPanel({ children, width = 560, style = {} }) {
         width,
         maxWidth: "calc(100vw - 32px)",
         background: C.white,
-        borderRadius: 10,
+        borderRadius: 12,
         boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
         overflow: "hidden",
         display: "flex",
@@ -395,7 +395,7 @@ export function PreviewModal({ template, onUse, onFullPreview, onClose, userLang
           </div>
 
           {/* Sections accordion */}
-          <div style={{ fontSize: 11, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10, fontFamily: F }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10, fontFamily: F }}>
             Sections &amp; Questions
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -417,7 +417,7 @@ export function PreviewModal({ template, onUse, onFullPreview, onClose, userLang
                 >
                   <span style={{ fontSize: 13, fontWeight: 600, color: C.g6 }}>{sec.title}</span>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontSize: 11, color: C.g4 }}>{sec.questions.length} questions</span>
+                    <span style={{ fontSize: 12, color: C.g4 }}>{sec.questions.length} questions</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.g4} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
                       style={{ transform: openSections[si] ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.15s" }}>
                       <polyline points="6 9 12 15 18 9" />
@@ -625,36 +625,54 @@ export function CancelProcessingModal({ onConfirm, onCancel }) {
 // ─── DiscardModal ────────────────────────────────────────────────────────────
 
 export function DiscardModal({ onSaveAndExit, onExitWithout, onCancel }) {
+  const [discardHov, setDiscardHov] = useState(false);
   return (
     <OverlayBase onClose={onCancel}>
       <ModalPanel width={440}>
-        <div style={{ padding: "24px 24px 20px", fontFamily: F }}>
-          <h3 style={{ margin: "0 0 10px", fontSize: 16, fontWeight: 700, color: C.g6 }}>
-            You have unsaved changes
-          </h3>
-          <p style={{ margin: "0 0 20px", fontSize: 13, color: C.g5, lineHeight: "20px" }}>
-            You have unsaved changes since the last auto-save.
+        {/* Header */}
+        <div style={{ padding: "20px 24px 0", fontFamily: F }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 8, background: C.red2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.red} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6" /><path d="M14 11v6" />
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+            </div>
+            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.g6, fontFamily: F }}>
+              Discard this template?
+            </h3>
+          </div>
+          <p style={{ margin: "0 0 6px", fontSize: 13, color: C.g5, lineHeight: "20px", fontFamily: F }}>
+            All progress will be lost. You can save it as a draft first if you want to come back to it later.
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-            <BtnPrimary onClick={onSaveAndExit}>Save and exit</BtnPrimary>
+        </div>
+
+        {/* Footer */}
+        <div style={{ padding: "16px 24px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, fontFamily: F }}>
+          <BtnGhost onClick={onCancel}>Keep editing</BtnGhost>
+          <div style={{ display: "flex", gap: 8 }}>
+            <BtnSecondary onClick={onSaveAndExit}>Save as draft</BtnSecondary>
             <button
               onClick={onExitWithout}
+              onMouseEnter={() => setDiscardHov(true)}
+              onMouseLeave={() => setDiscardHov(false)}
               style={{
-                background: "none",
-                border: "none",
+                background: discardHov ? "#fae5e6" : C.white,
                 color: C.red,
+                border: `1px solid ${C.red}50`,
+                borderRadius: 8,
+                padding: "8px 18px",
                 fontSize: 13,
-                fontWeight: 500,
+                fontWeight: 600,
                 fontFamily: F,
                 cursor: "pointer",
-                padding: "8px 4px",
-                textDecoration: "underline",
+                transition: "background 0.12s",
               }}
             >
-              Exit without saving
+              Yes, discard
             </button>
-            <div style={{ flex: 1 }} />
-            <BtnSecondary onClick={onCancel}>Cancel</BtnSecondary>
           </div>
         </div>
       </ModalPanel>

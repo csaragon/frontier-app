@@ -1,16 +1,23 @@
 import { useState, useMemo } from "react";
 import AppSidebar from "../AppSidebar.jsx";
 import { getAuditDetail } from "./auditStubData.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9", border2:"#c3c8d0",
-  primary:"#2226f7", primaryBg:"#f0f2ff",
-  success:"#15803d", successBg:"#f0fdf4",
-  warning:"#a16207", warningBg:"#fef9c3",
-  error:"#dc2626",   errorBg:"#fef2f2",
-  info:"#0369a1",    infoBg:"#f0f9ff",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  border2:   T.border2,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   "#15803d", successBg: "#f0fdf4",
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
+  info:      T.onInfo1,  infoBg:    T.infoContainer1,
 };
 
 const STATUS_META = {
@@ -24,7 +31,7 @@ const AP_STATUS = {
   in_progress: { label:"In Progress", color:C.warning, bg:C.warningBg },
   completed:   { label:"Completed",   color:C.success, bg:C.successBg },
 };
-const PRIORITY_COLOR = { high:"#dc2626", medium:"#a16207", low:"#15803d" };
+const PRIORITY_COLOR = { high:"#b6143a", medium:"#a16207", low:"#15803d" };
 
 function scoreColor(s) {
   if (s == null) return C.textMuted;
@@ -46,7 +53,7 @@ function Pill({ label, color, bg, sm }) {
 
 function SectionCard({ title, children, action }) {
   return (
-    <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+    <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
         padding:"14px 20px", borderBottom:`1px solid ${C.border}` }}>
         <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F }}>{title}</div>
@@ -74,7 +81,7 @@ function ResponseDisplay({ q }) {
     const pass = q.response === "Yes";
     return (
       <span style={{ display:"inline-flex", alignItems:"center", gap:4,
-        padding:"2px 8px", borderRadius:5,
+        padding:"2px 8px", borderRadius:4,
         background: pass ? C.successBg : C.errorBg,
         color: pass ? C.success : C.error, fontSize:12, fontWeight:600, fontFamily:F }}>
         {pass
@@ -94,7 +101,7 @@ function ResponseDisplay({ q }) {
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
         ))}
-        <span style={{ fontSize:11, color:C.textSec, fontFamily:F, marginLeft:4 }}>{q.response}/5</span>
+        <span style={{ fontSize:12, color:C.textSec, fontFamily:F, marginLeft:4 }}>{q.response}/5</span>
       </span>
     );
   }
@@ -148,13 +155,13 @@ function ReopenModal({ onClose, onConfirm }) {
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.4)", zIndex:1000, display:"flex", alignItems:"center", justifyContent:"center" }}>
       <div style={{ background:C.bgSurf, borderRadius:12, padding:28, width:400, boxShadow:"0 16px 48px rgba(0,0,0,0.2)" }}>
-        <div style={{ fontSize:15, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:10 }}>Reopen Audit?</div>
+        <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F, marginBottom:10 }}>Reopen Audit?</div>
         <div style={{ fontSize:13, color:C.textSec, fontFamily:F, lineHeight:1.6, marginBottom:20 }}>
           Reopening will allow the audit to be edited. This action is logged in the audit history and cannot be undone automatically. Continue?
         </div>
         <div style={{ display:"flex", gap:8, justifyContent:"flex-end" }}>
-          <button onClick={onClose} style={{ padding:"8px 16px", borderRadius:7, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>Cancel</button>
-          <button onClick={onConfirm} style={{ padding:"8px 16px", borderRadius:7, border:"none", background:C.error, color:"white", fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer" }}>Reopen Audit</button>
+          <button onClick={onClose} style={{ padding:"8px 16px", borderRadius:8, border:`1px solid ${C.border}`, background:"transparent", color:C.textSec, fontSize:12, fontFamily:F, cursor:"pointer" }}>Cancel</button>
+          <button onClick={onConfirm} style={{ padding:"8px 16px", borderRadius:8, border:"none", background:C.error, color:"white", fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer" }}>Reopen Audit</button>
         </div>
       </div>
     </div>
@@ -301,19 +308,19 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                 <div style={{ display:"flex", alignItems:"center", gap:4, padding:"4px 10px",
                   background:C.errorBg, borderRadius:6, border:`1px solid ${C.error}30` }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.error} strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <span style={{ fontSize:11, fontWeight:700, color:C.error, fontFamily:F }}>{detail.cf} critical fail{detail.cf > 1 ? "s" : ""}</span>
+                  <span style={{ fontSize:12, fontWeight:700, color:C.error, fontFamily:F }}>{detail.cf} critical fail{detail.cf > 1 ? "s" : ""}</span>
                 </div>
               )}
               <Pill label={sm.label} color={sm.color} bg={sm.bg} />
               <button onClick={() => alert("PDF export coming soon.")}
-                style={{ padding:"7px 14px", borderRadius:7, border:`1px solid ${C.border}`, background:C.bgSurf,
+                style={{ padding:"7px 14px", borderRadius:8, border:`1px solid ${C.border}`, background:C.bgSurf,
                   color:C.navyDeep, fontSize:12, fontFamily:F, cursor:"pointer", display:"flex", alignItems:"center", gap:5 }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Export PDF
               </button>
               <div style={{ position:"relative" }}>
                 <button onClick={() => setKebabOpen(o => !o)}
-                  style={{ width:32, height:32, borderRadius:7, border:`1px solid ${C.border}`, background:C.bgSurf,
+                  style={{ width:32, height:32, borderRadius:8, border:`1px solid ${C.border}`, background:C.bgSurf,
                     cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:C.textMuted }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
                 </button>
@@ -346,7 +353,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                   fontWeight: tab === k ? 700 : 400, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
                 {label}
                 {k === "reports" && (
-                  <span style={{ fontSize:9, fontWeight:700, background:C.primary, color:"white", padding:"2px 5px", borderRadius:3 }}>Insights</span>
+                  <span style={{ fontSize:10, fontWeight:700, background:C.primary, color:"white", padding:"2px 5px", borderRadius:4 }}>Insights</span>
                 )}
               </button>
             ))}
@@ -441,16 +448,16 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
               </SectionCard>
 
               {/* ── Section 3: Question Responses ── */}
-              <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+              <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden" }}>
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
                   padding:"14px 20px", borderBottom:`1px solid ${C.border}` }}>
                   <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Question Responses</div>
                   <div style={{ display:"flex", gap:4 }}>
                     {[["all","All"], ["failed","Failed"], ["critical","Critical"], ["action","Has Action"], ["photos","Has Photos"]].map(([k, label]) => (
                       <button key={k} onClick={() => setQFilter(k)}
-                        style={{ padding:"4px 10px", borderRadius:5, border:`1px solid ${qFilter === k ? C.primary : C.border}`,
+                        style={{ padding:"4px 10px", borderRadius:4, border:`1px solid ${qFilter === k ? C.primary : C.border}`,
                           background: qFilter === k ? C.primaryBg : "transparent", color: qFilter === k ? C.primary : C.textSec,
-                          fontSize:11, fontFamily:F, fontWeight: qFilter === k ? 600 : 400, cursor:"pointer" }}>
+                          fontSize:12, fontFamily:F, fontWeight: qFilter === k ? 600 : 400, cursor:"pointer" }}>
                         {label}
                       </button>
                     ))}
@@ -475,7 +482,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                             <polyline points="9 18 15 12 9 6"/>
                           </svg>
                           <span style={{ fontSize:12, fontWeight:700, color:C.navyDeep, fontFamily:F, flex:1 }}>{sec.name}</span>
-                          <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+                          <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
                             {sec.questions.length} question{sec.questions.length > 1 ? "s" : ""}
                             {sec.score != null && ` · ${Math.round((sec.score / sec.maxScore) * 100)}%`}
                           </span>
@@ -493,7 +500,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                                   <div style={{ flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", gap:4, paddingTop:2 }}>
                                     <div style={{ width:22, height:22, borderRadius:"50%", background:C.bgApp,
                                       display:"flex", alignItems:"center", justifyContent:"center",
-                                      fontSize:9, fontWeight:700, color:C.textMuted, fontFamily:F }}>{q.num}</div>
+                                      fontSize:10, fontWeight:700, color:C.textMuted, fontFamily:F }}>{q.num}</div>
                                     <TypeIcon type={q.type} />
                                   </div>
 
@@ -502,28 +509,28 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                                     <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap", marginBottom:5 }}>
                                       <span style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F }}>{q.title}</span>
                                       {q.isCritical && (
-                                        <span style={{ fontSize:9, fontWeight:700, color:C.error, background:C.errorBg,
-                                          padding:"1px 5px", borderRadius:3, border:`1px solid ${C.error}30` }}>CRITICAL</span>
+                                        <span style={{ fontSize:10, fontWeight:700, color:C.error, background:C.errorBg,
+                                          padding:"1px 5px", borderRadius:4, border:`1px solid ${C.error}30` }}>CRITICAL</span>
                                       )}
                                     </div>
 
                                     <div style={{ display:"flex", alignItems:"center", gap:12, flexWrap:"wrap" }}>
                                       <ResponseDisplay q={q} />
                                       {q.maxScore > 0 && q.scoreEarned != null && (
-                                        <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+                                        <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
                                           {q.scoreEarned}/{q.maxScore} pts
                                         </span>
                                       )}
                                       {hasAP && (
                                         <span style={{ fontSize:10, fontWeight:600, color:C.warning, background:C.warningBg,
-                                          padding:"2px 6px", borderRadius:3, display:"flex", alignItems:"center", gap:3 }}>
+                                          padding:"2px 6px", borderRadius:4, display:"flex", alignItems:"center", gap:3 }}>
                                           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                                           Action plan
                                         </span>
                                       )}
                                       {hasEsc && (
                                         <span style={{ fontSize:10, fontWeight:600, color:C.error, background:C.errorBg,
-                                          padding:"2px 6px", borderRadius:3, display:"flex", alignItems:"center", gap:3 }}>
+                                          padding:"2px 6px", borderRadius:4, display:"flex", alignItems:"center", gap:3 }}>
                                           <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
                                           Escalation
                                         </span>
@@ -567,7 +574,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                         gap:10, padding:"10px 0", borderBottom:`1px solid ${C.border}`, alignItems:"center" }}>
                         <div>
                           <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F, marginBottom:2 }}>{ap.title}</div>
-                          <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                          <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                             From: {ap.sectionName}
                           </div>
                         </div>
@@ -576,7 +583,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                         <div>
                           <Pill label={AP_STATUS[ap.status]?.label || ap.status} color={AP_STATUS[ap.status]?.color || C.textMuted} bg={AP_STATUS[ap.status]?.bg || C.bgApp} sm />
                         </div>
-                        <div style={{ fontSize:11, fontWeight:700, color:PRIORITY_COLOR[ap.priority] || C.textMuted, fontFamily:F, textTransform:"capitalize" }}>
+                        <div style={{ fontSize:12, fontWeight:700, color:PRIORITY_COLOR[ap.priority] || C.textMuted, fontFamily:F, textTransform:"capitalize" }}>
                           {ap.priority}
                         </div>
                       </div>
@@ -603,7 +610,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                           <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F, marginBottom:3 }}>{esc.trigger}</div>
                           <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
                             {[["To", `${esc.recipient} (${esc.role})`], ["Via", esc.channel], ["Sent", esc.sentAt]].map(([k, v]) => (
-                              <span key={k} style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+                              <span key={k} style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
                                 <span style={{ fontWeight:600, color:C.textSec }}>{k}:</span> {v}
                               </span>
                             ))}
@@ -623,7 +630,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                     <div key={c.id} style={{ display:"flex", gap:10 }}>
                       <div style={{ width:30, height:30, borderRadius:"50%", background:C.primary,
                         display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                        <span style={{ fontSize:11, fontWeight:700, color:"white", fontFamily:F }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:"white", fontFamily:F }}>
                           {c.author.split(" ").map(n => n[0]).join("").slice(0,2)}
                         </span>
                       </div>
@@ -642,7 +649,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                   <div style={{ display:"flex", gap:10 }}>
                     <div style={{ width:30, height:30, borderRadius:"50%", background:"#e8ecf8",
                       display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                      <span style={{ fontSize:11, fontWeight:700, color:C.navy, fontFamily:F }}>CA</span>
+                      <span style={{ fontSize:12, fontWeight:700, color:C.navy, fontFamily:F }}>CA</span>
                     </div>
                     <div style={{ flex:1 }}>
                       <textarea id="comment-input" value={newComment} onChange={e => setNewComment(e.target.value)}
@@ -674,7 +681,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                       <div style={{ width:6, height:6, borderRadius:"50%", background:C.border2, marginTop:5, flexShrink:0 }} />
                       <div>
                         <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, fontWeight:500, marginBottom:2 }}>{ev.event}</div>
-                        <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+                        <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
                           {ev.timestamp} · {ev.actor}
                         </div>
                       </div>
@@ -688,7 +695,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
           {tab === "reports" && (
             <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
               {detail.score == null ? (
-                <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10,
+                <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12,
                   padding:48, textAlign:"center" }}>
                   <div style={{ fontSize:14, color:C.textMuted, fontFamily:F }}>
                     Reports are available once the audit is completed.
@@ -702,7 +709,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                       <HBar label={`This audit (${detail.name.slice(0, 40)}…)`} value={detail.score} color={scoreColor(detail.score)} />
                       <HBar label={`Template average (${detail.templateFull?.name} ${detail.templateFull?.version})`} value={templateAvg} color={C.info} />
                     </div>
-                    <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:8 }}>
+                    <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:8 }}>
                       This audit scored {detail.score > templateAvg ? `${detail.score - templateAvg}% above` : `${templateAvg - detail.score}% below`} the template average across all locations.
                     </div>
                   </SectionCard>
@@ -712,7 +719,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                     <div style={{ marginBottom:8 }}>
                       <SimpleLineChart points={locationHistory} color={C.primary} />
                     </div>
-                    <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+                    <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
                       Score trend at {detail.location} for {detail.templateFull?.name} over the past 6 audit cycles.
                     </div>
                   </SectionCard>
@@ -726,7 +733,7 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                         return (
                           <div key={q.id} style={{ marginBottom:8 }}>
                             <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                              <span style={{ fontSize:11, color:C.navyDeep, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"70%" }}>
+                              <span style={{ fontSize:12, color:C.navyDeep, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"70%" }}>
                                 Q{q.num}: {q.title.slice(0, 55)}{q.title.length > 55 ? "…" : ""}
                               </span>
                               <div style={{ display:"flex", gap:8, alignItems:"center", flexShrink:0 }}>
@@ -739,15 +746,15 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                               </div>
                             </div>
                             <div style={{ display:"flex", gap:4 }}>
-                              <div style={{ flex:1, height:5, background:C.bgApp, borderRadius:3, overflow:"hidden" }}>
-                                <div style={{ height:"100%", width:`${peerRate}%`, background:C.info, opacity:0.5, borderRadius:3 }} />
+                              <div style={{ flex:1, height:5, background:C.bgApp, borderRadius:4, overflow:"hidden" }}>
+                                <div style={{ height:"100%", width:`${peerRate}%`, background:C.info, opacity:0.5, borderRadius:4 }} />
                               </div>
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                    <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:4 }}>
+                    <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:4 }}>
                       Comparison based on {detail.templateFull?.name} audits across all locations in the past 90 days.
                     </div>
                   </SectionCard>
@@ -767,15 +774,15 @@ export default function AuditRecordPage({ auditId, onNav, density = "condensed" 
                             <div style={{ fontSize:13, fontWeight:700, color, fontFamily:F, marginBottom:4 }}>
                               {hrs > 0 ? `${hrs}h ` : ""}{mins}min
                             </div>
-                            <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginBottom:6 }}>{label}</div>
-                            <div style={{ height:10, background:C.bgApp, borderRadius:5, overflow:"hidden" }}>
-                              <div style={{ height:"100%", width:`${pct}%`, background:color, borderRadius:5 }} />
+                            <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:6 }}>{label}</div>
+                            <div style={{ height:10, background:C.bgApp, borderRadius:4, overflow:"hidden" }}>
+                              <div style={{ height:"100%", width:`${pct}%`, background:color, borderRadius:4 }} />
                             </div>
                           </div>
                         );
                       })}
                     </div>
-                    <div style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>
+                    <div style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>
                       This audit {(meta.timeToComplete ? parseInt(meta.timeToComplete) || 153 : 153) > avgTime ? `took ${(meta.timeToComplete ? parseInt(meta.timeToComplete) || 153 : 153) - avgTime} minutes longer` : `was completed ${avgTime - (meta.timeToComplete ? parseInt(meta.timeToComplete) || 153 : 153)} minutes faster`} than the template average.
                     </div>
                   </SectionCard>

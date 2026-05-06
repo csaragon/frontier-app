@@ -6,7 +6,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -16,14 +16,14 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  warning:      "#854d0e",
+  warningBg:    "#fef9c3",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -91,9 +91,9 @@ function ConditionalBadge() {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 3,
-      padding: "1px 6px", borderRadius: 3,
-      background: "#fffbeb", border: "1px solid #fde68a",
-      fontSize: 9, fontWeight: 700, color: C.warning, fontFamily: F,
+      padding: "1px 6px", borderRadius: 4,
+      background: "#fef9c3", border: "1px solid #fde68a",
+      fontSize: 10, fontWeight: 700, color: C.warning, fontFamily: F,
       letterSpacing: "0.04em", textTransform: "uppercase", flexShrink: 0,
     }}>
       Conditional
@@ -114,14 +114,14 @@ function QuestionRow({ q, rules, allQuestions, isConditional, onAddRule, dispatc
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
             <span style={{ fontSize: 12, color: C.navyDeep, fontFamily: F, lineHeight: "17px" }}>{q.text}</span>
-            <span style={{ fontSize: 9, color: C.textMuted, background: C.bgApp, border: `1px solid ${C.borderSubtle}`, borderRadius: 3, padding: "1px 5px", fontFamily: F, fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase" }}>{q.type}</span>
+            <span style={{ fontSize: 10, color: C.textMuted, background: C.bgApp, border: `1px solid ${C.borderSubtle}`, borderRadius: 4, padding: "1px 5px", fontFamily: F, fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase" }}>{q.type}</span>
             {isConditional && <ConditionalBadge />}
           </div>
         </div>
         <button
           type="button"
           onClick={() => onAddRule(q.id)}
-          style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.borderDef}`, background: C.bgSurface, color: C.primary, fontSize: 11, fontFamily: F, cursor: "pointer", outline: "none", flexShrink: 0, fontWeight: 500 }}
+          style={{ padding: "4px 12px", borderRadius: 6, border: `1px solid ${C.borderDef}`, background: C.bgSurface, color: C.primary, fontSize: 12, fontFamily: F, cursor: "pointer", outline: "none", flexShrink: 0, fontWeight: 500 }}
           onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
           onBlur={e => (e.currentTarget.style.boxShadow = "none")}
         >
@@ -159,7 +159,7 @@ function ErrorPanel({ allIssues, totalRules }) {
   return (
     <div style={{
       width: 240, flexShrink: 0,
-      background: C.bgSurface, borderRadius: 10,
+      background: C.bgSurface, borderRadius: 12,
       border: `1px solid ${C.borderSubtle}`,
       alignSelf: "flex-start", position: "sticky", top: 0,
     }}>
@@ -170,16 +170,16 @@ function ErrorPanel({ allIssues, totalRules }) {
       {/* Stats */}
       <div style={{ padding: "10px 14px", display: "flex", flexDirection: "column", gap: 6 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>Total rules</span>
-          <span style={{ fontSize: 11, fontWeight: 600, color: C.navyDeep, fontFamily: F }}>{totalRules}</span>
+          <span style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>Total rules</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: C.navyDeep, fontFamily: F }}>{totalRules}</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: C.error, fontFamily: F }}>Errors</span>
-          <span style={{ fontSize: 11, fontWeight: 600, color: C.error, fontFamily: F }}>{errorCount}</span>
+          <span style={{ fontSize: 12, color: C.error, fontFamily: F }}>Errors</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: C.error, fontFamily: F }}>{errorCount}</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 11, color: C.warning, fontFamily: F }}>Warnings</span>
-          <span style={{ fontSize: 11, fontWeight: 600, color: C.warning, fontFamily: F }}>{warningCount}</span>
+          <span style={{ fontSize: 12, color: C.warning, fontFamily: F }}>Warnings</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: C.warning, fontFamily: F }}>{warningCount}</span>
         </div>
       </div>
 
@@ -196,7 +196,7 @@ function ErrorPanel({ allIssues, totalRules }) {
       )}
 
       {allIssues.length === 0 && totalRules > 0 && (
-        <div style={{ padding: "12px 14px", fontSize: 11, color: C.success, fontFamily: F, display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ padding: "12px 14px", fontSize: 12, color: C.success, fontFamily: F, display: "flex", alignItems: "center", gap: 6 }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           All rules valid
         </div>
@@ -283,7 +283,7 @@ const Step4Logic = forwardRef(function Step4Logic({ structure, logic, dispatch }
             </div>
           </div>
           {totalQuestions > 0 && (
-            <div style={{ fontSize: 11, color: C.textMuted, fontFamily: F, textAlign: "right", marginTop: 4 }}>
+            <div style={{ fontSize: 12, color: C.textMuted, fontFamily: F, textAlign: "right", marginTop: 4 }}>
               {withLogic} of {totalQuestions} questions have logic
             </div>
           )}
@@ -307,7 +307,7 @@ const Step4Logic = forwardRef(function Step4Logic({ structure, logic, dispatch }
                   border: `1px solid ${filter === f.key ? C.primary : C.borderDef}`,
                   background: filter === f.key ? C.primaryBg : C.bgSurface,
                   color: filter === f.key ? C.primary : C.textSec,
-                  fontSize: 11, fontFamily: F, cursor: "pointer", outline: "none", fontWeight: filter === f.key ? 600 : 400,
+                  fontSize: 12, fontFamily: F, cursor: "pointer", outline: "none", fontWeight: filter === f.key ? 600 : 400,
                 }}
                 onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
                 onBlur={e => (e.currentTarget.style.boxShadow = "none")}
@@ -320,7 +320,7 @@ const Step4Logic = forwardRef(function Step4Logic({ structure, logic, dispatch }
 
         {/* Empty state */}
         {sections.length === 0 && (
-          <div style={{ textAlign: "center", padding: "56px 24px", background: C.bgSurface, borderRadius: 10, border: `1px solid ${C.borderSubtle}` }}>
+          <div style={{ textAlign: "center", padding: "56px 24px", background: C.bgSurface, borderRadius: 12, border: `1px solid ${C.borderSubtle}` }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: C.textSec, fontFamily: F, marginBottom: 6 }}>No questions in this template</div>
             <div style={{ fontSize: 12, color: C.textMuted, fontFamily: F }}>Go back to Step 2 to add sections and questions first.</div>
           </div>
@@ -330,11 +330,11 @@ const Step4Logic = forwardRef(function Step4Logic({ structure, logic, dispatch }
         {filteredSections.map(section => (
           <div
             key={section.id}
-            style={{ background: C.bgSurface, borderRadius: 10, border: `1px solid ${C.borderSubtle}`, marginBottom: 16, overflow: "hidden" }}
+            style={{ background: C.bgSurface, borderRadius: 12, border: `1px solid ${C.borderSubtle}`, marginBottom: 16, overflow: "hidden" }}
           >
             <div style={{ padding: "10px 16px", background: C.bgApp, borderBottom: `1px solid ${C.borderSubtle}`, display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: C.navy, fontFamily: F }}>{section.name}</span>
-              <span style={{ fontSize: 11, color: C.textMuted, fontFamily: F }}>{section.questions.length} question{section.questions.length !== 1 ? "s" : ""}</span>
+              <span style={{ fontSize: 12, color: C.textMuted, fontFamily: F }}>{section.questions.length} question{section.questions.length !== 1 ? "s" : ""}</span>
             </div>
             {section.questions.length === 0 ? (
               <div style={{ padding: "20px 16px", textAlign: "center", fontSize: 12, color: C.textMuted, fontFamily: F }}>

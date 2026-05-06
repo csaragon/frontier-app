@@ -6,21 +6,21 @@ const C = {
   ocean: "#2226f7",
   white: "#ffffff",
   g1: "#f4f4f6", g2: "#e2e5e9", g3: "#c3c8d0", g4: "#8692a2", g5: "#555f6d", g6: "#16191d",
-  amber: "#b45309", amberBg: "#fffbeb",
+  amber: "#854d0e", amberBg: "#fef9c3",
   red: "#b6143a",
   teal: "#0f766e",
   purple: "#7c3aed",
 };
 
 const ANSWER_TYPES = [
-  { value: "Yes/No/NA",       bg: "#ecfdf5", color: "#065f46" },
+  { value: "Yes/No/NA",       bg: "#ccfbf1", color: "#065f46" },
   { value: "Yes/No",          bg: "#eff6ff", color: "#1d4ed8" },
   { value: "Pass/Fail",       bg: "#fff7ed", color: "#9a3412" },
   { value: "Rating Scale",    bg: "#faf5ff", color: "#6d28d9" },
   { value: "Free Text",       bg: "#f9fafb", color: "#374151" },
   { value: "Number",          bg: "#f0fdfa", color: "#0f766e" },
   { value: "Multiple Choice", bg: "#fefce8", color: "#92400e" },
-  { value: "Grid",            bg: "#f0f2ff", color: "#1e40af" },
+  { value: "Grid",            bg: "#d4e2ff", color: "#1e40af" },
   { value: "Asset",           bg: "#fff1f2", color: "#9f1239" },
   { value: "Photo Required",  bg: "#ecfeff", color: "#0e7490" },
 ];
@@ -106,7 +106,7 @@ function AnswerTypeBadge({ value }) {
     <span style={{
       display: "inline-flex", alignItems: "center",
       background: m.bg, color: m.color,
-      fontSize: 11, fontWeight: 600, fontFamily: F,
+      fontSize: 12, fontWeight: 600, fontFamily: F,
       borderRadius: 4, padding: "2px 7px", whiteSpace: "nowrap",
     }}>
       {value}
@@ -118,7 +118,7 @@ function inputStyle(focused) {
   return {
     width: "100%", fontFamily: F, fontSize: 13, color: C.g6,
     background: C.white, border: `1px solid ${focused ? C.navy : C.g2}`,
-    borderRadius: 7, padding: "7px 10px", outline: "none", boxSizing: "border-box",
+    borderRadius: 8, padding: "7px 10px", outline: "none", boxSizing: "border-box",
     transition: "border-color 0.15s",
   };
 }
@@ -127,7 +127,7 @@ function selectStyle() {
   return {
     width: "100%", fontFamily: F, fontSize: 13, color: C.g6,
     background: C.white, border: `1px solid ${C.g2}`,
-    borderRadius: 7, padding: "7px 10px", outline: "none", cursor: "pointer",
+    borderRadius: 8, padding: "7px 10px", outline: "none", cursor: "pointer",
     boxSizing: "border-box",
   };
 }
@@ -158,7 +158,7 @@ function Label({ children, helper }) {
   return (
     <div style={{ marginBottom: 5 }}>
       <div style={{ fontSize: 12, fontWeight: 600, color: C.g5, fontFamily: F }}>{children}</div>
-      {helper && <div style={{ fontSize: 11, color: C.g4, fontFamily: F, marginTop: 2, lineHeight: "15px" }}>{helper}</div>}
+      {helper && <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 2, lineHeight: "15px" }}>{helper}</div>}
     </div>
   );
 }
@@ -190,7 +190,7 @@ function Panel({ title, statusText, open, onToggle, children }) {
   }, [open]);
 
   return (
-    <div style={{ border: `1px solid ${C.g2}`, borderRadius: 10, marginBottom: 12, overflow: "visible" }}>
+    <div style={{ border: `1px solid ${C.g2}`, borderRadius: 12, marginBottom: 12, overflow: "visible" }}>
       <button
         onClick={onToggle}
         style={{
@@ -205,7 +205,7 @@ function Panel({ title, statusText, open, onToggle, children }) {
         </span>
         <span style={{ fontSize: 13, fontWeight: 700, color: C.g6, fontFamily: F, flex: 1 }}>{title}</span>
         {!open && statusText && (
-          <span style={{ fontSize: 11, color: C.g4, fontFamily: F, fontWeight: 500 }}>{statusText}</span>
+          <span style={{ fontSize: 12, color: C.g4, fontFamily: F, fontWeight: 500 }}>{statusText}</span>
         )}
       </button>
       <div
@@ -362,7 +362,7 @@ function GridConfig({ config, onChange }) {
           <div key={idx} style={{ display: "flex", gap: 5, marginBottom: 5 }}>
             <FocusInput value={r} onChange={e => updateRow(idx, e.target.value)} placeholder={`Row ${idx + 1}`} />
             <button onClick={() => removeRow(idx)} disabled={rows.length <= 1}
-              style={{ background: "none", border: `1px solid ${C.g2}`, borderRadius: 5, padding: "3px 7px", cursor: rows.length > 1 ? "pointer" : "not-allowed", color: rows.length > 1 ? C.red : C.g3, flexShrink: 0, display: "flex", alignItems: "center" }}>
+              style={{ background: "none", border: `1px solid ${C.g2}`, borderRadius: 4, padding: "3px 7px", cursor: rows.length > 1 ? "pointer" : "not-allowed", color: rows.length > 1 ? C.red : C.g3, flexShrink: 0, display: "flex", alignItems: "center" }}>
               <IconTrash />
             </button>
           </div>
@@ -379,7 +379,7 @@ function GridConfig({ config, onChange }) {
           <div key={idx} style={{ display: "flex", gap: 5, marginBottom: 5 }}>
             <FocusInput value={c} onChange={e => updateCol(idx, e.target.value)} placeholder={`Col ${idx + 1}`} />
             <button onClick={() => removeCol(idx)} disabled={cols.length <= 1}
-              style={{ background: "none", border: `1px solid ${C.g2}`, borderRadius: 5, padding: "3px 7px", cursor: cols.length > 1 ? "pointer" : "not-allowed", color: cols.length > 1 ? C.red : C.g3, flexShrink: 0, display: "flex", alignItems: "center" }}>
+              style={{ background: "none", border: `1px solid ${C.g2}`, borderRadius: 4, padding: "3px 7px", cursor: cols.length > 1 ? "pointer" : "not-allowed", color: cols.length > 1 ? C.red : C.g3, flexShrink: 0, display: "flex", alignItems: "center" }}>
               <IconTrash />
             </button>
           </div>
@@ -486,7 +486,7 @@ function InstructionsEditor({ value, onChange }) {
   return (
     <div>
       <div style={{
-        border: `1px solid ${focused ? C.navy : C.g2}`, borderRadius: 7, overflow: "hidden",
+        border: `1px solid ${focused ? C.navy : C.g2}`, borderRadius: 8, overflow: "hidden",
         transition: "border-color 0.15s",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "4px 8px", borderBottom: `1px solid ${C.g2}`, background: C.g1 }}>
@@ -572,7 +572,7 @@ function Panel1Body({ state, onChange }) {
             <Checkbox checked={critical} onChange={() => setField("critical", !critical)} />
             Critical
           </label>
-          <div style={{ fontSize: 11, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
+          <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
             Critical questions can fail the entire audit if configured on the Scoring step.
           </div>
         </div>
@@ -582,7 +582,7 @@ function Panel1Body({ state, onChange }) {
             <Checkbox checked={informational} onChange={handleInformational} />
             Informational only
           </label>
-          <div style={{ fontSize: 11, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
+          <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
             When checked, this question is excluded from all scoring calculations.
           </div>
         </div>
@@ -690,7 +690,7 @@ function Panel3Body({ media, onChange }) {
           <Toggle checked={requireOnFail} onChange={allow ? () => onChange({ ...media, requireOnFail: !requireOnFail }) : undefined} disabled={!allow} />
           Require photo on fail
         </label>
-        <div style={{ fontSize: 11, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 40, lineHeight: "15px" }}>
+        <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 40, lineHeight: "15px" }}>
           When required on fail, auditors must attach evidence before submitting a failing answer.
         </div>
       </div>
@@ -919,7 +919,7 @@ function EscalationRuleEditor({ rule, isCritical, onSave, onCancel }) {
           </label>
           <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "not-allowed", fontSize: 13, color: C.g3, fontFamily: F }}>
             <Checkbox checked={false} disabled />
-            SMS <span style={{ fontSize: 11, marginLeft: 4, color: C.g4 }}>Coming soon</span>
+            SMS <span style={{ fontSize: 12, marginLeft: 4, color: C.g4 }}>Coming soon</span>
           </label>
         </div>
       </div>
@@ -990,7 +990,7 @@ function Panel5Body({ escalation, isCritical, onChange }) {
           ) : (
             <div style={{
               display: "flex", alignItems: "center", gap: 8, padding: "8px 12px",
-              border: `1px solid ${C.g2}`, borderRadius: 7, marginBottom: 6, background: C.white,
+              border: `1px solid ${C.g2}`, borderRadius: 8, marginBottom: 6, background: C.white,
             }}>
               <span style={{ flex: 1, fontSize: 13, color: C.g6, fontFamily: F }}>{ruleLabel(rule)}</span>
               <button onClick={() => startEdit(idx)} style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, display: "flex", padding: 4, borderRadius: 4 }}
@@ -1134,8 +1134,8 @@ function ConditionGroup({ group, priorQuestions, onUpdate, onDelete, depth = 0 }
         <button
           onClick={toggleOp}
           style={{
-            padding: "3px 10px", fontSize: 11, fontWeight: 700, fontFamily: F, letterSpacing: "0.04em",
-            borderRadius: 5, border: `1.5px solid ${C.navy}`, cursor: "pointer",
+            padding: "3px 10px", fontSize: 12, fontWeight: 700, fontFamily: F, letterSpacing: "0.04em",
+            borderRadius: 4, border: `1.5px solid ${C.navy}`, cursor: "pointer",
             background: C.navy, color: C.white,
           }}
         >{group.operator ?? "AND"}</button>
@@ -1144,7 +1144,7 @@ function ConditionGroup({ group, priorQuestions, onUpdate, onDelete, depth = 0 }
         </span>
         {onDelete && (
           <button onClick={onDelete}
-            style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: C.g4, fontSize: 11, fontFamily: F, display: "flex", alignItems: "center", gap: 4, padding: "2px 6px", borderRadius: 4 }}
+            style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: C.g4, fontSize: 12, fontFamily: F, display: "flex", alignItems: "center", gap: 4, padding: "2px 6px", borderRadius: 4 }}
             onMouseEnter={e => e.currentTarget.style.color = C.red} onMouseLeave={e => e.currentTarget.style.color = C.g4}
           ><IconTrash /> Delete group</button>
         )}
@@ -1162,7 +1162,7 @@ function ConditionGroup({ group, priorQuestions, onUpdate, onDelete, depth = 0 }
         <button onClick={addCondition}
           style={{
             display: "flex", alignItems: "center", gap: 4, background: "none",
-            border: `1px dashed ${C.g3}`, borderRadius: 5, padding: "4px 10px",
+            border: `1px dashed ${C.g3}`, borderRadius: 4, padding: "4px 10px",
             fontSize: 12, color: C.g4, fontFamily: F, cursor: "pointer",
           }}
           onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
@@ -1172,7 +1172,7 @@ function ConditionGroup({ group, priorQuestions, onUpdate, onDelete, depth = 0 }
           <button onClick={addGroup}
             style={{
               display: "flex", alignItems: "center", gap: 4, background: "none",
-              border: `1px dashed ${C.g3}`, borderRadius: 5, padding: "4px 10px",
+              border: `1px dashed ${C.g3}`, borderRadius: 4, padding: "4px 10px",
               fontSize: 12, color: C.g4, fontFamily: F, cursor: "pointer",
             }}
             onMouseEnter={e => { e.currentTarget.style.color = C.purple; e.currentTarget.style.borderColor = C.purple; }}
@@ -1276,7 +1276,7 @@ function Panel6Body({ conditional, priorQuestions, onChange, onValidationChange 
             <button onClick={addTopCondition}
               style={{
                 display: "flex", alignItems: "center", gap: 5, background: C.navy, color: C.white,
-                border: "none", borderRadius: 7, padding: "7px 14px", fontSize: 12, fontWeight: 600, fontFamily: F, cursor: "pointer",
+                border: "none", borderRadius: 8, padding: "7px 14px", fontSize: 12, fontWeight: 600, fontFamily: F, cursor: "pointer",
               }}
               onMouseEnter={e => e.currentTarget.style.background = C.navy2}
               onMouseLeave={e => e.currentTarget.style.background = C.navy}
@@ -1290,8 +1290,8 @@ function Panel6Body({ conditional, priorQuestions, onChange, onValidationChange 
             {items.length > 1 && (
               <button onClick={toggleOperator}
                 style={{
-                  padding: "3px 10px", fontSize: 11, fontWeight: 700, fontFamily: F,
-                  borderRadius: 5, border: `1.5px solid ${C.navy}`, cursor: "pointer",
+                  padding: "3px 10px", fontSize: 12, fontWeight: 700, fontFamily: F,
+                  borderRadius: 4, border: `1.5px solid ${C.navy}`, cursor: "pointer",
                   background: C.navy, color: C.white,
                 }}
               >{operator}</button>
@@ -1310,7 +1310,7 @@ function Panel6Body({ conditional, priorQuestions, onChange, onValidationChange 
             <button onClick={addTopCondition}
               style={{
                 display: "flex", alignItems: "center", gap: 4, background: "none",
-                border: `1px dashed ${C.g3}`, borderRadius: 5, padding: "4px 10px",
+                border: `1px dashed ${C.g3}`, borderRadius: 4, padding: "4px 10px",
                 fontSize: 12, color: C.g4, fontFamily: F, cursor: "pointer",
               }}
               onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
@@ -1319,7 +1319,7 @@ function Panel6Body({ conditional, priorQuestions, onChange, onValidationChange 
             <button onClick={addTopGroup}
               style={{
                 display: "flex", alignItems: "center", gap: 4, background: "none",
-                border: `1px dashed ${C.g3}`, borderRadius: 5, padding: "4px 10px",
+                border: `1px dashed ${C.g3}`, borderRadius: 4, padding: "4px 10px",
                 fontSize: 12, color: C.g4, fontFamily: F, cursor: "pointer",
               }}
               onMouseEnter={e => { e.currentTarget.style.color = C.purple; e.currentTarget.style.borderColor = C.purple; }}
@@ -1329,8 +1329,8 @@ function Panel6Body({ conditional, priorQuestions, onChange, onValidationChange 
 
           {/* Plain-English preview */}
           <div style={{
-            marginTop: 14, padding: "10px 12px", borderRadius: 7,
-            background: validationError ? "#fef2f2" : "#f0f2ff",
+            marginTop: 14, padding: "10px 12px", borderRadius: 8,
+            background: validationError ? "#fae5e6" : "#d4e2ff",
             border: `1px solid ${validationError ? "#fca5a5" : "#c7ccff"}`,
             fontSize: 12, fontFamily: F, color: validationError ? C.red : C.navy, lineHeight: "17px",
           }}>
@@ -1371,7 +1371,7 @@ export default function QuestionEditor({ question, isNew, methodology, priorQues
   const [escalation, setEscalation]   = useState(question.escalation ?? { rules: [] });
   const [conditional, setConditional] = useState(question.conditional ?? { operator: "AND", items: [] });
 
-  const [openPanels, setOpenPanels] = useState({ p1: true, p2: false, p3: false, p4: false, p5: false, p6: false });
+  const [openPanels, setOpenPanels] = useState({ p1: true, p2: true, p3: true, p4: true, p5: true, p6: true });
   const [titleError, setTitleError] = useState(false);
   const [isDirty, setIsDirty]       = useState(false);
   const [showDiscard, setShowDiscard] = useState(false);
@@ -1467,7 +1467,7 @@ export default function QuestionEditor({ question, isNew, methodology, priorQues
                 onBlur={e => { if (!titleError) e.currentTarget.style.borderBottomColor = "transparent"; }}
               />
               {titleError && (
-                <div style={{ fontSize: 11, color: C.red, fontFamily: F, marginTop: 2 }}>Question text is required.</div>
+                <div style={{ fontSize: 12, color: C.red, fontFamily: F, marginTop: 2 }}>Question text is required.</div>
               )}
             </div>
 
@@ -1475,7 +1475,7 @@ export default function QuestionEditor({ question, isNew, methodology, priorQues
             <label style={{ display: "flex", alignItems: "center", gap: 5, cursor: "pointer", flexShrink: 0 }}>
               <span style={{ display: "flex", color: inBank ? C.navy : C.g4 }}><IconBank /></span>
               <Toggle checked={inBank} onChange={() => { setInBank(b => !b); markDirty(); }} />
-              <span style={{ fontSize: 11, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Add to Bank</span>
+              <span style={{ fontSize: 12, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Add to Bank</span>
             </label>
 
             {/* Save + Cancel */}
@@ -1484,7 +1484,7 @@ export default function QuestionEditor({ question, isNew, methodology, priorQues
               disabled={!canSave}
               style={{
                 background: canSave ? C.navy : C.g2, color: canSave ? C.white : C.g4,
-                border: "none", borderRadius: 7, padding: "7px 16px", fontSize: 13, fontWeight: 600, fontFamily: F,
+                border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 600, fontFamily: F,
                 cursor: canSave ? "pointer" : "not-allowed", flexShrink: 0,
               }}
               onMouseEnter={e => { if (canSave) e.currentTarget.style.background = C.navy2; }}
@@ -1493,14 +1493,14 @@ export default function QuestionEditor({ question, isNew, methodology, priorQues
 
             <button
               onClick={handleCancelClick}
-              style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 7, padding: "7px 14px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer", flexShrink: 0 }}
+              style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 8, padding: "7px 14px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer", flexShrink: 0 }}
               onMouseEnter={e => e.currentTarget.style.background = C.g1} onMouseLeave={e => e.currentTarget.style.background = "none"}
             >Cancel</button>
           </div>
 
           {/* Discard confirmation row */}
           {showDiscard && (
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, padding: "8px 10px", background: "#fef2f2", borderRadius: 7, border: `1px solid #fca5a5` }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, padding: "8px 10px", background: "#fae5e6", borderRadius: 8, border: `1px solid #fca5a5` }}>
               <span style={{ flex: 1, fontSize: 13, color: C.red, fontFamily: F }}>Discard changes?</span>
               <button onClick={onClose}
                 style={{ background: C.red, color: C.white, border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, fontWeight: 600, fontFamily: F, cursor: "pointer" }}

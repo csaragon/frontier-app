@@ -18,10 +18,10 @@ const C = {
   g6:      "#16191d",
   teal:    "#0f766e",
   teal2:   "#ccfbf1",
-  amber:   "#b45309",
-  amberBg: "#fffbeb",
-  green:   "#059669",
-  greenBg: "#ecfdf5",
+  amber:   "#854d0e",
+  amberBg: "#fef9c3",
+  green:   "#115e59",
+  greenBg: "#ccfbf1",
 };
 
 function CategoryPill({ cat }) {
@@ -75,7 +75,7 @@ function TemplateCardGrid({ template, userLangs, onPreview }) {
       onMouseLeave={() => setHover(false)}
       style={{
         background: C.white,
-        borderRadius: 10,
+        borderRadius: 12,
         border: `1px solid ${hover ? C.navy : C.g2}`,
         padding: 18,
         cursor: "pointer",
@@ -97,7 +97,7 @@ function TemplateCardGrid({ template, userLangs, onPreview }) {
             border: "none",
             borderRadius: "0 0 0 10px",
             padding: "6px 12px",
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 600,
             cursor: "pointer",
             fontFamily: F,
@@ -111,7 +111,7 @@ function TemplateCardGrid({ template, userLangs, onPreview }) {
         {template.name}
       </div>
       <div style={{
-        fontSize: 11,
+        fontSize: 12,
         color: C.g5,
         lineHeight: "16px",
         display: "-webkit-box",
@@ -160,7 +160,7 @@ function TemplateCardList({ template, userLangs, onPreview }) {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: C.g6 }}>{template.name}</div>
         <div style={{
-          fontSize: 11,
+          fontSize: 12,
           color: C.g5,
           overflow: "hidden",
           textOverflow: "ellipsis",
@@ -182,7 +182,7 @@ function TemplateCardList({ template, userLangs, onPreview }) {
             border: "none",
             borderRadius: 6,
             padding: "5px 12px",
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 600,
             cursor: "pointer",
             fontFamily: F,
@@ -343,7 +343,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
         <span style={{ fontSize: 14, fontWeight: 600, color: C.g6 }}>Start from a template</span>
         <div style={{ flex: 1 }} />
         {/* View toggle */}
-        <div style={{ display: "flex", border: `1px solid ${C.g3}`, borderRadius: 7, overflow: "hidden" }}>
+        <div style={{ display: "flex", border: `1px solid ${C.g3}`, borderRadius: 8, overflow: "hidden" }}>
           {["grid", "list"].map((mode) => (
             <button
               key={mode}
@@ -405,7 +405,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
           fontFamily: F,
         }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.06em" }}>
               Filters
             </span>
             {anyFilterActive && (
@@ -415,7 +415,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
                   background: "none",
                   border: "none",
                   color: C.ocean,
-                  fontSize: 11,
+                  fontSize: 12,
                   cursor: "pointer",
                   fontFamily: F,
                   textDecoration: "underline",
@@ -429,7 +429,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
 
           {/* Category filter */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.g5, marginBottom: 8 }}>Category</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.g5, marginBottom: 8 }}>Category</div>
             {Object.keys(CAT_COLORS).map((cat) => (
               <CheckboxRow
                 key={cat}
@@ -442,7 +442,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
 
           {/* Language filter */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.g5, marginBottom: 8 }}>Language</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.g5, marginBottom: 8 }}>Language</div>
             {ALL_LANGUAGES.map((lang) => (
               <CheckboxRow
                 key={lang}
@@ -455,7 +455,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
 
           {/* Sort */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.g5, marginBottom: 8 }}>Sort by</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.g5, marginBottom: 8 }}>Sort by</div>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
@@ -480,7 +480,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
 
         {/* Main content */}
         <main style={{ flex: 1, overflowY: "auto", padding: 20 }}>
-          <div style={{ fontSize: 11, color: C.g4, marginBottom: 16, fontFamily: F }}>
+          <div style={{ fontSize: 12, color: C.g4, marginBottom: 16, fontFamily: F }}>
             {anyFilterActive
               ? `${filtered.length} template${filtered.length !== 1 ? "s" : ""} matching filters`
               : `${filtered.length} template${filtered.length !== 1 ? "s" : ""}`}

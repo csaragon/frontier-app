@@ -1,15 +1,21 @@
 import { useState, useMemo } from "react";
 import AppSidebar from "../AppSidebar.jsx";
 import { LOCATIONS_30 } from "./locationStubData.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9",
-  primary:"#2226f7", primaryBg:"#f0f2ff",
-  success:"#15803d", successBg:"#f0fdf4",
-  warning:"#a16207", warningBg:"#fef9c3",
-  error:"#dc2626",   errorBg:"#fef2f2",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   T.success1, successBg: T.successContainer1,
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
 };
 
 const STATUS_META = {
@@ -90,7 +96,7 @@ function MultiDrop({ label, selected, onToggle, opts }) {
             <button onClick={() => opts.forEach(o => selected.has(o) && onToggle(o))}
               style={{ display:"block", width:"100%", textAlign:"left", padding:"6px 12px",
                 background:"none", border:"none", borderTop:`1px solid ${C.border}`, marginTop:4,
-                fontSize:11, color:C.primary, cursor:"pointer", fontFamily:F }}>
+                fontSize:12, color:C.primary, cursor:"pointer", fontFamily:F }}>
               Clear
             </button>
           )}
@@ -138,14 +144,14 @@ function LocationCard({ loc, onNav }) {
   return (
     <div onClick={() => onNav("location_record",{ locationId:loc.id, locationName:loc.name })}
       style={{ background:C.bgSurf, border:`1px solid ${loc.isCritical ? C.error+"60" : C.border}`,
-        borderRadius:10, padding:16, cursor:"pointer", transition:"box-shadow 0.12s" }}
+        borderRadius:12, padding:16, cursor:"pointer", transition:"box-shadow 0.12s" }}
       onMouseEnter={e => e.currentTarget.style.boxShadow="0 2px 12px rgba(0,0,0,0.08)"}
       onMouseLeave={e => e.currentTarget.style.boxShadow="none"}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
         <div>
-          <div style={{ fontSize:11, fontWeight:700, color:C.textMuted, fontFamily:F, marginBottom:2 }}>{loc.storeNum}</div>
+          <div style={{ fontSize:12, fontWeight:700, color:C.textMuted, fontFamily:F, marginBottom:2 }}>{loc.storeNum}</div>
           <div style={{ fontSize:13, fontWeight:700, color:C.navyDeep, fontFamily:F }}>{loc.name}</div>
-          <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>{loc.city}, {loc.state}</div>
+          <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>{loc.city}, {loc.state}</div>
         </div>
         <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:4 }}>
           <Pill label={sm.label} color={sm.color} bg={sm.bg} sm />
@@ -157,16 +163,16 @@ function LocationCard({ loc, onNav }) {
       </div>
       <div style={{ display:"flex", gap:8, alignItems:"center" }}>
         <div style={{ flex:1, background: sc != null ? scoreBg(sc) : C.bgApp, borderRadius:6, padding:"6px 10px", textAlign:"center" }}>
-          <div style={{ fontSize:18, fontWeight:800, color: sc != null ? scoreColor(sc) : C.textMuted, fontFamily:F, lineHeight:1 }}>
+          <div style={{ fontSize:20, fontWeight:800, color: sc != null ? scoreColor(sc) : C.textMuted, fontFamily:F, lineHeight:1 }}>
             {sc != null ? sc : "—"}
           </div>
-          <div style={{ fontSize:9, color:C.textMuted, fontFamily:F, marginTop:2 }}>Compliance</div>
+          <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:2 }}>Compliance</div>
         </div>
         <div style={{ flex:1, background:C.bgApp, borderRadius:6, padding:"6px 10px", textAlign:"center" }}>
-          <div style={{ fontSize:18, fontWeight:800, color: loc.openAPs > 5 ? C.warning : C.navyDeep, fontFamily:F, lineHeight:1 }}>
+          <div style={{ fontSize:20, fontWeight:800, color: loc.openAPs > 5 ? C.warning : C.navyDeep, fontFamily:F, lineHeight:1 }}>
             {loc.openAPs}
           </div>
-          <div style={{ fontSize:9, color:C.textMuted, fontFamily:F, marginTop:2 }}>Open APs</div>
+          <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:2 }}>Open APs</div>
         </div>
       </div>
       {loc.lastAuditDate && (
@@ -204,9 +210,9 @@ export default function LocationsListPage({ onNav, density }) {
             display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 24px" }}>
             <span style={{ fontWeight:700, fontSize:16, color:C.navyDeep, fontFamily:F }}>Locations</span>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
+              <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
               <select value={viewerRole} onChange={e => setViewerRole(e.target.value)}
-                style={{ padding:"4px 8px", borderRadius:5, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
+                style={{ padding:"4px 8px", borderRadius:4, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
                 {VIEWER_ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -220,7 +226,7 @@ export default function LocationsListPage({ onNav, density }) {
                 As a Store Manager you have access to your assigned location's record directly.
               </div>
               <button onClick={() => onNav("location_record",{ locationId:"L001", locationName:"New York Central" })}
-                style={{ padding:"9px 24px", borderRadius:7, border:"none", background:C.primary, color:"#fff",
+                style={{ padding:"9px 24px", borderRadius:8, border:"none", background:C.primary, color:"#fff",
                   fontSize:13, fontFamily:F, cursor:"pointer", fontWeight:600 }}>
                 View My Location
               </button>
@@ -241,9 +247,9 @@ export default function LocationsListPage({ onNav, density }) {
             display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 24px" }}>
             <span style={{ fontWeight:700, fontSize:16, color:C.navyDeep, fontFamily:F }}>Locations</span>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
+              <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
               <select value={viewerRole} onChange={e => setViewerRole(e.target.value)}
-                style={{ padding:"4px 8px", borderRadius:5, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
+                style={{ padding:"4px 8px", borderRadius:4, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
                 {VIEWER_ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -326,7 +332,7 @@ export default function LocationsListPage({ onNav, density }) {
           cursor: k ? "pointer" : "default", userSelect:"none",
           display:"flex", alignItems:"center", gap:3, ...style }}>
         {label}
-        {k && active && <span style={{ fontSize:9 }}>{sortDir==="asc"?"▲":"▼"}</span>}
+        {k && active && <span style={{ fontSize:10 }}>{sortDir==="asc"?"▲":"▼"}</span>}
       </div>
     );
   }
@@ -358,9 +364,9 @@ export default function LocationsListPage({ onNav, density }) {
                 </button>
               ))}
             </div>
-            <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
+            <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>Viewing as:</span>
             <select value={viewerRole} onChange={e => { setViewerRole(e.target.value); setPage(1); }}
-              style={{ padding:"4px 8px", borderRadius:5, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
+              style={{ padding:"4px 8px", borderRadius:4, border:`1px solid ${C.border}`, fontSize:12, fontFamily:F, background:C.bgSurf }}>
               {VIEWER_ROLES.map(r => <option key={r}>{r}</option>)}
             </select>
           </div>
@@ -425,7 +431,7 @@ export default function LocationsListPage({ onNav, density }) {
               {visible.map(loc => <LocationCard key={loc.id} loc={loc} onNav={onNav} />)}
             </div>
           ) : (
-            <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, overflow:"hidden" }}>
+            <div style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, overflow:"hidden" }}>
               {/* Table header */}
               <div style={{ display:"grid", gridTemplateColumns:"28px 1fr 90px 180px 70px 110px 72px 72px 1fr 36px",
                 gap:0, borderBottom:`1px solid ${C.border}`, padding:"0 12px", alignItems:"center",
@@ -469,23 +475,23 @@ export default function LocationsListPage({ onNav, density }) {
                     <div>
                       <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                         <span style={{ fontSize:12, fontWeight:600, color:C.primary, fontFamily:F }}>{loc.name}</span>
-                        {loc.isCritical && <span style={{ fontSize:9, fontWeight:700, color:C.error, background:C.errorBg, padding:"1px 5px", borderRadius:999, border:`1px solid ${C.error}30` }}>CRITICAL</span>}
+                        {loc.isCritical && <span style={{ fontSize:10, fontWeight:700, color:C.error, background:C.errorBg, padding:"1px 5px", borderRadius:999, border:`1px solid ${C.error}30` }}>CRITICAL</span>}
                       </div>
                       <div style={{ fontSize:10, color:C.textMuted, fontFamily:F }}>{loc.city}, {loc.state}</div>
                     </div>
 
                     {/* Store # */}
-                    <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>{loc.storeNum}</div>
+                    <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>{loc.storeNum}</div>
 
                     {/* Region → District */}
-                    <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>
+                    <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>
                       <span style={{ fontWeight:600, color:C.navy }}>{loc.region}</span>
                       <span style={{ color:C.textMuted }}> → </span>
                       <span>{loc.district}</span>
                     </div>
 
                     {/* Type */}
-                    <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>{loc.type}</div>
+                    <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>{loc.type}</div>
 
                     {/* Status */}
                     <div><Pill label={sm.label} color={sm.color} bg={sm.bg} sm /></div>
@@ -502,7 +508,7 @@ export default function LocationsListPage({ onNav, density }) {
                     </div>
 
                     {/* Last Audit */}
-                    <div style={{ fontSize:11, color:C.textSec, fontFamily:F }}>
+                    <div style={{ fontSize:12, color:C.textSec, fontFamily:F }}>
                       {loc.lastAuditDate ? (
                         <span
                           onClick={e => { e.stopPropagation(); if (loc.lastAuditId) onNav("audit_record",{ auditId:loc.lastAuditId }); }}

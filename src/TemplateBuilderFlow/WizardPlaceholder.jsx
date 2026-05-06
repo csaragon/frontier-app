@@ -16,8 +16,8 @@ const C = {
   teal:    "#0f766e",
   teal2:   "#ccfbf1",
   red:     "#b6143a",
-  green:   "#059669",
-  greenBg: "#ecfdf5",
+  green:   "#115e59",
+  greenBg: "#ccfbf1",
 };
 
 const ROUTE_LABELS = {
@@ -30,7 +30,7 @@ function RouteBadge({ routeOrigin }) {
   const cfg = ROUTE_LABELS[routeOrigin] || ROUTE_LABELS.scratch;
   return (
     <span style={{
-      fontSize: 11,
+      fontSize: 12,
       fontWeight: 700,
       color: cfg.color,
       background: cfg.bg,
@@ -96,7 +96,7 @@ export default function WizardPlaceholder({ routeOrigin = "scratch", templateId 
 
         {/* Version header stub */}
         {templateId && (
-          <span style={{ fontSize: 11, color: C.g4, marginLeft: 4 }}>
+          <span style={{ fontSize: 12, color: C.g4, marginLeft: 4 }}>
             Editing: Template #{templateId} · v2 → v3 (stub)
           </span>
         )}
@@ -109,7 +109,7 @@ export default function WizardPlaceholder({ routeOrigin = "scratch", templateId 
             <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
             <polyline points="16 16 12 12 8 16" />
           </svg>
-          <span style={{ fontSize: 11, color: C.teal, fontFamily: F }}>Saved just now</span>
+          <span style={{ fontSize: 12, color: C.teal, fontFamily: F }}>Saved just now</span>
         </div>
       </div>
 
@@ -120,7 +120,7 @@ export default function WizardPlaceholder({ routeOrigin = "scratch", templateId 
             <RouteBadge routeOrigin={routeOrigin} />
           </div>
 
-          <h1 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700, color: C.g6 }}>
+          <h1 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 700, color: C.g6 }}>
             Wizard placeholder — Step 1: Details
           </h1>
           <p style={{ margin: "0 0 28px", fontSize: 13, color: C.g5 }}>
@@ -130,7 +130,7 @@ export default function WizardPlaceholder({ routeOrigin = "scratch", templateId 
           {/* Placeholder body */}
           <div style={{
             background: C.g1,
-            borderRadius: 10,
+            borderRadius: 12,
             border: `1px dashed ${C.g3}`,
             padding: 32,
             textAlign: "center",

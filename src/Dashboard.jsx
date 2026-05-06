@@ -1,15 +1,27 @@
 import { useState } from "react";
 import AppSidebar from "./AppSidebar.jsx";
+import { T, F } from "./aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navy2:"#001356", navy3:"#e8ecf8",
-  ocean:"#2226f7", ocean2:"#1316a8", ocean3:"#d4e2ff",
-  white:"#ffffff", g1:"#f4f4f6", g2:"#e2e5e9", g3:"#c3c8d0",
-  g4:"#8692a2", g5:"#555f6d", g6:"#16191d",
-  teal:"#0f766e", teal2:"#ccfbf1",
-  red:"#b6143a", red2:"#fae5e6",
-  yel:"#854d0e", yel2:"#fef9c3",
+  navy:  T.action1,
+  navy2: T.action2,
+  navy3: T.actionContainer3,
+  ocean: T.actionContainer1,
+  ocean2:T.actionContainer2,
+  ocean3:T.actionContainer3,
+  white: T.surface1,
+  g1:    T.surface2,
+  g2:    T.border1,
+  g3:    T.border2,
+  g4:    T.disabled1,
+  g5:    T.onSurface1,
+  g6:    T.onSurface2,
+  teal:  "#0f766e",
+  teal2: "#ccfbf1",
+  red:   T.onError1,
+  red2:  T.errorContainer1,
+  yel:   T.warning1,
+  yel2:  T.warningContainer1,
 };
 
 const sc = s => s >= 80 ? C.teal : s >= 65 ? C.yel : C.red;
@@ -63,7 +75,7 @@ function MultiDrop({ label, sel, onToggle, opts }) {
           style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "8px 12px", background: ck ? C.ocean3 : "transparent", border: "none", color: C.navy, fontSize: 12, fontFamily: F, cursor: "pointer" }}
           onMouseEnter={e => { if (!ck) e.currentTarget.style.background = C.g1; }}
           onMouseLeave={e => { if (!ck) e.currentTarget.style.background = "transparent"; }}>
-          <div style={{ width: 14, height: 14, borderRadius: 3, border: `1.5px solid ${ck ? C.navy : C.g3}`, background: ck ? C.navy : C.white, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ width: 14, height: 14, borderRadius: 4, border: `1.5px solid ${ck ? C.navy : C.g3}`, background: ck ? C.navy : C.white, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             {ck && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5"><polyline points="20 6 9 17 4 12" /></svg>}
           </div>
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{x}</span>
@@ -75,7 +87,7 @@ function MultiDrop({ label, sel, onToggle, opts }) {
 
 function GridHead({ cols, headers, aligns = [], gap = 8, px = 16 }) {
   return <div style={{ display: "grid", gridTemplateColumns: cols, gap, padding: `0 ${px}px`, background: C.g1, borderBottom: `1px solid ${C.g2}`, alignItems: "center" }}>
-    {headers.map((h, i) => <span key={i} style={{ fontSize: 9, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: F, padding: "7px 0", textAlign: aligns[i] || "left" }}>{h}</span>)}
+    {headers.map((h, i) => <span key={i} style={{ fontSize: 10, fontWeight: 700, color: C.navy, textTransform: "uppercase", letterSpacing: "0.04em", fontFamily: F, padding: "7px 0", textAlign: aligns[i] || "left" }}>{h}</span>)}
   </div>;
 }
 
@@ -158,7 +170,7 @@ const CATS = [
   { key:"fire", label:"Fire Safety",     color:"#7c3aed", data:TD.fire },
 ];
 const PTRENDS = [
-  { key:"P001", label:"Retail Safety — SE",  cat:"hs",   color:"#dc2626", data:[62,60,59,57,56,55,58,57,59,58,59,58,60,58,59,60] },
+  { key:"P001", label:"Retail Safety — SE",  cat:"hs",   color:"#b6143a", data:[62,60,59,57,56,55,58,57,59,58,59,58,60,58,59,60] },
   { key:"P004", label:"PPE Compliance",      cat:"hs",   color:"#f59e0b", data:[72,71,70,70,71,69,70,70,70,70,70,70,71,70,71,71] },
   { key:"P007", label:"OSHA Compliance",     cat:"hs",   color:"#ec4899", data:[79,78,78,77,78,78,77,78,79,78,78,79,78,79,78,78] },
   { key:"P002", label:"LP Compliance — NE",  cat:"lp",   color:"#1e3a8a", data:[72,73,74,73,74,75,74,74,75,74,73,74,74,74,74,75] },
@@ -237,7 +249,7 @@ function DrillPanel({ prog, onCollapse, onViewScorecard }) {
   // No-data fallback (from Analytics standalone)
   if (!d) return (
     <div style={{ background:"#F6F7F8", borderBottom:`1px solid ${C.g2}`, padding:"14px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-      <span style={{ fontSize:11, color:C.g4, fontFamily:F }}>No drill-down data available for this program.</span>
+      <span style={{ fontSize:12, color:C.g4, fontFamily:F }}>No drill-down data available for this program.</span>
       <CollapseBtn onClick={onCollapse} />
     </div>
   );
@@ -247,7 +259,7 @@ function DrillPanel({ prog, onCollapse, onViewScorecard }) {
       {/* Drill header */}
       <div style={{ padding:"10px 16px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <span style={{ fontSize:11, fontWeight:600, color:C.navy, fontFamily:F }}>{prog.name.split("—")[0].trim()}</span>
+          <span style={{ fontSize:12, fontWeight:600, color:C.navy, fontFamily:F }}>{prog.name.split("—")[0].trim()}</span>
           <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>— snapshot</span>
         </div>
         <CollapseBtn onClick={onCollapse} />
@@ -260,9 +272,9 @@ function DrillPanel({ prog, onCollapse, onViewScorecard }) {
           { label:"Critical locations",value:d.critLocs,color:C.red, sub:"below 65% score" },
         ].map((k,i) => (
           <div key={i} style={{ background:C.white, borderRadius:8, border:`1px solid ${C.g2}`, padding:"10px 12px" }}>
-            <div style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>{k.label}</div>
+            <div style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>{k.label}</div>
             <div style={{ fontSize:22, fontWeight:700, color:k.color, lineHeight:1, fontFamily:F, marginBottom:3 }}>{k.value}</div>
-            <div style={{ fontSize:9, color:C.g4, fontFamily:F }}>{k.sub}</div>
+            <div style={{ fontSize:10, color:C.g4, fontFamily:F }}>{k.sub}</div>
           </div>
         ))}
       </div>
@@ -270,32 +282,32 @@ function DrillPanel({ prog, onCollapse, onViewScorecard }) {
       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:0, margin:"0 16px 10px", borderRadius:8, border:`1px solid ${C.g2}`, overflow:"hidden", background:C.white }}>
         <div style={{ borderRight:`1px solid ${C.g2}` }}>
           <div style={{ padding:"8px 12px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <span style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Top missed questions</span>
-            <span style={{ fontSize:9, color:C.g4, fontFamily:F }}>{d.missedQ} total</span>
+            <span style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Top missed questions</span>
+            <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>{d.missedQ} total</span>
           </div>
           {d.topQ.map((q,i) => (
             <div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"7px 12px", borderBottom:i<d.topQ.length-1?`1px solid ${C.g1}`:"none" }}>
-              <span style={{ fontSize:9, fontWeight:700, color:C.g3, fontFamily:F, flexShrink:0, width:12 }}>{i+1}</span>
+              <span style={{ fontSize:10, fontWeight:700, color:C.g3, fontFamily:F, flexShrink:0, width:12 }}>{i+1}</span>
               <div style={{ flex:1, minWidth:0, display:"flex", alignItems:"center", gap:4 }}>
                 {q.crit && <span style={{ fontSize:7, fontWeight:700, color:C.red, background:C.red2, padding:"1px 3px", borderRadius:2, textTransform:"uppercase", letterSpacing:"0.04em", flexShrink:0 }}>Crit</span>}
-                <span style={{ fontSize:11, color:C.g6, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight:500 }}>{q.q}</span>
+                <span style={{ fontSize:12, color:C.g6, fontFamily:F, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight:500 }}>{q.q}</span>
               </div>
-              <span style={{ fontSize:11, fontWeight:700, color:C.red, fontFamily:F, flexShrink:0 }}>{q.pct}%</span>
+              <span style={{ fontSize:12, fontWeight:700, color:C.red, fontFamily:F, flexShrink:0 }}>{q.pct}%</span>
             </div>
           ))}
         </div>
         <div>
           <div style={{ padding:"8px 12px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <span style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Critical locations</span>
-            <span style={{ fontSize:9, color:C.g4, fontFamily:F }}>{d.critLocs} total</span>
+            <span style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.05em", fontFamily:F }}>Critical locations</span>
+            <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>{d.critLocs} total</span>
           </div>
           {d.topL.map((loc,i) => (
             <div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"7px 12px", borderBottom:i<d.topL.length-1?`1px solid ${C.g1}`:"none" }}>
-              <span style={{ fontSize:9, fontWeight:700, color:C.g3, fontFamily:F, flexShrink:0, width:12 }}>{i+1}</span>
-              <span style={{ fontSize:11, color:C.g6, fontFamily:F, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight:500 }}>{loc.name}</span>
+              <span style={{ fontSize:10, fontWeight:700, color:C.g3, fontFamily:F, flexShrink:0, width:12 }}>{i+1}</span>
+              <span style={{ fontSize:12, color:C.g6, fontFamily:F, flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight:500 }}>{loc.name}</span>
               <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0 }}>
                 <Score v={loc.score} sz={11} />
-                <span style={{ fontSize:9, fontWeight:600, color:loc.delta<0?C.red:C.teal, fontFamily:F }}>{loc.delta<0?"▼":"▲"}{Math.abs(loc.delta)}pp</span>
+                <span style={{ fontSize:10, fontWeight:600, color:loc.delta<0?C.red:C.teal, fontFamily:F }}>{loc.delta<0?"▼":"▲"}{Math.abs(loc.delta)}pp</span>
               </div>
             </div>
           ))}
@@ -304,7 +316,7 @@ function DrillPanel({ prog, onCollapse, onViewScorecard }) {
       {/* View full scorecard CTA */}
       <div style={{ padding:"10px 16px", display:"flex", justifyContent:"flex-end" }}>
         <button onClick={() => onViewScorecard && onViewScorecard(prog)}
-          style={{ fontSize:11, fontWeight:600, color:C.ocean, background:C.ocean3, border:`1px solid ${C.ocean3}`, borderRadius:7, cursor:"pointer", fontFamily:F, padding:"6px 14px" }}
+          style={{ fontSize:12, fontWeight:600, color:C.ocean, background:C.ocean3, border:`1px solid ${C.ocean3}`, borderRadius:8, cursor:"pointer", fontFamily:F, padding:"6px 14px" }}
           onMouseEnter={e => e.currentTarget.style.background = C.navy3}
           onMouseLeave={e => e.currentTarget.style.background = C.ocean3}>
           View full scorecard →
@@ -417,22 +429,22 @@ export default function Dashboard({ onViewScorecard, onNav }) {
       <main style={{ flex:1, overflowY:"auto", padding:"14px 18px", display:"flex", flexDirection:"column", gap:12 }}>
 
         {/* Context bar */}
-        <div style={{ display:"flex", alignItems:"center", padding:"10px 14px", background:C.navy3, border:`1px solid ${C.ocean3}`, borderRadius:10, gap:10 }}>
-          <div style={{ width:22, height:22, background:C.navy, borderRadius:5, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+        <div style={{ display:"flex", alignItems:"center", padding:"10px 14px", background:C.navy3, border:`1px solid ${C.ocean3}`, borderRadius:12, gap:10 }}>
+          <div style={{ width:22, height:22, background:C.navy, borderRadius:4, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.white} strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           </div>
-          <span style={{ fontSize:9, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.06em", fontFamily:F }}>Viewing</span>
+          <span style={{ fontSize:10, fontWeight:700, color:C.g4, textTransform:"uppercase", letterSpacing:"0.06em", fontFamily:F }}>Viewing</span>
           <span style={{ fontSize:13, fontWeight:600, color:C.navy, fontFamily:F }}>Southeast Region</span>
-          <span style={{ fontSize:11, color:C.g5, fontFamily:F }}>· 48 locations · 6 districts · 12 programs</span>
+          <span style={{ fontSize:12, color:C.g5, fontFamily:F }}>· 48 locations · 6 districts · 12 programs</span>
         </div>
 
         {/* Filters */}
-        <div style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}`, padding:"14px 16px" }}>
+        <div style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}`, padding:"14px 16px" }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
             <span style={{ fontSize:13, fontWeight:700, color:C.navy, fontFamily:F }}>Filters</span>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              {pills.length > 0 && <button onClick={() => { setDate("Last 30 days"); setProgs(new Set()); setTmpls(new Set()); setRegion("All regions"); }} style={{ fontSize:11, color:C.g4, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>Clear all</button>}
-              <button style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, fontWeight:500, color:C.navy, background:"none", border:`1px solid ${C.g3}`, borderRadius:7, cursor:"pointer", fontFamily:F, padding:"5px 10px" }}
+              {pills.length > 0 && <button onClick={() => { setDate("Last 30 days"); setProgs(new Set()); setTmpls(new Set()); setRegion("All regions"); }} style={{ fontSize:12, color:C.g4, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>Clear all</button>}
+              <button style={{ display:"flex", alignItems:"center", gap:5, fontSize:12, fontWeight:500, color:C.navy, background:"none", border:`1px solid ${C.g3}`, borderRadius:8, cursor:"pointer", fontFamily:F, padding:"5px 10px" }}
                 onMouseEnter={e=>{e.currentTarget.style.background=C.g1;e.currentTarget.style.borderColor=C.navy;}}
                 onMouseLeave={e=>{e.currentTarget.style.background="none";e.currentTarget.style.borderColor=C.g3;}}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
@@ -442,24 +454,24 @@ export default function Dashboard({ onViewScorecard, onNav }) {
           </div>
           <div style={{ display:"flex", gap:12, flexWrap:"wrap" }}>
             <div>
-              <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Date range</div>
+              <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Date range</div>
               <Drop value={date} onChange={setDate} opts={["Last 7 days","Last 30 days","Last 90 days","This month","This quarter","Fiscal year"]} />
             </div>
             <div>
-              <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Program</div>
+              <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Program</div>
               <MultiDrop label="All programs" sel={progs} onToggle={toggleP} opts={PROGS.map(p => p.name)} />
             </div>
             <div>
-              <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Template</div>
+              <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Template</div>
               <MultiDrop label="All templates" sel={tmpls} onToggle={toggleT} opts={avTmpls} />
             </div>
             <div>
-              <div style={{ fontSize:9, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Region</div>
+              <div style={{ fontSize:10, fontWeight:600, color:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:4 }}>Region</div>
               <Drop value={region} onChange={setRegion} opts={["All regions","Southeast","Northeast","Midwest","West"]} />
             </div>
           </div>
           {pills.length > 0 && <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginTop:12, paddingTop:12, borderTop:`1px solid ${C.g1}` }}>
-            {pills.map((p, i) => <div key={i} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 8px 4px 10px", borderRadius:999, background:C.navy3, border:`1px solid ${C.navy}`, fontSize:11, fontWeight:500, color:C.navy, fontFamily:F }}>
+            {pills.map((p, i) => <div key={i} style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 8px 4px 10px", borderRadius:999, background:C.navy3, border:`1px solid ${C.navy}`, fontSize:12, fontWeight:500, color:C.navy, fontFamily:F }}>
               <span style={{ maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{p.val}</span>
               <button onClick={() => clear(p.type, p.val)} style={{ display:"flex", alignItems:"center", justifyContent:"center", width:14, height:14, borderRadius:"50%", background:C.navy, border:"none", cursor:"pointer", padding:0, flexShrink:0 }}>
                 <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -478,10 +490,10 @@ export default function Dashboard({ onViewScorecard, onNav }) {
           ].map((k, i) => {
             const act = kpi === k.id;
             return <div key={i} onClick={() => setKpi(act ? null : k.id)}
-              style={{ background:C.white, borderRadius:10, border:`1px solid ${act?C.ocean:C.g2}`, padding:"13px 14px", cursor:"pointer" }}
+              style={{ background:C.white, borderRadius:12, border:`1px solid ${act?C.ocean:C.g2}`, padding:"13px 14px", cursor:"pointer" }}
               onMouseEnter={e => e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)"}
               onMouseLeave={e => e.currentTarget.style.boxShadow = "none"}>
-              <div style={{ fontSize:9, fontWeight:700, color:act?C.ocean:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:5 }}>{k.lbl}</div>
+              <div style={{ fontSize:10, fontWeight:700, color:act?C.ocean:C.g4, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, marginBottom:5 }}>{k.lbl}</div>
               <div style={{ display:"flex", alignItems:"baseline", gap:4, marginBottom:4 }}>
                 <span style={{ fontSize:22, fontWeight:700, color:k.red?C.red:C.g6, lineHeight:1, fontFamily:F }}>{k.val}</span>
                 {k.den && <span style={{ fontSize:13, color:C.g4, fontFamily:F }}>{k.den}</span>}
@@ -492,7 +504,7 @@ export default function Dashboard({ onViewScorecard, onNav }) {
         </div>
 
         {/* Compliance trend */}
-        <div style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}`, padding:"13px 8px" }}>
+        <div style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}`, padding:"13px 8px" }}>
           <div style={{ padding:"0 8px", marginBottom:10 }}>
             <div style={{ fontSize:13, fontWeight:700, color:C.g6, marginBottom:2, fontFamily:F }}>
               {tcat==="all" ? "Compliance trend by category" : `${CATS.find(c=>c.key===tcat)?.label||""} — programs`}
@@ -524,7 +536,7 @@ export default function Dashboard({ onViewScorecard, onNav }) {
         </div>
 
         {/* ── Audit Analytics ── */}
-        <div style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}` }}>
+        <div style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}` }}>
           <div style={{ padding:"13px 16px", borderBottom:`1px solid ${C.g2}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div>
               <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Audit Analytics</div>
@@ -560,11 +572,11 @@ export default function Dashboard({ onViewScorecard, onNav }) {
                   }
                   <div style={{ minWidth:0 }}>
                     <div style={{ fontSize:12, fontWeight:500, color:C.ocean, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontFamily:F }}>{p.name}</div>
-                    <div style={{ fontSize:9, color:C.g4, marginTop:1, fontFamily:F }}>{p.type}</div>
+                    <div style={{ fontSize:10, color:C.g4, marginTop:1, fontFamily:F }}>{p.type}</div>
                   </div>
                 </div>
                 <div style={{ textAlign:"center" }}><Score v={p.score} /></div>
-                <div style={{ fontSize:11, color:C.g5, fontFamily:F, textAlign:"center" }}>{p.done}/{p.total}</div>
+                <div style={{ fontSize:12, color:C.g5, fontFamily:F, textAlign:"center" }}>{p.done}/{p.total}</div>
                 <div style={{ fontSize:12, fontWeight:600, color:p.ov>0?C.red:C.g4, fontFamily:F, textAlign:"center" }}>{p.ov}</div>
                 <div style={{ fontSize:12, fontWeight:700, color:d>=0?C.teal:C.red, fontFamily:F, textAlign:"center" }}>{d>=0?"▲":"▼"} {Math.abs(d).toFixed(0)}pp</div>
                 <div style={{ display:"flex", justifyContent:"flex-end" }} onClick={e=>e.stopPropagation()}>
@@ -586,10 +598,10 @@ export default function Dashboard({ onViewScorecard, onNav }) {
         {/* Open action plans + Behind on actions */}
         <div style={{ display:"grid", gridTemplateColumns:"minmax(0,2fr) minmax(0,3fr)", gap:12, marginBottom:8 }}>
 
-          <div style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}`, overflow:"hidden", display:"flex", flexDirection:"column" }}>
+          <div style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}`, overflow:"hidden", display:"flex", flexDirection:"column" }}>
             <div style={{ padding:"11px 16px", borderBottom:`1px solid ${C.g1}`, display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0 }}>
               <span style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Open action plans</span>
-              <span style={{ fontSize:11, fontWeight:600, color:C.red, fontFamily:F }}>2 overdue</span>
+              <span style={{ fontSize:12, fontWeight:600, color:C.red, fontFamily:F }}>2 overdue</span>
             </div>
             <GridHead cols="1fr 88px 64px" headers={["Action plan","Status","Priority"]} aligns={["left","center","left"]} />
             {ACTIONS.map((a, i) => {
@@ -597,36 +609,36 @@ export default function Dashboard({ onViewScorecard, onNav }) {
               return <div key={i} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
                 style={{ display:"grid", gridTemplateColumns:"1fr 88px 64px", gap:8, padding:"9px 16px", alignItems:"center", background:h?C.ocean3:"transparent", borderBottom:`1px solid ${C.g1}` }}>
                 <div style={{ minWidth:0 }}>
-                  <div style={{ fontSize:11, fontWeight:500, color:C.g6, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontFamily:F }}>{a.title}</div>
-                  <div style={{ fontSize:9, color:C.g4, marginTop:2, fontFamily:F }}>{a.loc} · Due {a.due}</div>
+                  <div style={{ fontSize:12, fontWeight:500, color:C.g6, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontFamily:F }}>{a.title}</div>
+                  <div style={{ fontSize:10, color:C.g4, marginTop:2, fontFamily:F }}>{a.loc} · Due {a.due}</div>
                 </div>
                 <div style={{ display:"flex", justifyContent:"center" }}>
                   <Pill type={a.ov?"err":a.st==="in_progress"?"info":"base"} label={a.ov?"Overdue":a.st==="in_progress"?"In progress":"Open"} sm />
                 </div>
-                <span style={{ fontSize:11, fontFamily:F, color:a.pri==="high"?C.red:a.pri==="medium"?C.yel:C.g5, fontWeight:500 }}>
+                <span style={{ fontSize:12, fontFamily:F, color:a.pri==="high"?C.red:a.pri==="medium"?C.yel:C.g5, fontWeight:500 }}>
                   {a.pri.charAt(0).toUpperCase()+a.pri.slice(1)}
                 </span>
               </div>;
             })}
             <div style={{ padding:"10px 16px", borderTop:`1px solid ${C.g2}`, display:"flex", justifyContent:"center" }}>
-              <button style={{ fontSize:11, color:C.ocean, background:"none", border:"none", cursor:"pointer", fontFamily:F, fontWeight:500 }}>View all {ACTIONS.length} action plans</button>
+              <button style={{ fontSize:12, color:C.ocean, background:"none", border:"none", cursor:"pointer", fontFamily:F, fontWeight:500 }}>View all {ACTIONS.length} action plans</button>
             </div>
           </div>
 
-          <div style={{ background:C.white, borderRadius:10, border:`1px solid ${C.g2}`, overflow:"hidden" }}>
+          <div style={{ background:C.white, borderRadius:12, border:`1px solid ${C.g2}`, overflow:"hidden" }}>
             <div style={{ padding:"11px 16px", borderBottom:`1px solid ${C.g1}`, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
               <div>
                 <div style={{ fontSize:13, fontWeight:700, color:C.g6, fontFamily:F }}>Behind on actions</div>
                 <div style={{ fontSize:10, color:C.g4, marginTop:2, fontFamily:F }}>{BEHIND.length} people with overdue audits · ordered by severity</div>
               </div>
-              <button style={{ fontSize:11, fontWeight:500, color:C.ocean, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>View full report →</button>
+              <button style={{ fontSize:12, fontWeight:500, color:C.ocean, background:"none", border:"none", cursor:"pointer", fontFamily:F }}>View full report →</button>
             </div>
             {BEHIND.map((u, i) => {
               const sev = u.ov>=3?C.red:u.ov>=2?C.yel:C.g5;
               return <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", borderBottom:i<BEHIND.length-1?`1px solid ${C.g1}`:"none" }}
                 onMouseEnter={e => e.currentTarget.style.background=C.g1}
                 onMouseLeave={e => e.currentTarget.style.background="transparent"}>
-                <div style={{ width:36, height:36, borderRadius:"50%", background:sev, color:C.white, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, fontFamily:F, flexShrink:0 }}>{u.ini}</div>
+                <div style={{ width:36, height:36, borderRadius:"50%", background:sev, color:C.white, display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, fontFamily:F, flexShrink:0 }}>{u.ini}</div>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:12, fontWeight:600, color:C.g6, fontFamily:F }}>{u.name}</div>
                   <div style={{ fontSize:10, color:C.g4, marginTop:2, fontFamily:F }}>{u.role} · {u.dist}</div>

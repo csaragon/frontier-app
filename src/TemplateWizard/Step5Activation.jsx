@@ -6,7 +6,7 @@ const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
   primary:      "#2226f7",
   primaryHover: "#1316a8",
-  primaryBg:    "#f0f2ff",
+  primaryBg:    "#d4e2ff",
   primaryLight: "#d4e2ff",
   navy:         "#001e76",
   navyDeep:     "#16191d",
@@ -16,14 +16,14 @@ const C = {
   bgSurface:    "#ffffff",
   borderSubtle: "#e2e5e9",
   borderDef:    "#c3c8d0",
-  success:      "#059669",
-  successBg:    "#ecfdf5",
-  error:        "#dc2626",
-  errorBg:      "#fef2f2",
-  warning:      "#b45309",
-  warningBg:    "#fffbeb",
-  info:         "#0369a1",
-  infoBg:       "#f0f9ff",
+  success:      "#115e59",
+  successBg:    "#ccfbf1",
+  error:        "#b6143a",
+  errorBg:      "#fae5e6",
+  warning:      "#854d0e",
+  warningBg:    "#fef9c3",
+  info:         "#001e76",
+  infoBg:       "#d4e2ff",
 };
 const FOCUS_RING = "0 0 0 2px #fff, 0 0 0 4px #2226f7";
 
@@ -239,12 +239,12 @@ function SummarySection({ title, children, onEdit, step }) {
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: C.navy, fontFamily: F, textTransform: "uppercase", letterSpacing: "0.05em" }}>{title}</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: C.navy, fontFamily: F, textTransform: "uppercase", letterSpacing: "0.05em" }}>{title}</div>
         {onEdit && (
           <button
             type="button"
             onClick={onEdit}
-            style={{ fontSize: 11, color: C.primary, background: "none", border: "none", cursor: "pointer", padding: "1px 0", fontFamily: F }}
+            style={{ fontSize: 12, color: C.primary, background: "none", border: "none", cursor: "pointer", padding: "1px 0", fontFamily: F }}
             onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
             onBlur={e => (e.currentTarget.style.boxShadow = "none")}
           >
@@ -262,8 +262,8 @@ function SummarySection({ title, children, onEdit, step }) {
 function SummaryRow({ label, value, muted }) {
   return (
     <div style={{ display: "flex", gap: 8, justifyContent: "space-between", alignItems: "flex-start" }}>
-      <span style={{ fontSize: 11, color: C.textSec, fontFamily: F, flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 11, color: muted ? C.textMuted : C.navyDeep, fontFamily: F, textAlign: "right", fontStyle: muted ? "italic" : "normal" }}>
+      <span style={{ fontSize: 12, color: C.textSec, fontFamily: F, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 12, color: muted ? C.textMuted : C.navyDeep, fontFamily: F, textAlign: "right", fontStyle: muted ? "italic" : "normal" }}>
         {value || <em style={{ color: C.textMuted }}>—</em>}
       </span>
     </div>
@@ -279,7 +279,7 @@ function LifecycleControls({ status, canPublish, onDispatch, onPublish }) {
     <button
       type="button"
       onClick={onClick}
-      style={{ padding: "7px 16px", borderRadius: 7, fontSize: 12, fontFamily: F, cursor: "pointer", fontWeight: 500, outline: "none", ...style }}
+      style={{ padding: "7px 16px", borderRadius: 8, fontSize: 12, fontFamily: F, cursor: "pointer", fontWeight: 500, outline: "none", ...style }}
       onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
       onBlur={e => (e.currentTarget.style.boxShadow = "none")}
     >{label}</button>
@@ -287,7 +287,7 @@ function LifecycleControls({ status, canPublish, onDispatch, onPublish }) {
 
   return (
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.borderSubtle}` }}>
-      <div style={{ fontSize: 11, color: C.textMuted, fontFamily: F, width: "100%", marginBottom: 4 }}>Lifecycle actions</div>
+      <div style={{ fontSize: 12, color: C.textMuted, fontFamily: F, width: "100%", marginBottom: 4 }}>Lifecycle actions</div>
       {status === "active"      && btn("Deactivate", () => onDispatch({ type: "SET_STATUS", value: "deactivated" }), { border: `1px solid ${C.borderDef}`, background: C.bgSurface, color: C.textSec })}
       {status === "deactivated" && btn("Reactivate", () => onDispatch({ type: "SET_STATUS", value: "active" }),      { border: "none", background: C.primary, color: "#fff", fontWeight: 600 })}
       {status === "active" || status === "deactivated"
@@ -332,7 +332,7 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
         </div>
 
         {/* Hard checks */}
-        <div style={{ background: C.bgSurface, borderRadius: 10, border: `1px solid ${C.borderSubtle}`, overflow: "hidden", marginBottom: 16 }}>
+        <div style={{ background: C.bgSurface, borderRadius: 12, border: `1px solid ${C.borderSubtle}`, overflow: "hidden", marginBottom: 16 }}>
           <div style={{ padding: "10px 16px", background: C.bgApp, borderBottom: `1px solid ${C.borderSubtle}` }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: C.navyDeep, fontFamily: F }}>Required checks</span>
           </div>
@@ -342,13 +342,13 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 12, fontWeight: 500, color: check.pass ? C.navyDeep : C.error, fontFamily: F }}>{check.label}</div>
                 {!check.pass && check.detail && (
-                  <div style={{ fontSize: 11, color: C.error, fontFamily: F, marginTop: 3 }}>
+                  <div style={{ fontSize: 12, color: C.error, fontFamily: F, marginTop: 3 }}>
                     {check.detail}
                     {check.goStep && (
                       <button
                         type="button"
                         onClick={() => onGoStep(check.goStep)}
-                        style={{ marginLeft: 6, fontSize: 11, color: C.primary, background: "none", border: "none", cursor: "pointer", fontFamily: F, padding: 0, textDecoration: "underline" }}
+                        style={{ marginLeft: 6, fontSize: 12, color: C.primary, background: "none", border: "none", cursor: "pointer", fontFamily: F, padding: 0, textDecoration: "underline" }}
                         onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
                         onBlur={e => (e.currentTarget.style.boxShadow = "none")}
                       >
@@ -358,7 +358,7 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
                   </div>
                 )}
                 {!check.pass && check.extraDetails?.map((d, i) => (
-                  <div key={i} style={{ fontSize: 11, color: C.error, fontFamily: F, marginTop: 2 }}>{d}</div>
+                  <div key={i} style={{ fontSize: 12, color: C.error, fontFamily: F, marginTop: 2 }}>{d}</div>
                 ))}
               </div>
             </div>
@@ -367,7 +367,7 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
 
         {/* Soft checks / warnings */}
         {soft.length > 0 && (
-          <div style={{ background: C.bgSurface, borderRadius: 10, border: `1px solid ${C.borderSubtle}`, overflow: "hidden", marginBottom: 16 }}>
+          <div style={{ background: C.bgSurface, borderRadius: 12, border: `1px solid ${C.borderSubtle}`, overflow: "hidden", marginBottom: 16 }}>
             <div style={{ padding: "10px 16px", background: C.bgApp, borderBottom: `1px solid ${C.borderSubtle}` }}>
               <span style={{ fontSize: 12, fontWeight: 700, color: C.navyDeep, fontFamily: F }}>Recommendations</span>
             </div>
@@ -376,13 +376,13 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
                 <WarnIcon />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 12, fontWeight: 500, color: C.warning, fontFamily: F }}>{check.label}</div>
-                  <div style={{ fontSize: 11, color: C.textSec, fontFamily: F, marginTop: 3 }}>
+                  <div style={{ fontSize: 12, color: C.textSec, fontFamily: F, marginTop: 3 }}>
                     {check.detail}
                     {check.goStep && (
                       <button
                         type="button"
                         onClick={() => onGoStep(check.goStep)}
-                        style={{ marginLeft: 6, fontSize: 11, color: C.primary, background: "none", border: "none", cursor: "pointer", fontFamily: F, padding: 0, textDecoration: "underline" }}
+                        style={{ marginLeft: 6, fontSize: 12, color: C.primary, background: "none", border: "none", cursor: "pointer", fontFamily: F, padding: 0, textDecoration: "underline" }}
                         onFocus={e => (e.currentTarget.style.boxShadow = FOCUS_RING)}
                         onBlur={e => (e.currentTarget.style.boxShadow = "none")}
                       >
@@ -398,14 +398,14 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
 
         {/* All-pass banner */}
         {canPublish && (
-          <div style={{ background: C.successBg, border: `1px solid #6ee7b7`, borderRadius: 10, padding: "14px 18px", display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+          <div style={{ background: C.successBg, border: `1px solid #6ee7b7`, borderRadius: 12, padding: "14px 18px", display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.success} strokeWidth="2.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
               <circle cx="12" cy="12" r="10" fill={C.successBg}/>
               <polyline points="8 12 11 15 16 9"/>
             </svg>
             <div>
               <div style={{ fontSize: 12, fontWeight: 700, color: C.success, fontFamily: F }}>All required checks pass</div>
-              <div style={{ fontSize: 11, color: C.textSec, fontFamily: F, marginTop: 2 }}>This template is ready to publish.</div>
+              <div style={{ fontSize: 12, color: C.textSec, fontFamily: F, marginTop: 2 }}>This template is ready to publish.</div>
             </div>
           </div>
         )}
@@ -432,7 +432,7 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
           Publish template
         </button>
         {!canPublish && (
-          <p style={{ textAlign: "center", fontSize: 11, color: C.textMuted, fontFamily: F, marginTop: 8 }}>
+          <p style={{ textAlign: "center", fontSize: 12, color: C.textMuted, fontFamily: F, marginTop: 8 }}>
             Resolve all required checks above to enable publishing.
           </p>
         )}
@@ -447,7 +447,7 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
       </div>
 
       {/* ── Right: summary card */}
-      <div style={{ background: C.bgSurface, borderRadius: 10, border: `1px solid ${C.borderSubtle}`, padding: "16px 18px", overflowY: "auto", maxHeight: "calc(100vh - 220px)", position: "sticky", top: 0 }}>
+      <div style={{ background: C.bgSurface, borderRadius: 12, border: `1px solid ${C.borderSubtle}`, padding: "16px 18px", overflowY: "auto", maxHeight: "calc(100vh - 220px)", position: "sticky", top: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: C.navyDeep, fontFamily: F, marginBottom: 16 }}>Template summary</div>
 
         {/* Basics */}
@@ -497,13 +497,13 @@ export default function Step5Activation({ fields, status, conditionalIds, onGoSt
         {/* Status */}
         <div style={{ marginTop: 4, paddingTop: 12, borderTop: `1px solid ${C.borderSubtle}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 11, color: C.textSec, fontFamily: F }}>Status</span>
+            <span style={{ fontSize: 12, color: C.textSec, fontFamily: F }}>Status</span>
             <span style={{
               display: "inline-flex", alignItems: "center", gap: 5,
               padding: "2px 9px", borderRadius: 999,
               background: status === "active" ? C.successBg : status === "archived" || status === "deactivated" ? C.bgApp : C.warningBg,
               color: status === "active" ? C.success : status === "archived" || status === "deactivated" ? C.textMuted : C.warning,
-              fontSize: 11, fontWeight: 600, fontFamily: F,
+              fontSize: 12, fontWeight: 600, fontFamily: F,
             }}>
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "currentColor", display: "inline-block" }} />
               {status.charAt(0).toUpperCase() + status.slice(1)}

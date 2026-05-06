@@ -1,17 +1,24 @@
 import { useState, useMemo } from "react";
 import AppSidebar from "../AppSidebar.jsx";
 import { AUDITS_50, LOCATIONS_ALL, AUDITORS_ALL, PROGRAMS_ALL, TEMPLATES_ALL } from "./auditStubData.js";
+import { T, F } from "../aegis-tokens.js";
 
-const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
-  navy:"#001e76", navyDeep:"#16191d", textSec:"#555f6d", textMuted:"#8692a2",
-  bgApp:"#f4f4f6", bgSurf:"#ffffff", border:"#e2e5e9", border2:"#c3c8d0",
-  primary:"#2226f7", primaryBg:"#f0f2ff",
-  success:"#15803d", successBg:"#f0fdf4",
-  warning:"#a16207", warningBg:"#fef9c3",
-  error:"#dc2626",   errorBg:"#fef2f2",
-  info:"#0369a1",    infoBg:"#f0f9ff",
-  purple:"#7c3aed",  purpleBg:"#f5f3ff",
+  navy:      T.action1,
+  navyDeep:  T.onSurface2,
+  textSec:   T.onSurface1,
+  textMuted: T.disabled1,
+  bgApp:     T.surface2,
+  bgSurf:    T.surface1,
+  border:    T.border1,
+  border2:   T.border2,
+  primary:   T.actionContainer1,
+  primaryBg: T.actionContainer3,
+  success:   "#15803d", successBg: "#f0fdf4",
+  warning:   T.warning1, warningBg: T.warningContainer1,
+  error:     T.onError1, errorBg:   T.errorContainer1,
+  info:      T.onInfo1,  infoBg:    T.infoContainer1,
+  purple:    "#7c3aed",  purpleBg:  "#f5f3ff",
 };
 
 const STATUS_META = {
@@ -64,7 +71,7 @@ const ROLE_SCOPE = {
 function Pill({ label, color, bg }) {
   return (
     <span style={{ display:"inline-flex", alignItems:"center", padding:"3px 9px", borderRadius:999,
-      background: bg, border:`1px solid ${color}30`, fontSize:11, fontWeight:600,
+      background: bg, border:`1px solid ${color}30`, fontSize:12, fontWeight:600,
       color, fontFamily:F, whiteSpace:"nowrap" }}>
       {label}
     </span>
@@ -133,7 +140,7 @@ function MultiFilterDrop({ label, selected, onToggle, options }) {
                   fontSize:12, fontFamily:F, cursor:"pointer" }}
                 onMouseEnter={e => { if (!ck) e.currentTarget.style.background = C.bgApp; }}
                 onMouseLeave={e => { if (!ck) e.currentTarget.style.background = "transparent"; }}>
-                <div style={{ width:13, height:13, borderRadius:3, border:`1.5px solid ${ck ? C.primary : C.border2}`,
+                <div style={{ width:13, height:13, borderRadius:4, border:`1.5px solid ${ck ? C.primary : C.border2}`,
                   background: ck ? C.primary : "white", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   {ck && <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
@@ -152,7 +159,7 @@ function KebabMenu({ audit, onView, onNav }) {
   return (
     <div style={{ position:"relative" }}>
       <button onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
-        style={{ width:28, height:28, borderRadius:5, border:"none", background:"transparent",
+        style={{ width:28, height:28, borderRadius:4, border:"none", background:"transparent",
           cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:C.textMuted }}
         onMouseEnter={e => e.currentTarget.style.background = C.bgApp}
         onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
@@ -186,7 +193,7 @@ function AuditCard({ audit, onClick }) {
   const sc = audit.score;
   return (
     <div onClick={onClick}
-      style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:10, padding:16,
+      style={{ background:C.bgSurf, border:`1px solid ${C.border}`, borderRadius:12, padding:16,
         cursor:"pointer", transition:"box-shadow 0.12s, border-color 0.12s" }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; e.currentTarget.style.borderColor = C.border2; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = "none"; e.currentTarget.style.borderColor = C.border; }}>
@@ -197,29 +204,29 @@ function AuditCard({ audit, onClick }) {
           display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
           {sc ? (
             <>
-              <span style={{ fontSize:18, fontWeight:800, color:scoreColor(sc), lineHeight:1, fontFamily:F }}>{sc}</span>
-              <span style={{ fontSize:9, fontWeight:600, color:scoreColor(sc), fontFamily:F }}>%</span>
+              <span style={{ fontSize:20, fontWeight:800, color:scoreColor(sc), lineHeight:1, fontFamily:F }}>{sc}</span>
+              <span style={{ fontSize:10, fontWeight:600, color:scoreColor(sc), fontFamily:F }}>%</span>
             </>
-          ) : <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>—</span>}
+          ) : <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>—</span>}
         </div>
         <Pill label={sm.label} color={sm.color} bg={sm.bg} />
       </div>
       <div style={{ fontSize:13, fontWeight:600, color:C.navyDeep, fontFamily:F, marginBottom:4,
         overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{audit.name}</div>
-      <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginBottom:10,
+      <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:10,
         overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
         {audit.template} {audit.version}
       </div>
       <div style={{ display:"flex", flexDirection:"column", gap:3 }}>
         {[["Location", audit.location], ["Auditor", audit.auditor], ["Date", audit.date]].map(([k, v]) => (
-          <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:11, fontFamily:F }}>
+          <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:12, fontFamily:F }}>
             <span style={{ color:C.textMuted }}>{k}</span>
             <span style={{ color:C.navyDeep, fontWeight:500, maxWidth:120, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{v}</span>
           </div>
         ))}
       </div>
       {audit.cf > 0 && (
-        <div style={{ marginTop:10, padding:"4px 8px", background:C.errorBg, borderRadius:5, display:"inline-flex", alignItems:"center", gap:4 }}>
+        <div style={{ marginTop:10, padding:"4px 8px", background:C.errorBg, borderRadius:4, display:"inline-flex", alignItems:"center", gap:4 }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={C.error} strokeWidth="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           <span style={{ fontSize:10, fontWeight:700, color:C.error, fontFamily:F }}>{audit.cf} critical fail{audit.cf > 1 ? "s" : ""}</span>
         </div>
@@ -350,7 +357,7 @@ export default function AuditsListPage({ onNav, density = "condensed" }) {
               background:C.primaryBg, borderRadius:6, border:`1px solid ${C.primary}30` }}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.primary} strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               <select value={role} onChange={e => { setRole(e.target.value); setPage(1); }}
-                style={{ border:"none", background:"transparent", color:C.primary, fontSize:11, fontFamily:F, fontWeight:600, cursor:"pointer", outline:"none" }}>
+                style={{ border:"none", background:"transparent", color:C.primary, fontSize:12, fontFamily:F, fontWeight:600, cursor:"pointer", outline:"none" }}>
                 {ROLES.map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
@@ -362,7 +369,7 @@ export default function AuditsListPage({ onNav, density = "condensed" }) {
               </svg>
               <input value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                 placeholder="Search audits…"
-                style={{ padding:"6px 10px 6px 28px", borderRadius:7, border:`1px solid ${C.border}`,
+                style={{ padding:"6px 10px 6px 28px", borderRadius:8, border:`1px solid ${C.border}`,
                   fontSize:12, fontFamily:F, color:C.navyDeep, outline:"none", width:200, background:C.bgSurf }}
                 onFocus={e => (e.target.style.borderColor = C.primary)}
                 onBlur={e => (e.target.style.borderColor = C.border)} />
@@ -420,10 +427,10 @@ export default function AuditsListPage({ onNav, density = "condensed" }) {
 
           {/* View toggle + sort — pushed right */}
           <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:6 }}>
-            <span style={{ fontSize:11, color:C.textMuted, fontFamily:F }}>{sorted.length} audits</span>
+            <span style={{ fontSize:12, color:C.textMuted, fontFamily:F }}>{sorted.length} audits</span>
             {["row","grid"].map(v => (
               <button key={v} onClick={() => setViewMode(v)}
-                style={{ width:28, height:28, borderRadius:5, border:`1px solid ${viewMode === v ? C.primary : C.border}`,
+                style={{ width:28, height:28, borderRadius:4, border:`1px solid ${viewMode === v ? C.primary : C.border}`,
                   background: viewMode === v ? C.primaryBg : C.bgSurf, cursor:"pointer",
                   display:"flex", alignItems:"center", justifyContent:"center", color: viewMode === v ? C.primary : C.textMuted }}>
                 {v === "row"
@@ -490,13 +497,13 @@ export default function AuditsListPage({ onNav, density = "condensed" }) {
                       onMouseLeave={e => e.currentTarget.style.background = C.bgSurf}>
                       {/* checkbox */}
                       <div onClick={e => e.stopPropagation()}
-                        style={{ width:15, height:15, borderRadius:3, border:`1.5px solid ${C.border2}`, background:"white" }} />
+                        style={{ width:15, height:15, borderRadius:4, border:`1.5px solid ${C.border2}`, background:"white" }} />
 
                       {/* Name + template */}
                       <div style={{ minWidth:0 }}>
                         <div style={{ fontSize:12, fontWeight:600, color:C.navyDeep, fontFamily:F,
                           overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.name}</div>
-                        <div style={{ fontSize:11, color:C.textMuted, fontFamily:F, marginTop:1,
+                        <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginTop:1,
                           overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                           {a.template} · {a.version}
                         </div>
@@ -541,7 +548,7 @@ export default function AuditsListPage({ onNav, density = "condensed" }) {
                       </div>
 
                       {/* Date */}
-                      <div style={{ fontSize:11, color: a.status === "overdue" ? C.error : C.textSec,
+                      <div style={{ fontSize:12, color: a.status === "overdue" ? C.error : C.textSec,
                         fontWeight: a.status === "overdue" ? 600 : 400, fontFamily:F,
                         overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                         {a.date}
