@@ -113,7 +113,7 @@ export default function AuditBuilderHome({ onNav, templates }) {
           <div style={{ fontSize:16, fontWeight:700, color:C.navyDeep, fontFamily:F }}>Template Builder</div>
           <div style={{ marginLeft:"auto" }}>
             <button
-              onClick={() => onNav("template_wizard")}
+              onClick={() => onNav("template_builder")}
               style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", borderRadius:8, border:"none", background:C.primary, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
               onMouseEnter={e => (e.currentTarget.style.background = C.primaryHov)}
               onMouseLeave={e => (e.currentTarget.style.background = C.primary)}
@@ -154,8 +154,8 @@ export default function AuditBuilderHome({ onNav, templates }) {
                 <TemplateRow
                   key={t.id}
                   t={t}
-                  onResume={id => onNav("template_wizard", { templateId: id })}
-                  onEdit={id => onNav("template_wizard", { templateId: id })}
+                  onResume={id => onNav("template_builder", { templateId: id })}
+                  onEdit={id => onNav("template_builder", { templateId: id })}
                 />
               ))}
             </div>
@@ -167,7 +167,7 @@ export default function AuditBuilderHome({ onNav, templates }) {
               <div style={{ fontSize:13, fontWeight:600, color:C.navyDeep, fontFamily:F, marginBottom:6 }}>No templates yet</div>
               <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:20 }}>Create your first audit template to get started.</div>
               <button
-                onClick={() => onNav("template_wizard")}
+                onClick={() => onNav("template_builder")}
                 style={{ padding:"8px 18px", borderRadius:8, border:"none", background:C.primary, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
               >
                 New Template

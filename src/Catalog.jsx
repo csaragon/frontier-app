@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AppSidebar from "./AppSidebar.jsx";
 import { T, F } from "./aegis-tokens.js";
+import { LogicIcons } from "./TemplateBuilderFlow/typeIcons.jsx";
 
 // Local aliases mapping legacy names → Aegis semantic tokens
 const C = {
@@ -47,28 +48,28 @@ export const TYPE_META = {
 };
 
 export const QUESTIONS = [
-  { id:"Q001", text:"Emergency exit signage is visible and unobstructed", type:"Pass/Fail", category:"Fire Safety", usedIn:4 },
-  { id:"Q002", text:"Fire extinguisher inspection tag is current", type:"Pass/Fail", category:"Fire Safety", usedIn:3 },
-  { id:"Q003", text:"Chemical storage log is up to date", type:"Yes/No", category:"Health & Safety", usedIn:2 },
-  { id:"Q004", text:"PPE is available and accessible at all required stations", type:"Pass/Fail", category:"PPE", usedIn:5 },
-  { id:"Q005", text:"PPE items are in good condition (no damage or expiry)", type:"Pass/Fail", category:"PPE", usedIn:5 },
+  { id:"Q001", text:"Emergency exit signage is visible and unobstructed", type:"Pass/Fail", category:"Fire Safety", usedIn:4, hasAction:true, hasEscalation:true },
+  { id:"Q002", text:"Fire extinguisher inspection tag is current", type:"Pass/Fail", category:"Fire Safety", usedIn:3, hasAction:true },
+  { id:"Q003", text:"Chemical storage log is up to date", type:"Yes/No", category:"Health & Safety", usedIn:2, hasAction:true },
+  { id:"Q004", text:"PPE is available and accessible at all required stations", type:"Pass/Fail", category:"PPE", usedIn:5, hasEscalation:true },
+  { id:"Q005", text:"PPE items are in good condition (no damage or expiry)", type:"Pass/Fail", category:"PPE", usedIn:5, hasAction:true },
   { id:"Q006", text:"Gloves are stocked in all required sizes", type:"Yes/No", category:"PPE", usedIn:3 },
-  { id:"Q007", text:"CCTV coverage is active across all required zones", type:"Pass/Fail", category:"Loss Prevention", usedIn:3 },
-  { id:"Q008", text:"Cash handling procedures are being followed correctly", type:"Pass/Fail", category:"Loss Prevention", usedIn:4 },
+  { id:"Q007", text:"CCTV coverage is active across all required zones", type:"Pass/Fail", category:"Loss Prevention", usedIn:3, hasEscalation:true },
+  { id:"Q008", text:"Cash handling procedures are being followed correctly", type:"Pass/Fail", category:"Loss Prevention", usedIn:4, hasEscalation:true, hasConditional:true },
   { id:"Q009", text:"Access control logs have been reviewed this week", type:"Yes/No", category:"Loss Prevention", usedIn:2 },
-  { id:"Q010", text:"EAS tags are applied correctly to all high-risk merchandise", type:"Pass/Fail", category:"Loss Prevention", usedIn:2 },
+  { id:"Q010", text:"EAS tags are applied correctly to all high-risk merchandise", type:"Pass/Fail", category:"Loss Prevention", usedIn:2, hasAction:true },
   { id:"Q011", text:"Overall store cleanliness rating", type:"Rating", category:"Operations", usedIn:6 },
-  { id:"Q012", text:"Which planogram compliance issues were found?", type:"Multi-Select", category:"Operations", usedIn:2 },
-  { id:"Q013", text:"Temperature log reading (refrigerated zone)", type:"Number", category:"Operations", usedIn:1 },
-  { id:"Q014", text:"MSDS sheets are accessible to all employees", type:"Pass/Fail", category:"OSHA", usedIn:3 },
-  { id:"Q015", text:"Lockout/tagout procedures are posted at equipment", type:"Pass/Fail", category:"OSHA", usedIn:3 },
+  { id:"Q012", text:"Which planogram compliance issues were found?", type:"Multi-Select", category:"Operations", usedIn:2, hasConditional:true },
+  { id:"Q013", text:"Temperature log reading (refrigerated zone)", type:"Number", category:"Operations", usedIn:1, hasEscalation:true },
+  { id:"Q014", text:"MSDS sheets are accessible to all employees", type:"Pass/Fail", category:"OSHA", usedIn:3, hasEscalation:true },
+  { id:"Q015", text:"Lockout/tagout procedures are posted at equipment", type:"Pass/Fail", category:"OSHA", usedIn:3, hasAction:true },
   { id:"Q016", text:"Employee right-to-know training is current", type:"Yes/No", category:"OSHA", usedIn:3 },
   { id:"Q017", text:"Describe any unsafe conditions observed on the floor", type:"Text", category:"Health & Safety", usedIn:1 },
-  { id:"Q018", text:"Return desk procedures are being followed", type:"Pass/Fail", category:"Loss Prevention", usedIn:2 },
+  { id:"Q018", text:"Return desk procedures are being followed", type:"Pass/Fail", category:"Loss Prevention", usedIn:2, hasConditional:true },
   { id:"Q019", text:"Select the primary shrink driver identified", type:"Dropdown", category:"Loss Prevention", usedIn:1 },
-  { id:"Q020", text:"Number of associate safety incidents this period", type:"Number", category:"Health & Safety", usedIn:1 },
-  { id:"Q021", text:"Slip, trip, and fall hazards have been addressed", type:"Pass/Fail", category:"Health & Safety", usedIn:4 },
-  { id:"Q022", text:"Merchandise is secured in high-risk zones", type:"Pass/Fail", category:"Loss Prevention", usedIn:2 },
+  { id:"Q020", text:"Number of associate safety incidents this period", type:"Number", category:"Health & Safety", usedIn:1, hasEscalation:true },
+  { id:"Q021", text:"Slip, trip, and fall hazards have been addressed", type:"Pass/Fail", category:"Health & Safety", usedIn:4, hasAction:true, hasPhoto:true },
+  { id:"Q022", text:"Merchandise is secured in high-risk zones", type:"Pass/Fail", category:"Loss Prevention", usedIn:2, hasEscalation:true },
   { id:"Q023", text:"Staff scheduling board is up to date", type:"Yes/No", category:"Operations", usedIn:1 },
   { id:"Q024", text:"Select all compliance areas reviewed this visit", type:"Multiple Choice", category:"Operations", usedIn:2 },
 ];
@@ -393,7 +394,7 @@ function NewTemplateDropdown({ onNav }) {
   return (
     <div style={{ position:"relative" }}>
       <div style={{ display:"flex", borderRadius:8, overflow:"hidden", border:`1px solid ${C.primary}` }}>
-        <button type="button" onClick={() => onNav("template_wizard")}
+        <button type="button" onClick={() => onNav("template_builder")}
           style={{ padding:"6px 12px", border:"none", background:C.primary, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}>
           + New Template
         </button>
@@ -411,7 +412,7 @@ function NewTemplateDropdown({ onNav }) {
               { label:"Upload Excel (Seymour)",    sub:"Auto-generate from an audit checklist",       key:"seymour", icon:"⬆" },
             ].map(item => (
               <button key={item.key} type="button"
-                onClick={() => { setOpen(false); onNav("template_wizard", item.key === "seymour" ? { seymourMode: true } : {}); }}
+                onClick={() => { setOpen(false); onNav("template_builder"); }}
                 style={{ width:"100%", padding:"11px 16px", border:"none", background:"transparent", textAlign:"left", cursor:"pointer", display:"flex", alignItems:"center", gap:12 }}
                 onMouseEnter={e => e.currentTarget.style.background = C.bgApp}
                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
@@ -510,7 +511,7 @@ function TemplatesTab({ templates, onAction, isAdmin, onNav }) {
             key={t.id}
             t={t}
             onDuplicate={() => setDupTarget(t)}
-            onOpenWizard={() => onNav("template_wizard", { templateId: t.id })}
+            onOpenWizard={() => onNav("template_builder", { templateId: t.id })}
             onAction={action => onAction(action, t.id)}
           />
         ))}
@@ -910,9 +911,9 @@ function QuestionsTab() {
       <div style={{ fontSize:12, color:C.textMuted, fontFamily:F, marginBottom:10 }}>{filtered.length} question{filtered.length!==1?"s":""} in the bank</div>
 
       <div style={{ background:C.bgSurface, borderRadius:12, border:`1px solid ${C.borderSubtle}`, overflow:"hidden" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 110px 120px 80px", gap:8, padding:"8px 16px", background:C.bgApp, borderBottom:`1px solid ${C.borderSubtle}` }}>
-          {["Question","Type","Category","Used in"].map((h,i) =>
-            <span key={i} style={{ fontSize:10, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, textAlign:i===3?"center":"left" }}>{h}</span>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 120px 70px", gap:8, padding:"8px 16px", background:C.bgApp, borderBottom:`1px solid ${C.borderSubtle}` }}>
+          {["Question","Category","Used in"].map((h,i) =>
+            <span key={i} style={{ fontSize:10, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.04em", fontFamily:F, textAlign:i===2?"center":"left" }}>{h}</span>
           )}
         </div>
 
@@ -922,12 +923,14 @@ function QuestionsTab() {
           const [h, setH] = useState(false);
           return (
             <div key={q.id} onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-              style={{ display:"grid", gridTemplateColumns:"1fr 110px 120px 80px", gap:8, padding:"11px 16px", alignItems:"center", background:h?C.bgApp:"transparent", borderBottom:i<filtered.length-1?`1px solid ${C.borderSubtle}`:"none", transition:"background 0.1s" }}>
+              style={{ display:"grid", gridTemplateColumns:"1fr 120px 70px", gap:8, padding:"10px 16px", alignItems:"center", background:h?C.bgApp:"transparent", borderBottom:i<filtered.length-1?`1px solid ${C.borderSubtle}`:"none", transition:"background 0.1s" }}>
               <div>
-                <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, fontWeight:500, lineHeight:"16px" }}>{q.text}</div>
-                <div style={{ fontSize:10, color:C.textMuted, fontFamily:F, marginTop:2 }}>ID: {q.id}</div>
+                <div style={{ fontSize:12, color:C.navyDeep, fontFamily:F, fontWeight:500, lineHeight:"16px", marginBottom:4 }}>{q.text}</div>
+                <div style={{ display:"flex", alignItems:"center", gap:5, flexWrap:"wrap" }}>
+                  <Badge label={q.type} color={tm.color} bg={tm.bg} sm />
+                  <LogicIcons question={q} size={10} />
+                </div>
               </div>
-              <div><Badge label={q.type} color={tm.color} bg={tm.bg} sm /></div>
               <div><Badge label={q.category} color={catStyle.color} bg={catStyle.bg} sm /></div>
               <div style={{ textAlign:"center", fontSize:12, color:C.textSec, fontFamily:F }}>{q.usedIn} section{q.usedIn!==1?"s":""}</div>
             </div>

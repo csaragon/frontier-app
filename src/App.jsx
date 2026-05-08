@@ -3,7 +3,6 @@ import { useState } from "react";
 import Dashboard from "./Dashboard.jsx";
 import Scorecard from "./Scorecard.jsx";
 import Catalog, { TEMPLATES, CAT_COLORS } from "./Catalog.jsx";
-import TemplateWizard from "./TemplateWizard.jsx";
 import ProgramList from "./ProgramList.jsx";
 import AuditList from "./AuditList.jsx";
 import AuditsListPage from "./records/AuditsListPage.jsx";
@@ -30,22 +29,17 @@ export default function App() {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [selectedEmployeeName, setSelectedEmployeeName] = useState(null);
   const [recordFromAudit, setRecordFromAudit]   = useState(null);
-  const [wizardTemplateId, setWizardTemplateId]   = useState(null);
-  const [wizardSeymourMode, setWizardSeymourMode] = useState(false);
-  const [wizardOrigin, setWizardOrigin]           = useState("catalog");
   const [templates, setTemplates]           = useState(seedTemplates);
   const [isAdmin, setIsAdmin]               = useState(true);
   const [density, setDensity]               = useState("condensed");
   const [categories, setCategories]         = useState(seedCategories);
   const [templateBuilderEntryPoint, setTemplateBuilderEntryPoint] = useState("catalog");
+  const [templateBuilderId, setTemplateBuilderId] = useState(null);
 
   const handleNav = (key, payload) => {
-    if (key === "template_wizard") {
-      setWizardTemplateId(payload?.templateId ?? null);
-      setWizardSeymourMode(payload?.seymourMode ?? false);
-      setWizardOrigin(payload?.origin ?? view);
-    } else if (key === "template_builder") {
+    if (key === "template_builder") {
       setTemplateBuilderEntryPoint(payload?.entryPoint ?? "catalog");
+      setTemplateBuilderId(payload?.templateId ?? null);
     } else if (key === "audit_record") {
       setSelectedAuditId(payload?.auditId ?? null);
     } else if (key === "location_record") {
@@ -80,26 +74,6 @@ export default function App() {
       }
     });
   };
-
-  if (view === "template_wizard") {
-    return (
-      <TemplateWizard
-        templateId={wizardTemplateId}
-        seymourMode={wizardSeymourMode}
-        onBack={() => handleNav(wizardOrigin)}
-        onPublish={(publishedData) => {
-          // Add or update template in the catalog list on publish
-          setTemplates(prev => {
-            const exists = prev.find(t => t.id === publishedData.id);
-            if (exists) {
-              return prev.map(t => t.id === publishedData.id ? { ...t, ...publishedData, state: "active" } : t);
-            }
-            return [...prev, { ...publishedData, state: "active" }];
-          });
-        }}
-      />
-    );
-  }
 
   if (view === "scorecard" && selectedProg) {
     return (
@@ -153,6 +127,7 @@ export default function App() {
     return (
       <TemplateBuilderFlow
         entryPoint={templateBuilderEntryPoint}
+        initialTemplateId={templateBuilderId}
         onExit={() => handleNav(templateBuilderEntryPoint || "catalog")}
         onNav={handleNav}
         templates={templates}

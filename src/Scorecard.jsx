@@ -1561,7 +1561,7 @@ export default function Scorecard({
                 <div style={{ fontSize:12, color:C.g4, fontFamily:F, marginTop:2 }}>Templates assigned to this program</div>
               </div>
               <button
-                onClick={() => onNav("template_wizard", {})}
+                onClick={() => onNav("template_builder")}
                 style={{ display:"flex", alignItems:"center", gap:6, padding:"8px 16px", borderRadius:8, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
                 onMouseEnter={e => (e.currentTarget.style.background = C.ocean2)}
                 onMouseLeave={e => (e.currentTarget.style.background = C.ocean)}
@@ -1607,7 +1607,7 @@ export default function Scorecard({
                     <div style={{ fontSize:13, fontWeight:600, color:C.g5, marginBottom:6 }}>No templates yet</div>
                     <div style={{ fontSize:12, color:C.g4, marginBottom:20 }}>Create a template to start running audits for this program.</div>
                     <button
-                      onClick={() => onNav("template_wizard", {})}
+                      onClick={() => onNav("template_builder")}
                       style={{ padding:"9px 20px", borderRadius:8, border:"none", background:C.ocean, color:"#fff", fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer" }}
                       onMouseEnter={e => (e.currentTarget.style.background = C.ocean2)}
                       onMouseLeave={e => (e.currentTarget.style.background = C.ocean)}
@@ -1636,7 +1636,7 @@ export default function Scorecard({
                       </span>
                       {/* Edit button */}
                       <button
-                        onClick={() => onNav("template_wizard", { templateId: t.id })}
+                        onClick={() => onNav("template_builder", { templateId: t.id })}
                         style={{ padding:"6px 14px", borderRadius:6, border:`1px solid ${C.g2}`, background:C.white, color:C.ocean, fontSize:12, fontWeight:600, fontFamily:F, cursor:"pointer", flexShrink:0 }}
                         onMouseEnter={e => (e.currentTarget.style.background = "#d4e2ff")}
                         onMouseLeave={e => (e.currentTarget.style.background = C.white)}

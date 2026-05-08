@@ -627,55 +627,78 @@ export function CancelProcessingModal({ onConfirm, onCancel }) {
 export function DiscardModal({ onSaveAndExit, onExitWithout, onCancel }) {
   const [discardHov, setDiscardHov] = useState(false);
   return (
-    <OverlayBase onClose={onCancel}>
-      <ModalPanel width={440}>
-        {/* Header */}
-        <div style={{ padding: "20px 24px 0", fontFamily: F }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: C.red2, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.red} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                <path d="M10 11v6" /><path d="M14 11v6" />
-                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-              </svg>
-            </div>
-            <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: C.g6, fontFamily: F }}>
-              Discard this template?
-            </h3>
-          </div>
-          <p style={{ margin: "0 0 6px", fontSize: 13, color: C.g5, lineHeight: "20px", fontFamily: F }}>
-            All progress will be lost. You can save it as a draft first if you want to come back to it later.
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div style={{ padding: "16px 24px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, fontFamily: F }}>
-          <BtnGhost onClick={onCancel}>Keep editing</BtnGhost>
-          <div style={{ display: "flex", gap: 8 }}>
-            <BtnSecondary onClick={onSaveAndExit}>Save as draft</BtnSecondary>
-            <button
-              onClick={onExitWithout}
-              onMouseEnter={() => setDiscardHov(true)}
-              onMouseLeave={() => setDiscardHov(false)}
-              style={{
-                background: discardHov ? "#fae5e6" : C.white,
-                color: C.red,
-                border: `1px solid ${C.red}50`,
-                borderRadius: 8,
-                padding: "8px 18px",
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: F,
-                cursor: "pointer",
-                transition: "background 0.12s",
-              }}
-            >
-              Yes, discard
-            </button>
-          </div>
-        </div>
-      </ModalPanel>
-    </OverlayBase>
+    <div style={{
+      position: "fixed",
+      bottom: 28,
+      left: "50%",
+      transform: "translateX(-50%)",
+      zIndex: 9999,
+      background: C.g6,
+      borderRadius: 12,
+      boxShadow: "0 8px 32px rgba(0,0,0,0.28)",
+      padding: "14px 20px",
+      display: "flex",
+      alignItems: "center",
+      gap: 16,
+      fontFamily: F,
+      whiteSpace: "nowrap",
+    }}>
+      <span style={{ fontSize: 13, color: C.white, fontWeight: 500 }}>
+        Discard unsaved changes?
+      </span>
+      <div style={{ display: "flex", gap: 8 }}>
+        <button
+          onClick={onCancel}
+          style={{
+            background: "rgba(255,255,255,0.12)",
+            color: C.white,
+            border: "1px solid rgba(255,255,255,0.20)",
+            borderRadius: 7,
+            padding: "6px 14px",
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily: F,
+            cursor: "pointer",
+          }}
+        >
+          Keep editing
+        </button>
+        <button
+          onClick={onSaveAndExit}
+          style={{
+            background: C.white,
+            color: C.g6,
+            border: "none",
+            borderRadius: 7,
+            padding: "6px 14px",
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily: F,
+            cursor: "pointer",
+          }}
+        >
+          Save draft
+        </button>
+        <button
+          onClick={onExitWithout}
+          onMouseEnter={() => setDiscardHov(true)}
+          onMouseLeave={() => setDiscardHov(false)}
+          style={{
+            background: discardHov ? "#fae5e6" : C.red2,
+            color: C.red,
+            border: "none",
+            borderRadius: 7,
+            padding: "6px 14px",
+            fontSize: 12,
+            fontWeight: 600,
+            fontFamily: F,
+            cursor: "pointer",
+            transition: "background 0.12s",
+          }}
+        >
+          Discard
+        </button>
+      </div>
+    </div>
   );
 }

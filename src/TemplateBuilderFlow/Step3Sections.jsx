@@ -10,10 +10,12 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { featureFlags } from "./shared.js";
 import QuestionEditor from "./QuestionEditor.jsx";
+import SectionEditor from "./SectionEditor.jsx";
 import BanksPanel from "./BanksPanel.jsx";
 import GridSection from "./GridSection.jsx";
 
 import { T, F } from "../aegis-tokens.js";
+import { LogicIcons } from "./typeIcons.jsx";
 
 const C = {
   navy:     T.action1,
@@ -35,41 +37,41 @@ const C = {
 };
 
 const ANSWER_TYPES = [
-  { value: "Yes/No/NA",       bg: "#ccfbf1", color: "#065f46" },
-  { value: "Yes/No",          bg: "#eff6ff", color: "#1d4ed8" },
-  { value: "Pass/Fail",       bg: "#fff7ed", color: "#9a3412" },
-  { value: "Rating Scale",    bg: "#faf5ff", color: "#6d28d9" },
-  { value: "Free Text",       bg: "#f9fafb", color: "#374151" },
-  { value: "Number",          bg: "#f0fdfa", color: "#0f766e" },
-  { value: "Multiple Choice", bg: "#fefce8", color: "#92400e" },
-  { value: "Grid",            bg: "#d4e2ff", color: "#1e40af" },
-  { value: "Asset",           bg: "#fff1f2", color: "#9f1239" },
-  { value: "Photo Required",  bg: "#ecfeff", color: "#0e7490" },
+  { value: "Yes/No/NA",       bg: "#d9e5f5", color: "#2b4b94" },  // slate blue
+  { value: "Yes/No",          bg: "#d9e5f5", color: "#2b4b94" },  // slate blue
+  { value: "Pass/Fail",       bg: "#e0dcf8", color: "#4030a6" },  // indigo
+  { value: "Rating Scale",    bg: "#e8d8f5", color: "#5c2c98" },  // violet
+  { value: "Free Text",       bg: "#d6ecf5", color: "#1e5f80" },  // powder blue
+  { value: "Number",          bg: "#d6dff0", color: "#2e3e72" },  // navy slate
+  { value: "Multiple Choice", bg: "#e6e9ed", color: "#48535f" },  // cool gray
+  { value: "Grid",            bg: "#e6e9ed", color: "#48535f" },  // cool gray
+  { value: "Asset",           bg: "#d8e4f2", color: "#30527a" },  // blue-gray
+  { value: "Photo Required",  bg: "#e0dcf8", color: "#4030a6" },  // indigo
 ];
 
 const DEFAULT_SECTIONS = [
   {
     id: "sec-1", name: "Fire Safety", weight: 40, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-1", title: "Are all fire extinguishers properly mounted and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-2", title: "When was the last fire drill conducted?",                    answerType: "Free Text",   required: false, informational: true,  critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-3", title: "How many exits are marked with illuminated signage?",        answerType: "Number",      required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-1", title: "Are all fire extinguishers properly mounted and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "corrective" }, escalation: { rules: [{ id: "e1", condition: "fail", notify: "manager" }] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-2", title: "When was the last fire drill conducted?",                    answerType: "Free Text",   required: false, informational: true,  critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [{ type: "condition", questionId: "q-1", operator: "eq", value: "No" }] } },
+      { id: "q-3", title: "How many exits are marked with illuminated signage?",        answerType: "Number",      required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [{ id: "e2", condition: "below_threshold", notify: "safety_officer" }] }, conditional: { operator: "AND", items: [] } },
       { id: "q-4", title: "Describe any fire safety concerns observed during this visit.", answerType: "Free Text", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
     ],
   },
   {
     id: "sec-2", name: "Emergency Exits", weight: 35, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-5", title: "Are all emergency exits unobstructed and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-6", title: "Do emergency exit doors open outward?",                answerType: "Pass/Fail",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-7", title: "Rate the overall emergency exit compliance.",           answerType: "Rating Scale", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-5", title: "Are all emergency exits unobstructed and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "corrective" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-6", title: "Do emergency exit doors open outward?",                answerType: "Pass/Fail",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: { requireOnFail: true }, action: { type: "none" }, escalation: { rules: [{ id: "e3", condition: "fail", notify: "manager" }] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-7", title: "Rate the overall emergency exit compliance.",           answerType: "Rating Scale", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [{ type: "condition", questionId: "q-5", operator: "eq", value: "No" }] } },
     ],
   },
   {
     id: "sec-3", name: "Chemical Storage", weight: 25, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-8", title: "Are all chemicals stored in approved containers with proper labeling?", answerType: "Yes/No/NA", required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-9", title: "Is the MSDS / SDS binder current and accessible to all employees?",    answerType: "Yes/No",    required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-8", title: "Are all chemicals stored in approved containers with proper labeling?", answerType: "Yes/No/NA", required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "corrective" }, escalation: { rules: [{ id: "e4", condition: "fail", notify: "safety_officer" }] }, conditional: { operator: "AND", items: [] } },
+      { id: "q-9", title: "Is the MSDS / SDS binder current and accessible to all employees?",    answerType: "Yes/No",    required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: { requireOnFail: true }, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [{ type: "condition", questionId: "q-8", operator: "eq", value: "No" }] } },
     ],
   },
 ];
@@ -763,7 +765,7 @@ function QuestionKebabMenu({ onEdit, onDuplicate, onDelete, onClose }) {
 
 // ── Kebab Menu ────────────────────────────────────────────────────────────────
 
-function KebabMenu({ onRename, onDuplicate, onDelete, onClose }) {
+function KebabMenu({ onRename, onEditDetails, onDuplicate, onDelete, onClose }) {
   const ref = useRef(null);
   useEffect(() => {
     function handle(e) { if (ref.current && !ref.current.contains(e.target)) onClose(); }
@@ -780,9 +782,10 @@ function KebabMenu({ onRename, onDuplicate, onDelete, onClose }) {
   );
 
   return (
-    <div ref={ref} style={{ position: "absolute", top: "100%", right: 0, zIndex: 200, background: C.white, borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.14)", border: `1px solid ${C.g2}`, minWidth: 140, overflow: "hidden", marginTop: 4 }}>
+    <div ref={ref} style={{ position: "absolute", top: "100%", right: 0, zIndex: 200, background: C.white, borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.14)", border: `1px solid ${C.g2}`, minWidth: 160, overflow: "hidden", marginTop: 4 }}>
+      {onEditDetails && item("Edit details…", onEditDetails)}
       {item("Rename", onRename)}
-      {item("Duplicate", onDuplicate)}
+      {item("Duplicate section", onDuplicate)}
       <div style={{ height: 1, background: C.g2 }}/>
       {item("Delete", onDelete, true)}
     </div>
@@ -791,97 +794,50 @@ function KebabMenu({ onRename, onDuplicate, onDelete, onClose }) {
 
 // ── Question Row ──────────────────────────────────────────────────────────────
 
-function SortableQuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDuplicate, viewMode }) {
+function SortableQuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDuplicate }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: question.id });
   return (
     <div ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.35 : 1 }}>
-      <QuestionRow question={question} isSelected={isSelected} onSelect={onSelect} onClick={onClick} onDelete={onDelete} onDuplicate={onDuplicate} viewMode={viewMode} dragProps={{ ...attributes, ...listeners }} />
+      <QuestionRow question={question} isSelected={isSelected} onSelect={onSelect} onClick={onClick} onDelete={onDelete} onDuplicate={onDuplicate} dragProps={{ ...attributes, ...listeners }} />
     </div>
   );
 }
 
-function QuestionIndicatorIcons({ question }) {
-  return (
-    <>
-      {question.action?.type && question.action.type !== "none" && (
-        <span title="Has action" style={{ display: "flex", color: "#854d0e" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </span>
-      )}
-      {(question.conditional?.items?.length ?? 0) > 0 && (
-        <span title="Has conditional logic" style={{ display: "flex", color: "#7c3aed" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
-        </span>
-      )}
-      {(question.escalation?.rules?.length ?? 0) > 0 && (
-        <span title="Has escalation" style={{ display: "flex", color: "#b6143a" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
-        </span>
-      )}
-      {question.media?.requireOnFail && (
-        <span title="Photo required on fail" style={{ display: "flex", color: "#001e76" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        </span>
-      )}
-    </>
-  );
-}
 
-function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDuplicate, viewMode, dragProps = {} }) {
+const Q_COL = "18px 22px 1fr 130px 80px 44px 28px";
+
+function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDuplicate, dragProps = {} }) {
   const [hover, setHover] = useState(false);
   const [showKebab, setShowKebab] = useState(false);
-
-  if (viewMode === "grid") {
-    return (
-      <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-        style={{ background: isSelected ? "#d4e2ff" : hover ? "#f8f9fb" : C.white, border: `1px solid ${isSelected ? "#c7ccff" : C.g2}`, borderRadius: 8, padding: "10px 12px", transition: "background 0.1s", display: "flex", flexDirection: "column", gap: 6, position:"relative" }}
-      >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
-          <div onClick={e => { e.stopPropagation(); onSelect(); }} style={{ flexShrink: 0, marginTop: 1 }}><Checkbox checked={isSelected} /></div>
-          <span onClick={onClick} style={{ fontSize: 12, color: C.g6, fontFamily: F, lineHeight: "17px", flex: 1, cursor:"pointer" }}>{question.title}</span>
-          <div style={{ position:"relative", flexShrink:0 }}>
-            <button onClick={e => { e.stopPropagation(); setShowKebab(k => !k); }}
-              style={{ background:"none", border:"none", cursor:"pointer", color: hover ? C.g4 : "transparent", padding:"2px 4px", display:"flex", alignItems:"center", borderRadius:4 }}
-              onMouseEnter={e => e.currentTarget.style.background = C.g2}
-              onMouseLeave={e => e.currentTarget.style.background = "none"}>
-              <IconDots />
-            </button>
-            {showKebab && <QuestionKebabMenu onEdit={onClick} onDuplicate={() => onDuplicate(question.id)} onDelete={() => onDelete(question.id)} onClose={() => setShowKebab(false)} />}
-          </div>
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingLeft: 20, alignItems: "center" }}>
-          <AnswerBadge value={question.answerType} />
-          {question.required      && <SmallBadge label="Required"   bg="#fae5e6" color={C.red} />}
-          {question.informational && <SmallBadge label="Info only"  bg="#d4e2ff" color="#001e76" />}
-          <QuestionIndicatorIcons question={question} />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", background: isSelected ? "#d4e2ff" : hover ? "#f8f9fb" : C.white, borderRadius: 6, transition: "background 0.1s", borderBottom: `1px solid ${C.g1}`, position:"relative" }}
+      style={{ display: "grid", gridTemplateColumns: Q_COL, gap: 6, padding: "7px 12px", alignItems: "center", background: isSelected ? "#eef1ff" : hover ? "#f8f9fb" : C.white, borderBottom: `1px solid ${C.g1}`, transition: "background 0.1s" }}
     >
-      <div {...dragProps} style={{ color: hover ? C.g4 : C.g3, cursor: "grab", flexShrink: 0, display: "flex", alignItems: "center", touchAction: "none" }}>
+      <div {...dragProps} style={{ color: hover ? C.g4 : C.g3, cursor: "grab", display: "flex", alignItems: "center", touchAction: "none" }}>
         <IconGrip />
       </div>
-      <div onClick={e => { e.stopPropagation(); onSelect(); }} style={{ flexShrink: 0 }}><Checkbox checked={isSelected} /></div>
-      <span onClick={onClick} style={{ flex: 1, fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px", cursor: "pointer" }}>{question.title}</span>
-      <div style={{ display: "flex", gap: 5, alignItems: "center", flexShrink: 0 }}>
-        <AnswerBadge value={question.answerType} />
-        {question.required      && <SmallBadge label="Required"  bg="#fae5e6" color={C.red} />}
-        {question.informational && <SmallBadge label="Info only" bg="#d4e2ff" color="#001e76" />}
-        <QuestionIndicatorIcons question={question} />
-        <div style={{ position:"relative" }}>
-          <button onClick={e => { e.stopPropagation(); setShowKebab(k => !k); }}
-            style={{ background:"none", border:"none", cursor:"pointer", color: hover ? C.g4 : "transparent", padding:"2px 4px", display:"flex", alignItems:"center", borderRadius:4 }}
-            onMouseEnter={e => e.currentTarget.style.background = C.g1}
-            onMouseLeave={e => e.currentTarget.style.background = "none"}>
-            <IconDots />
-          </button>
-          {showKebab && <QuestionKebabMenu onEdit={onClick} onDuplicate={() => onDuplicate(question.id)} onDelete={() => onDelete(question.id)} onClose={() => setShowKebab(false)} />}
-        </div>
+      <div onClick={e => { e.stopPropagation(); onSelect(); }} style={{ cursor: "pointer", display: "flex" }}>
+        <Checkbox checked={isSelected} />
+      </div>
+      <span onClick={onClick} style={{ fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px", cursor: "pointer", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {question.title}
+      </span>
+      <div><AnswerBadge value={question.answerType} /></div>
+      <div style={{ display: "flex", gap: 3, alignItems: "center", flexWrap: "nowrap" }}>
+        {question.required      && <SmallBadge label="Req"  bg="#fae5e6" color={C.red} />}
+        {question.informational && <SmallBadge label="Info" bg="#d4e2ff" color="#001e76" />}
+      </div>
+      <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+        <LogicIcons question={question} size={12} />
+      </div>
+      <div style={{ position: "relative" }}>
+        <button onClick={e => { e.stopPropagation(); setShowKebab(k => !k); }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: hover ? C.g4 : "transparent", padding: "2px 4px", display: "flex", alignItems: "center", borderRadius: 4 }}
+          onMouseEnter={e => e.currentTarget.style.background = C.g1}
+          onMouseLeave={e => e.currentTarget.style.background = "none"}>
+          <IconDots />
+        </button>
+        {showKebab && <QuestionKebabMenu onEdit={onClick} onDuplicate={() => onDuplicate(question.id)} onDelete={() => onDelete(question.id)} onClose={() => setShowKebab(false)} />}
       </div>
     </div>
   );
@@ -911,11 +867,13 @@ function IconGrid4() {
   );
 }
 
-function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAddQ, onDeleteQ, onDuplicateQ, viewMode, onToggleCollapse, onWeightChange, onRename, onDuplicate, onDelete, onToggleGrid, onUpdateGrid, methodology, dragProps = {} }) {
+function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ, onEditQ, onAddQ, onDeleteQ, onDuplicateQ, onToggleCollapse, onWeightChange, onRename, onEditDetails, onDuplicate, onDelete, onToggleGrid, onUpdateGrid, methodology, dragProps = {} }) {
   const [showKebab, setShowKebab]       = useState(false);
   const [editingName, setEditingName]   = useState(false);
   const [nameVal, setNameVal]           = useState(section.name);
   const [weightVal, setWeightVal]       = useState(String(section.weight ?? 0));
+  const [search, setSearch]             = useState("");
+  const [typeFilter, setTypeFilter]     = useState("");
 
   useEffect(() => { setNameVal(section.name); }, [section.name]);
   useEffect(() => { setWeightVal(String(section.weight ?? 0)); }, [section.weight]);
@@ -1009,6 +967,7 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
           {showKebab && (
             <KebabMenu
               onRename={() => setEditingName(true)}
+              onEditDetails={onEditDetails}
               onDuplicate={onDuplicate}
               onDelete={onDelete}
               onClose={() => setShowKebab(false)}
@@ -1019,39 +978,72 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onEditQ, onAd
 
       {/* Body */}
       {!section.collapsed && (
-        <div style={{ padding: "8px 12px 8px" }}>
+        <div>
           {section.isGrid ? (
-            /* Grid editor */
-            <GridSection
-              section={section}
-              methodology={methodology}
-              onUpdate={(gridData) => onUpdateGrid(section.id, gridData)}
-              onToggleOff={() => onToggleGrid(section.id)}
-            />
+            <div style={{ padding: "8px 12px" }}>
+              <GridSection
+                section={section}
+                methodology={methodology}
+                onUpdate={(gridData) => onUpdateGrid(section.id, gridData)}
+                onToggleOff={() => onToggleGrid(section.id)}
+              />
+            </div>
           ) : (
-            /* Normal question list */
             <>
-              <SortableContext items={section.questions.map(q => q.id)} strategy={verticalListSortingStrategy}>
-                {viewMode === "grid" ? (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: section.questions.length > 0 ? 8 : 0 }}>
-                    {section.questions.map(q => (
-                      <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} onDelete={onDeleteQ} onDuplicate={onDuplicateQ} viewMode="grid" />
-                    ))}
-                  </div>
-                ) : (
-                  <div style={{ marginBottom: section.questions.length > 0 ? 6 : 0 }}>
-                    {section.questions.map(q => (
-                      <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} onDelete={onDeleteQ} onDuplicate={onDuplicateQ} viewMode="row" />
-                    ))}
-                  </div>
-                )}
-              </SortableContext>
+              {/* Search + type filter toolbar */}
+              <div style={{ display: "flex", gap: 8, padding: "8px 12px", borderBottom: `1px solid ${C.g2}`, alignItems: "center" }}>
+                <div style={{ position: "relative", flex: 1 }}>
+                  <svg style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: C.g4, pointerEvents: "none" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search questions…"
+                    style={{ width: "100%", boxSizing: "border-box", paddingLeft: 26, paddingRight: 8, paddingTop: 5, paddingBottom: 5, fontSize: 12, fontFamily: F, border: `1px solid ${C.g2}`, borderRadius: 6, outline: "none", color: C.g6, background: C.white }} />
+                </div>
+                <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
+                  style={{ padding: "5px 8px", fontSize: 12, fontFamily: F, border: `1px solid ${C.g2}`, borderRadius: 6, color: typeFilter ? C.g6 : C.g4, background: C.white, cursor: "pointer", outline: "none" }}>
+                  <option value="">All types</option>
+                  {[...new Set(section.questions.map(q => q.answerType))].sort().map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
 
-              <button onClick={() => onAddQ(section.id)}
-                style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "6px 12px", width: "100%", fontSize: 12, fontWeight: 500, color: C.g4, fontFamily: F, cursor: "pointer", transition: "color 0.1s, border-color 0.1s" }}
-                onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
-                onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
-              ><IconPlus size={12} /> Add question</button>
+              {/* Column headers */}
+              {section.questions.length > 0 && (() => {
+                const filteredQs = section.questions.filter(q =>
+                  (!search || q.title.toLowerCase().includes(search.toLowerCase())) &&
+                  (!typeFilter || q.answerType === typeFilter)
+                );
+                const allSel = filteredQs.length > 0 && filteredQs.every(q => selectedQs.has(q.id));
+                return (
+                  <>
+                    <div style={{ display: "grid", gridTemplateColumns: Q_COL, gap: 6, padding: "5px 12px", background: C.g1, borderBottom: `1px solid ${C.g2}`, alignItems: "center" }}>
+                      <div />
+                      <div onClick={() => onBulkSelectQ(filteredQs.map(q => q.id), !allSel)} style={{ cursor: "pointer", display: "flex" }}>
+                        <Checkbox checked={allSel} />
+                      </div>
+                      {["Question", "Type", "Status", "Logic", ""].map((h, i) => (
+                        <span key={i} style={{ fontSize: 11, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.05em", fontFamily: F }}>{h}</span>
+                      ))}
+                    </div>
+
+                    <SortableContext items={filteredQs.map(q => q.id)} strategy={verticalListSortingStrategy}>
+                      <div>
+                        {filteredQs.map(q => (
+                          <SortableQuestionRow key={q.id} question={q} isSelected={selectedQs.has(q.id)} onSelect={() => onSelectQ(q.id)} onClick={() => onEditQ(q)} onDelete={onDeleteQ} onDuplicate={onDuplicateQ} />
+                        ))}
+                        {filteredQs.length === 0 && (
+                          <div style={{ padding: "12px", fontSize: 12, color: C.g4, fontFamily: F, textAlign: "center" }}>No matching questions</div>
+                        )}
+                      </div>
+                    </SortableContext>
+                  </>
+                );
+              })()}
+
+              <div style={{ padding: "8px 12px" }}>
+                <button onClick={() => onAddQ(section.id)}
+                  style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "6px 12px", width: "100%", fontSize: 12, fontWeight: 500, color: C.g4, fontFamily: F, cursor: "pointer", transition: "color 0.1s, border-color 0.1s", boxSizing: "border-box" }}
+                  onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
+                ><IconPlus size={12} /> Add question</button>
+              </div>
             </>
           )}
         </div>
@@ -1232,9 +1224,9 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   const isWeighted = methodology === "weighted";
 
   const [sections, setSections]       = useState(() => formData?.sections ?? DEFAULT_SECTIONS);
-  const [viewMode, setViewMode]       = useState(() => formData?.viewMode ?? "row");
   const [selectedQs, setSelectedQs]   = useState(new Set());
   const [editingQ, setEditingQ]       = useState(null); // { q, sectionId, isNew }
+  const [editingSection, setEditingSection] = useState(null); // section.id | null
   const [showFixMath, setShowFixMath] = useState(false);
   const [activeId, setActiveId]       = useState(null);
   const [addingSection, setAddingSection] = useState(false);
@@ -1249,6 +1241,8 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   const [applyConfigPanel, setApplyConfigPanel] = useState(null);
   const [applyConfigConfirm, setApplyConfigConfirm] = useState(null);
   const [aiModal, setAiModal]                   = useState(false);
+  const [globalSearch, setGlobalSearch]         = useState("");
+  const [globalTypeFilter, setGlobalTypeFilter] = useState("");
 
   const sectionsRef = useRef(sections);
   useEffect(() => { sectionsRef.current = sections; }, [sections]);
@@ -1261,8 +1255,8 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   const totalWeight = sections.reduce((s, sec) => s + Number(sec.weight ?? 0), 0);
   const weightError = isWeighted && Math.round(totalWeight) !== 100;
 
-  function emit(secs, vm) {
-    onChange({ sections: secs, viewMode: vm ?? viewMode });
+  function emit(secs) {
+    onChange({ sections: secs });
   }
 
   function showToast(msg) { setToastMsg(msg); }
@@ -1271,7 +1265,13 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
     setSelectedQs(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
   }
 
-  function handleViewMode(m) { setViewMode(m); emit(sections, m); }
+  function handleBulkSelectQ(ids, forceAdd) {
+    setSelectedQs(prev => {
+      const n = new Set(prev);
+      ids.forEach(id => forceAdd ? n.add(id) : n.delete(id));
+      return n;
+    });
+  }
 
   function handleToggleCollapse(sectionId) {
     setSections(prev => prev.map(s => s.id === sectionId ? { ...s, collapsed: !s.collapsed } : s));
@@ -1308,6 +1308,46 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
     const next = [...sections, newSec];
     setSections(next); emit(next);
     setNewSectionName(""); setAddingSection(false);
+  }
+
+  // Save section details from SectionEditor modal. Patch may include _rebalance
+  // (an array of { id, afterWeight }) when the user accepted the auto-rebalance.
+  function handleSaveSection(patch) {
+    if (!editingSection) return;
+    const { _rebalance, ...fields } = patch || {};
+    let next = sections.map(s => {
+      if (s.id !== editingSection) return s;
+      return { ...s, ...fields };
+    });
+    if (_rebalance && Array.isArray(_rebalance)) {
+      const map = Object.fromEntries(_rebalance.map(r => [r.id, r.afterWeight]));
+      next = next.map(s => map[s.id] !== undefined ? { ...s, weight: map[s.id] } : s);
+    }
+    setSections(next); emit(next); setEditingSection(null);
+  }
+
+  // Save current section, then open the next one in the list.
+  function handleSaveAndNextSection(patch) {
+    if (!editingSection) return;
+    const { _rebalance, ...fields } = patch || {};
+    let next = sections.map(s => {
+      if (s.id !== editingSection) return s;
+      return { ...s, ...fields };
+    });
+    if (_rebalance && Array.isArray(_rebalance)) {
+      const map = Object.fromEntries(_rebalance.map(r => [r.id, r.afterWeight]));
+      next = next.map(s => map[s.id] !== undefined ? { ...s, weight: map[s.id] } : s);
+    }
+    setSections(next); emit(next);
+
+    const idx = next.findIndex(s => s.id === editingSection);
+    const nextSec = idx >= 0 ? next[idx + 1] : null;
+    if (nextSec) {
+      setEditingSection(nextSec.id);
+    } else {
+      setEditingSection(null);
+      showToast("Saved — last section in this template.");
+    }
   }
 
   function handleSaveQ(patch) {
@@ -1496,6 +1536,37 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
     showToast(`Added ${bankSections.length} section${bankSections.length === 1 ? "" : "s"}`);
   }
 
+  // Cherry-pick add: create a new section named after the catalog section,
+  // populated with only the questions the user picked from its preview.
+  function handleAddPickedAsSection(bankSection, pickedQuestions) {
+    if (!pickedQuestions || pickedQuestions.length === 0) return;
+    const newSec = {
+      id: genId("sec"),
+      name: bankSection.name,
+      weight: 0,
+      collapsed: false,
+      isGrid: false,
+      gridData: null,
+      questions: pickedQuestions.map(bq => ({
+        id: genId("q"),
+        title: bq.title,
+        answerType: bq.answerType,
+        required: bq.required ?? false,
+        critical: false, informational: false, instructions: "",
+        typeConfig: {}, inBank: true, scoring: {}, media: {},
+        action: { type: "none" }, escalation: { rules: [] },
+        conditional: { operator: "AND", items: [] },
+      })),
+    };
+    const next = [...sections, newSec];
+    setSections(next); emit(next);
+    showToast(
+      pickedQuestions.length === 1
+        ? `Added 1 question as new section "${bankSection.name}"`
+        : `Added ${pickedQuestions.length} questions as new section "${bankSection.name}"`
+    );
+  }
+
   // Multi-add: append all selected questions to the last section
   function handleAddManyQuestionsFromBank(bankQuestions) {
     if (!bankQuestions || bankQuestions.length === 0) return;
@@ -1649,12 +1720,63 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   return (
     <div style={{ display: "flex", height: "100%", fontFamily: F, overflow: "hidden" }}>
       <div style={{ flex: 1, overflowY: "auto" }}>
-        <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px 80px" }}>
+        {editingQ && (() => {
+          const allQuestionsFlat = sections.flatMap(s => s.questions);
+          const currentIdx = allQuestionsFlat.findIndex(q => q.id === editingQ.q.id);
+          const priorQuestions = editingQ.isNew ? allQuestionsFlat : allQuestionsFlat.slice(0, currentIdx);
+          const followQuestions = editingQ.isNew ? [] : allQuestionsFlat.slice(currentIdx + 1);
+          const sectionName = sections.find(s => s.id === editingQ.sectionId)?.name ?? "";
+          return (
+            <QuestionEditor
+              question={editingQ.q}
+              isNew={editingQ.isNew}
+              methodology={methodology}
+              sectionName={sectionName}
+              priorQuestions={priorQuestions}
+              followQuestions={followQuestions}
+              onSave={handleSaveQ}
+              onClose={() => setEditingQ(null)}
+            />
+          );
+        })()}
+        {!editingQ && <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px 80px" }}>
 
           {/* Page title */}
           <div style={{ marginBottom: 20 }}>
             <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Sections &amp; Questions</h2>
             <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Add sections to group related questions, then add questions to each section. Drag to reorder.</p>
+          </div>
+
+          {/* Global search + type filter */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 14, alignItems: "center" }}>
+            <div style={{ position: "relative", flex: 1 }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.g4} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                value={globalSearch}
+                onChange={e => setGlobalSearch(e.target.value)}
+                placeholder="Search sections and questions…"
+                style={{ width: "100%", boxSizing: "border-box", paddingLeft: 32, paddingRight: globalSearch ? 30 : 12, paddingTop: 8, paddingBottom: 8,
+                  fontSize: 13, fontFamily: F, color: C.g6, background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8, outline: "none" }}
+                onFocus={e => e.target.style.borderColor = C.navy}
+                onBlur={e => e.target.style.borderColor = C.g2}
+              />
+              {globalSearch && (
+                <button onClick={() => setGlobalSearch("")}
+                  style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.g4, display: "flex", padding: 2 }}>
+                  <IconClose />
+                </button>
+              )}
+            </div>
+            <select value={globalTypeFilter} onChange={e => setGlobalTypeFilter(e.target.value)}
+              style={{ padding: "8px 10px", fontSize: 13, fontFamily: F, border: `1px solid ${C.g2}`, borderRadius: 8, color: globalTypeFilter ? C.g6 : C.g4, background: C.white, cursor: "pointer", outline: "none", flexShrink: 0 }}>
+              <option value="">All types</option>
+              {[...new Set(sections.flatMap(s => s.questions.map(q => q.answerType)))].sort().map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </div>
 
           {/* Header controls */}
@@ -1724,13 +1846,6 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
               </button>
             )}
 
-            <div style={{ display: "flex", border: `1px solid ${C.g2}`, borderRadius: 8, overflow: "hidden" }}>
-              {[["row", <IconRows key="r"/>], ["grid", <IconGrid key="g"/>]].map(([m, icon]) => (
-                <button key={m} onClick={() => handleViewMode(m)}
-                  style={{ background: viewMode === m ? C.navy : C.white, color: viewMode === m ? C.white : C.g4, border: "none", padding: "5px 10px", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 0.1s" }}
-                >{icon}</button>
-              ))}
-            </div>
           </div>
 
           {/* Section list */}
@@ -1750,7 +1865,56 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
                 ><IconPlus /> Add section</button>
               )}
             </div>
-          ) : (
+          ) : (globalSearch.trim() || globalTypeFilter) ? (() => {
+            const q = globalSearch.trim().toLowerCase();
+            const filteredSections = sections.reduce((acc, sec) => {
+              const secMatch = q && sec.name.toLowerCase().includes(q) && !globalTypeFilter;
+              const matchingQs = sec.questions.filter(question =>
+                (!q || question.title.toLowerCase().includes(q)) &&
+                (!globalTypeFilter || question.answerType === globalTypeFilter)
+              );
+              if (!secMatch && matchingQs.length === 0) return acc;
+              acc.push(secMatch ? sec : { ...sec, questions: matchingQs, collapsed: false });
+              return acc;
+            }, []);
+            const totalQs = filteredSections.reduce((n, s) => n + s.questions.length, 0);
+            return (
+              <>
+                <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginBottom: 10 }}>
+                  {filteredSections.length} section{filteredSections.length !== 1 ? "s" : ""}, {totalQs} question{totalQs !== 1 ? "s" : ""}
+                </div>
+                {filteredSections.length === 0 ? (
+                  <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12, padding: "40px 24px", textAlign: "center" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: C.g5, fontFamily: F }}>
+                    No results{globalSearch ? ` for "${globalSearch}"` : ""}{globalTypeFilter ? ` · ${globalTypeFilter}` : ""}
+                  </div>
+                  </div>
+                ) : filteredSections.map(section => (
+                  <SectionCard
+                    key={section.id}
+                    section={section}
+                    isWeighted={isWeighted}
+                    selectedQs={selectedQs}
+                    onSelectQ={handleSelectQ}
+                    onBulkSelectQ={handleBulkSelectQ}
+                    onEditQ={q => setEditingQ({ q, sectionId: section.id, isNew: false })}
+                    onAddQ={sectionId => setEditingQ({ q: { title: "", answerType: "", required: false, critical: false, informational: false, instructions: "", typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } }, sectionId, isNew: true })}
+                    onDeleteQ={handleDeleteQuestion}
+                    onDuplicateQ={handleDuplicateQuestion}
+                    onToggleCollapse={() => handleToggleCollapse(section.id)}
+                    onWeightChange={v => handleWeightChange(section.id, v)}
+                    onRename={name => handleRename(section.id, name)}
+                    onEditDetails={() => setEditingSection(section.id)}
+                    onDuplicate={() => handleDuplicate(section.id)}
+                    onDelete={() => handleDeleteSection(section.id)}
+                    onToggleGrid={handleToggleGrid}
+                    onUpdateGrid={handleUpdateGrid}
+                    methodology={methodology}
+                  />
+                ))}
+              </>
+            );
+          })() : (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
               <SortableContext items={sections.map(s => s.id)} strategy={verticalListSortingStrategy}>
                 {sections.map(section => (
@@ -1760,14 +1924,15 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
                     isWeighted={isWeighted}
                     selectedQs={selectedQs}
                     onSelectQ={handleSelectQ}
+                    onBulkSelectQ={handleBulkSelectQ}
                     onEditQ={q => setEditingQ({ q, sectionId: section.id, isNew: false })}
-                    onAddQ={sectionId => setEditingQ({ q: { title: "", answerType: "Yes/No/NA", required: false, critical: false, informational: false, instructions: "", typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } }, sectionId, isNew: true })}
+                    onAddQ={sectionId => setEditingQ({ q: { title: "", answerType: "", required: false, critical: false, informational: false, instructions: "", typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } }, sectionId, isNew: true })}
                     onDeleteQ={handleDeleteQuestion}
                     onDuplicateQ={handleDuplicateQuestion}
-                    viewMode={viewMode}
                     onToggleCollapse={() => handleToggleCollapse(section.id)}
                     onWeightChange={v => handleWeightChange(section.id, v)}
                     onRename={name => handleRename(section.id, name)}
+                    onEditDetails={() => setEditingSection(section.id)}
                     onDuplicate={() => handleDuplicate(section.id)}
                     onDelete={() => handleDeleteSection(section.id)}
                     onToggleGrid={handleToggleGrid}
@@ -1805,8 +1970,7 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
             )
           )}
 
-        </div>
-      </div>
+        </div>}</div>
 
       <BanksPanel
         sections={sections}
@@ -1814,22 +1978,24 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
         onAddQuestionFromBank={handleAddQuestionFromBank}
         onAddManySectionsFromBank={handleAddManySectionsFromBank}
         onAddManyQuestionsFromBank={handleAddManyQuestionsFromBank}
+        onAddPickedAsSection={handleAddPickedAsSection}
         onToast={showToast}
       />
 
-      {editingQ && (() => {
-        const allQuestionsFlat = sections.flatMap(s => s.questions);
-        const priorQuestions = editingQ.isNew
-          ? allQuestionsFlat
-          : allQuestionsFlat.slice(0, allQuestionsFlat.findIndex(q => q.id === editingQ.q.id));
+      {editingSection && (() => {
+        const sec = sections.find(s => s.id === editingSection);
+        if (!sec) return null;
+        const idx = sections.findIndex(s => s.id === editingSection);
+        const hasNextSec = idx >= 0 && idx < sections.length - 1;
         return (
-          <QuestionEditor
-            question={editingQ.q}
-            isNew={editingQ.isNew}
+          <SectionEditor
+            section={sec}
+            allSections={sections}
             methodology={methodology}
-            priorQuestions={priorQuestions}
-            onSave={handleSaveQ}
-            onClose={() => setEditingQ(null)}
+            onSave={handleSaveSection}
+            onSaveAndNext={handleSaveAndNextSection}
+            hasNext={hasNextSec}
+            onClose={() => setEditingSection(null)}
           />
         );
       })()}

@@ -18,8 +18,8 @@ function formatRelativeTime(date) {
 }
 
 export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTemplateId = null, onExit, onNav, templates = [], categories = [] }) {
-  const [screen, setScreen] = useState("pick"); // 'pick' | 'routeA' | 'routeB' | 'wizard'
-  const [routeOrigin, setRouteOrigin] = useState(null); // 'template' | 'upload' | 'scratch' | null
+  const [screen, setScreen] = useState(initialTemplateId ? "wizard" : "pick"); // 'pick' | 'routeA' | 'routeB' | 'wizard'
+  const [routeOrigin, setRouteOrigin] = useState(initialTemplateId ? "template" : null); // 'template' | 'upload' | 'scratch' | null
   const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId);
   const [hasRouteData, setHasRouteData] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
@@ -143,6 +143,7 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
             onBackToPick={() => setScreen("pick")}
             onExit={onExit}
             categories={categories}
+            templates={templates}
           />
         )}
         {showDiscardModal && (

@@ -379,7 +379,7 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick,
 
         {/* Page title */}
         <div style={{ marginBottom: 28 }}>
-          <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Template Details</h2>
+          <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Audit Template Details</h2>
           <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Name, category, languages, and basic metadata for your template.</p>
         </div>
 

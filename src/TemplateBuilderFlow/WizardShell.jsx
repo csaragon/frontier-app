@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import Step1Details from "./Step1Details.jsx";
-import Step2Scoring from "./Step2Scoring.jsx";
 import Step3Sections from "./Step3Sections.jsx";
-import Step4Schedule from "./Step4Schedule.jsx";
-import Step5Escalation from "./Step5Escalation.jsx";
+import Step3Scoring from "./Step3Scoring.jsx";
+import Step4Translations from "./Step4Translations.jsx";
+import Step5Schedule from "./Step4Schedule.jsx";
+import Step6Escalation from "./Step6Escalation.jsx";
 import { DiscardModal } from "./modals.jsx";
 import { T, F } from "../aegis-tokens.js";
 
@@ -28,11 +29,12 @@ const C = {
 };
 
 const STEPS = [
-  { num: 1, label: "Details",    help: "Name, category, languages, and basic metadata for your template." },
-  { num: 2, label: "Scoring",    help: "Define how audits are scored — methodology, display format, and score visibility." },
-  { num: 3, label: "Questions",  help: "Build your audit structure by adding sections and questions." },
-  { num: 4, label: "Schedule",   help: "Set when audits run, where they happen, and who completes them." },
-  { num: 5, label: "Escalation", help: "Define automated actions triggered after an audit is submitted based on its outcome." },
+  { num: 1, label: "Details",      help: "Name, category, languages, and basic metadata for your template." },
+  { num: 2, label: "Questions",    help: "Build your audit structure by adding sections and questions." },
+  { num: 3, label: "Scoring", help: "Set scoring methodology and configure per-question scoring and escalation." },
+  { num: 4, label: "Translations", help: "Add translations for each language configured on this template." },
+  { num: 5, label: "Schedule",     help: "Set when audits run, where they happen, and who completes them." },
+  { num: 6, label: "Audit Escalation", help: "Define automated actions triggered after an audit is submitted based on its outcome." },
 ];
 
 function isStep1Complete(data) {
@@ -44,42 +46,27 @@ function isStep1Complete(data) {
   );
 }
 
-function isStep2Complete(data) {
+function isScoringComplete(data) {
   if (!data || !data.methodology) return false;
-  if (data.methodology === "informational") return true;
-  if (!data.displayFormat) return false;
-  if (data.methodology === "weighted") {
-    // undefined weights means defaults (4×25=100) — treat as balanced
-    if (data.sectionWeights !== undefined) {
-      const total = Object.values(data.sectionWeights).reduce((s, v) => s + Number(v ?? 0), 0);
-      if (Math.round(total) !== 100) return false;
-    }
-  }
-  if (data.displayFormat === "lettergrade") {
-    // undefined thresholds means defaults — treat as valid
-    if (data.gradeThresholds !== undefined) {
-      const t = data.gradeThresholds;
-      const A = Number(t.A ?? 90), B = Number(t.B ?? 80), C = Number(t.C ?? 70), D = Number(t.D ?? 60);
-      if (!(A > B && B > C && C > D && D >= 0)) return false;
-    }
-  }
-  return true;
+  return true; // methodology selected is sufficient
 }
 
 function isStepComplete(stepNum, formData) {
   if (stepNum === 1) return isStep1Complete(formData[1]);
-  if (stepNum === 2) return isStep2Complete(formData[2]);
-  if (stepNum === 3) {
-    const secs = formData[3]?.sections;
-    return Array.isArray(secs) && secs.length > 0 && secs.some(s => s.questions.length > 0);
+  if (stepNum === 2) {
+    const secs = formData[2]?.sections;
+    return Array.isArray(secs) && secs.length > 0 && secs.some(s => (s.questions || []).length > 0);
   }
-  if (stepNum === 4) {
-    const s4 = formData[4] || {};
-    const a = s4.assignees || {};
-    return !!s4.scheduleType
-      && (s4.locations || []).length > 0
+  if (stepNum === 3) return isScoringComplete(formData[3]);
+  if (stepNum === 4) return true; // translations optional
+  if (stepNum === 5) {
+    const s5 = formData[5] || {};
+    const a = s5.assignees || {};
+    return !!s5.scheduleType
+      && (s5.locations || []).length > 0
       && ((a.users||[]).length > 0 || (a.roles||[]).length > 0 || (a.groups||[]).length > 0);
   }
+  if (stepNum === 6) return true; // escalation optional
   return false;
 }
 
@@ -93,28 +80,17 @@ function getStepWarningTip(stepNum, formData) {
     return missing.length ? `Missing: ${missing.join(", ")}` : null;
   }
   if (stepNum === 2) {
-    const d = formData[2] || {};
-    if (!d.methodology) return "Scoring methodology not selected";
-    if (d.methodology !== "informational" && !d.displayFormat) return "Display format not selected";
-    if (d.methodology === "weighted" && d.sectionWeights) {
-      const total = Object.values(d.sectionWeights).reduce((s, v) => s + Number(v ?? 0), 0);
-      if (Math.round(total) !== 100) return `Section weights total ${Math.round(total)}% — must equal 100%`;
-    }
-    if (d.displayFormat === "lettergrade" && d.gradeThresholds) {
-      const t = d.gradeThresholds;
-      const A = Number(t.A ?? 90), B = Number(t.B ?? 80), Cv = Number(t.C ?? 70), D = Number(t.D ?? 60);
-      if (!(A > B && B > Cv && Cv > D && D >= 0)) return "Grade thresholds must be in descending order";
-    }
-    return null;
-  }
-  if (stepNum === 3) {
-    const secs = formData[3]?.sections || [];
+    const secs = formData[2]?.sections || [];
     if (!secs.length) return "No sections added yet";
     if (!secs.some(s => (s.questions || []).length > 0)) return "At least one section needs a question";
     return null;
   }
-  if (stepNum === 4) {
-    const d = formData[4] || {};
+  if (stepNum === 3) {
+    if (!formData[3]?.methodology) return "Scoring methodology not selected";
+    return null;
+  }
+  if (stepNum === 5) {
+    const d = formData[5] || {};
     if (!d.scheduleType) return "Schedule type not selected";
     if (!(d.locations || []).length) return "No locations selected";
     const a = d.assignees || {};
@@ -134,18 +110,100 @@ function formatRelativeTime(date) {
 
 // ── Status tags ───────────────────────────────────────────────────────────────
 
+const STATUS_ICONS = {
+  check: <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2 6 5 9 10 3"/></svg>,
+  draft: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  pause: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/><circle cx="12" cy="12" r="10"/></svg>,
+  lock:  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+};
+
+// Read-only tag (used for Draft)
 function StatusTag({ label, color, icon = "dot" }) {
-  const icons = {
-    check: <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2 6 5 9 10 3"/></svg>,
-    draft: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
-    pause: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/><circle cx="12" cy="12" r="10"/></svg>,
-    lock:  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-  };
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color, fontFamily: F, whiteSpace: "nowrap" }}>
-      {icons[icon] ?? icons.check}
+      {STATUS_ICONS[icon] ?? STATUS_ICONS.check}
       {label}
     </span>
+  );
+}
+
+// Clickable tag — shows a single action in a small dropdown
+function ClickableTag({ label, color, icon, action, disabled, disabledTip }) {
+  const [open, setOpen] = useState(false);
+  const [tip, setTip] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleClick(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  if (disabled) {
+    return (
+      <span style={{ position: "relative", display: "inline-flex", alignItems: "center" }}
+        onMouseEnter={() => setTip(true)} onMouseLeave={() => setTip(false)}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color, fontFamily: F, whiteSpace: "nowrap", opacity: 0.5, cursor: "not-allowed" }}>
+          {STATUS_ICONS[icon]}{label}
+        </span>
+        {tip && disabledTip && (
+          <div style={{ position: "absolute", bottom: "calc(100% + 6px)", left: "50%", transform: "translateX(-50%)", background: "#1e293b", color: "#fff", fontSize: 11, fontWeight: 500, fontFamily: F, padding: "5px 9px", borderRadius: 6, whiteSpace: "nowrap", pointerEvents: "none", zIndex: 999 }}>
+            {disabledTip}
+          </div>
+        )}
+      </span>
+    );
+  }
+
+  return (
+    <span ref={ref} style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+      <button onClick={() => setOpen(o => !o)}
+        style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color, fontFamily: F, whiteSpace: "nowrap", background: "none", border: "none", cursor: "pointer", padding: "2px 4px", borderRadius: 4 }}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.05)"}
+        onMouseLeave={e => e.currentTarget.style.background = "none"}>
+        {STATUS_ICONS[icon]}{label}
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 4px)", right: 0, background: "#fff", border: "1px solid #e2e5ea", borderRadius: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", zIndex: 999, minWidth: 150, overflow: "hidden" }}>
+          <button onClick={() => { setOpen(false); action.onClick(); }}
+            style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", background: "none", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500, fontFamily: F, color: action.danger ? "#dc2626" : "#374151", textAlign: "left" }}
+            onMouseEnter={e => e.currentTarget.style.background = action.danger ? "#fef2f2" : "#f8f9fa"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}>
+            {STATUS_ICONS[action.icon]}
+            {action.label}
+          </button>
+        </div>
+      )}
+    </span>
+  );
+}
+
+// Reusable confirmation modal for status changes
+function StatusConfirmModal({ title, body, confirmLabel, danger, onConfirm, onCancel }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
+      onClick={e => { if (e.target === e.currentTarget) onCancel(); }}>
+      <div style={{ background: "#fff", borderRadius: 12, width: 420, boxShadow: "0 8px 40px rgba(0,0,0,0.18)", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px 16px" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#16191d", marginBottom: 8 }}>{title}</div>
+          <div style={{ fontSize: 13, color: "#64748b", lineHeight: "20px" }}>{body}</div>
+        </div>
+        <div style={{ padding: "12px 24px 18px", display: "flex", gap: 8, justifyContent: "flex-end", borderTop: "1px solid #e2e5ea" }}>
+          <button onClick={onCancel}
+            style={{ background: "none", border: "1px solid #d1d5db", borderRadius: 8, padding: "8px 18px", fontSize: 13, fontWeight: 500, fontFamily: F, color: "#64748b", cursor: "pointer" }}>
+            Cancel
+          </button>
+          <button onClick={onConfirm}
+            style={{ background: danger ? "#dc2626" : C.navy, color: "#fff", border: "none", borderRadius: 8, padding: "8px 20px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer" }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.9"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -580,6 +638,19 @@ function BtnFooterActivate({ onClick }) {
 
 // ── Wizard Shell ──────────────────────────────────────────────────────────────
 
+function seedFormData(templateId, templates) {
+  const t = templates.find(x => x.id === templateId);
+  if (!t) return { 1: {}, 2: {}, 3: {}, 4: {}, 5: {}, 6: {} };
+  return {
+    1: { name: t.name, category: t.cat, languages: ["en"] },
+    2: {},
+    3: {},
+    4: {},
+    5: {},
+    6: {},
+  };
+}
+
 export default function WizardShell({
   routeOrigin = "scratch",
   templateId = null,
@@ -587,6 +658,7 @@ export default function WizardShell({
   onBackToPick,
   onExit,
   categories = [],
+  templates = [],
 }) {
   const [step, setStep] = useState(1);
   // Tracks whether the user entered any field value on each step (during this visit to that step)
@@ -595,10 +667,14 @@ export default function WizardShell({
   const [visitedSteps, setVisitedSteps] = useState({});
   // Amber warning: visited step still has incomplete required fields
   const [stepIncomplete, setStepIncomplete] = useState({});
-  const [formData, setFormData] = useState({ 1: {}, 2: {}, 3: {}, 4: {}, 5: {} });
+  const [formData, setFormData] = useState(() => seedFormData(templateId, templates));
 
-  const [isActive,    setIsActive]    = useState(!!templateId);
-  const [isPublished, setIsPublished] = useState(!!templateId);
+  const tpl = templates.find(x => x.id === templateId);
+  const initStatus = tpl
+    ? (tpl.state === "deactivated" ? "inactive" : tpl.state === "draft" ? "draft" : "active")
+    : "draft";
+  const [templateStatus, setTemplateStatus] = useState(initStatus); // "draft" | "active" | "inactive"
+  const [isPublished,    setIsPublished]    = useState(!!templateId);
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [savedLabel, setSavedLabel] = useState(null);
@@ -606,6 +682,7 @@ export default function WizardShell({
   const [showDiscard, setShowDiscard] = useState(false);
   const [cantActivateModal, setCantActivateModal] = useState(null); // null | { issues }
   const [activateConfirmModal, setActivateConfirmModal] = useState(false);
+  const [statusModal, setStatusModal] = useState(null); // null | "deactivate" | "reactivate" | "unpublish" | "publish"
 
   // Approval required stub — set to true to demo the approval flow
   const REQUIRE_APPROVAL = false;
@@ -669,27 +746,53 @@ export default function WizardShell({
 
   function handleActivateClick() {
     const issues = [];
-    const s1 = formData[1]; const s2 = formData[2]; const s3 = formData[3]; const s4 = formData[4];
+    const s1 = formData[1]; const s2 = formData[2]; const s3 = formData[3]; const s5 = formData[5];
     if (!isStep1Complete(s1)) issues.push({ step: 1, label: "Details", reason: "Template name, category, and at least one language are required." });
-    if (!isStep2Complete(s2)) issues.push({ step: 2, label: "Scoring", reason: "Scoring methodology must be selected and fully configured." });
-    const secs = s3?.sections;
-    if (!Array.isArray(secs) || secs.length === 0 || !secs.some(s => s.questions.length > 0))
-      issues.push({ step: 3, label: "Sections & Questions", reason: "At least one section with at least one question is required." });
-    const a = s4?.assignees || {};
-    if (!s4?.scheduleType) issues.push({ step: 4, label: "Schedule", reason: "Schedule type is required." });
-    else if (!(s4.locations || []).length) issues.push({ step: 4, label: "Schedule", reason: "At least one location must be selected." });
-    else if (!((a.users||[]).length || (a.roles||[]).length || (a.groups||[]).length)) issues.push({ step: 4, label: "Schedule", reason: "At least one assignee is required." });
+    const secs = s2?.sections;
+    if (!Array.isArray(secs) || secs.length === 0 || !secs.some(s => (s.questions || []).length > 0))
+      issues.push({ step: 2, label: "Questions", reason: "At least one section with at least one question is required." });
+    if (!isScoringComplete(s3)) issues.push({ step: 3, label: "Scoring", reason: "Scoring methodology must be selected." });
+    const a = s5?.assignees || {};
+    if (!s5?.scheduleType) issues.push({ step: 5, label: "Schedule", reason: "Schedule type is required." });
+    else if (!(s5.locations || []).length) issues.push({ step: 5, label: "Schedule", reason: "At least one location must be selected." });
+    else if (!((a.users||[]).length || (a.roles||[]).length || (a.groups||[]).length)) issues.push({ step: 5, label: "Schedule", reason: "At least one assignee is required." });
 
     if (issues.length > 0) { setCantActivateModal({ issues }); }
     else { setActivateConfirmModal(true); }
   }
 
-  function handleConfirmActivate() {
+  function handleConfirmActivate(andPublish = false) {
     setActivateConfirmModal(false);
+    setTemplateStatus("active");
+    if (andPublish) setIsPublished(true);
     doSave();
-    const msg = REQUIRE_APPROVAL ? `${templateName} submitted for approval` : `${templateName} activated`;
+    const msg = REQUIRE_APPROVAL
+      ? `${templateName} submitted for approval`
+      : andPublish ? `${templateName} activated & published` : `${templateName} activated`;
     showToast(msg);
     setTimeout(() => onExit(), 1800);
+  }
+
+  function handleStatusModalConfirm() {
+    const action = statusModal;
+    setStatusModal(null);
+    if (action === "deactivate") {
+      setTemplateStatus("inactive");
+      doSave();
+      showToast(`${templateName} deactivated`);
+    } else if (action === "reactivate") {
+      setTemplateStatus("active");
+      doSave();
+      showToast(`${templateName} reactivated`);
+    } else if (action === "unpublish") {
+      setIsPublished(false);
+      doSave();
+      showToast(`${templateName} unpublished`);
+    } else if (action === "publish") {
+      setIsPublished(true);
+      doSave();
+      showToast(`${templateName} published`);
+    }
   }
 
   function handleSaveDraft() {
@@ -699,17 +802,17 @@ export default function WizardShell({
   }
 
   function buildActivationSummary() {
-    const s4 = formData[4] || {};
     const s5 = formData[5] || {};
-    const schedType = s4.scheduleType === "one_time" ? "one-time" : s4.scheduleType === "recurring" ? "recurring" : s4.scheduleType === "event" ? "event-based" : s4.scheduleType || "scheduled";
-    const locCount = (s4.locations || []).length;
-    const a = s4.assignees || {};
+    const s6 = formData[6] || {};
+    const schedType = s5.scheduleType === "one_time" ? "one-time" : s5.scheduleType === "recurring" ? "recurring" : s5.scheduleType === "event" ? "event-based" : s5.scheduleType || "scheduled";
+    const locCount = (s5.locations || []).length;
+    const a = s5.assignees || {};
     const assigneeParts = [];
     if ((a.roles||[]).length) assigneeParts.push(a.roles.join(", "));
     if ((a.users||[]).length) assigneeParts.push(`${a.users.length} specific user${a.users.length !== 1 ? "s" : ""}`);
     if ((a.groups||[]).length) assigneeParts.push(`${a.groups.length} group${a.groups.length !== 1 ? "s" : ""}`);
-    const ruleCount = (s5.rules || []).length;
-    const programs = (s4.programs || []);
+    const ruleCount = (s6.rules || []).length;
+    const programs = (s5.programs || []);
     return { schedType, locCount, assigneeSummary: assigneeParts.join(", ") || "assignees", ruleCount, programs };
   }
 
@@ -787,19 +890,43 @@ export default function WizardShell({
 
         {/* Right: status tags */}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-          <StatusTag label="Draft" color="#b45309" icon="draft" />
-          <span style={{ color: C.g3, fontSize: 11 }}>·</span>
-          <StatusTag
-            label={isActive ? "Active" : "Inactive"}
-            color={isActive ? C.teal : C.g5}
-            icon={isActive ? "check" : "pause"}
-          />
-          <span style={{ color: C.g3, fontSize: 11 }}>·</span>
-          <StatusTag
-            label={isPublished ? "Published" : "Unpublished"}
-            color={isPublished ? C.ocean : C.g5}
-            icon={isPublished ? "check" : "lock"}
-          />
+          {templateStatus === "draft" && (
+            <>
+              <StatusTag label="Draft" color="#b45309" icon="draft" />
+              <span style={{ color: C.g3, fontSize: 11 }}>·</span>
+            </>
+          )}
+          {templateStatus === "active" && (
+            <>
+              <ClickableTag
+                label="Active" color={C.teal} icon="check"
+                action={{ label: "Deactivate", icon: "pause", onClick: () => setStatusModal("deactivate"), danger: false }}
+              />
+              <span style={{ color: C.g3, fontSize: 11 }}>·</span>
+            </>
+          )}
+          {templateStatus === "inactive" && (
+            <>
+              <ClickableTag
+                label="Inactive" color={C.g5} icon="pause"
+                action={{ label: "Reactivate", icon: "check", onClick: () => setStatusModal("reactivate") }}
+              />
+              <span style={{ color: C.g3, fontSize: 11 }}>·</span>
+            </>
+          )}
+          {isPublished ? (
+            <ClickableTag
+              label="Published" color={C.ocean} icon="check"
+              action={{ label: "Unpublish", icon: "lock", onClick: () => setStatusModal("unpublish"), danger: true }}
+            />
+          ) : (
+            <ClickableTag
+              label="Unpublished" color={C.g5} icon="lock"
+              action={{ label: "Publish", icon: "check", onClick: () => setStatusModal("publish") }}
+              disabled={templateStatus !== "active"}
+              disabledTip="Activate template first"
+            />
+          )}
         </div>
       </div>
 
@@ -823,41 +950,41 @@ export default function WizardShell({
           />
         )}
         {step === 2 && (
-          <Step2Scoring
+          <Step3Sections
             formData={formData[2]}
             onChange={(patch) => handleStepDataChange(2, patch)}
+            methodology={formData[3]?.methodology}
             onNext={() => navigateToStep(3)}
             onBack={() => navigateToStep(1)}
-            hasQuestions={
-              (formData[3]?.sections || []).some(s => s.questions?.length > 0)
-            }
           />
         )}
         {step === 3 && (
-          <Step3Sections
+          <Step3Scoring
             formData={formData[3]}
             onChange={(patch) => handleStepDataChange(3, patch)}
-            methodology={formData[2]?.methodology}
-            onNext={() => navigateToStep(4)}
-            onBack={() => navigateToStep(2)}
+            questionsData={formData[2]}
+            onQuestionsChange={(patch) => handleStepDataChange(2, patch)}
           />
         )}
         {step === 4 && (
-          <Step4Schedule
+          <Step4Translations
             formData={formData[4]}
             onChange={(patch) => handleStepDataChange(4, patch)}
-            onNext={() => navigateToStep(5)}
-            onBack={() => navigateToStep(3)}
+            languages={formData[1]?.languages}
           />
         )}
         {step === 5 && (
-          <Step5Escalation
+          <Step5Schedule
             formData={formData[5]}
             onChange={(patch) => handleStepDataChange(5, patch)}
+            onNext={() => navigateToStep(6)}
             onBack={() => navigateToStep(4)}
-            onActivate={handleActivateClick}
-            onSaveDraft={handleSaveDraft}
-            onNavigateToStep={navigateToStep}
+          />
+        )}
+        {step === 6 && (
+          <Step6Escalation
+            formData={formData[6]}
+            onChange={(patch) => handleStepDataChange(6, patch)}
           />
         )}
       </div>
@@ -894,14 +1021,15 @@ export default function WizardShell({
             onClick={step === 1 ? onBackToPick : () => navigateToStep(step - 1)}
             disabled={false}
           />
-          {step < 5 ? (
+          {step < 6 ? (
             <BtnFooterNext
               onClick={() => navigateToStep(step + 1)}
               label={
-                step === 1 ? "Next: Scoring"
-                : step === 2 ? "Next: Questions"
-                : step === 3 ? "Next: Schedule"
-                : step === 4 ? "Next: Escalation"
+                step === 1 ? "Next: Questions"
+                : step === 2 ? "Next: Scoring"
+                : step === 3 ? "Next: Translations"
+                : step === 4 ? "Next: Schedule"
+                : step === 5 ? "Next: Escalation"
                 : "Next"
               }
             />
@@ -966,7 +1094,7 @@ export default function WizardShell({
       {/* ── Activate confirmation modal ── */}
       {activateConfirmModal && (() => {
         const { schedType, locCount, assigneeSummary, ruleCount, programs } = buildActivationSummary();
-        const startDate = formData[4]?.startDate;
+        const startDate = formData[5]?.startDate;
         return (
           <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, fontFamily:F }}
             onClick={e => { if (e.target === e.currentTarget) setActivateConfirmModal(false); }}>
@@ -992,20 +1120,79 @@ export default function WizardShell({
                   </div>
                 )}
               </div>
-              <div style={{ padding:"12px 24px 20px", display:"flex", gap:8, justifyContent:"flex-end", borderTop:`1px solid ${C.g2}`, marginTop:4 }}>
+              <div style={{ padding:"12px 24px 20px", display:"flex", gap:8, justifyContent:"space-between", alignItems:"center", borderTop:`1px solid ${C.g2}`, marginTop:4 }}>
                 <button onClick={() => setActivateConfirmModal(false)}
-                  style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>Cancel</button>
-                <button onClick={handleConfirmActivate}
-                  style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 22px", fontSize:13, fontWeight:700, fontFamily:F, cursor:"pointer" }}
-                  onMouseEnter={e => e.currentTarget.style.background = C.navy2}
-                  onMouseLeave={e => e.currentTarget.style.background = C.navy}>
-                  {REQUIRE_APPROVAL ? "Submit for approval" : "Activate"}
+                  style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>
+                  Cancel
                 </button>
+                {!REQUIRE_APPROVAL && (
+                  <div style={{ display:"flex", gap:8 }}>
+                    <button onClick={() => handleConfirmActivate(false)}
+                      style={{ background:"none", border:`1px solid ${C.navy}`, borderRadius:8, padding:"9px 20px", fontSize:13, fontWeight:600, fontFamily:F, color:C.navy, cursor:"pointer" }}
+                      onMouseEnter={e => e.currentTarget.style.background = "#eef1ff"}
+                      onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                      Activate only
+                    </button>
+                    <button onClick={() => handleConfirmActivate(true)}
+                      style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 22px", fontSize:13, fontWeight:700, fontFamily:F, cursor:"pointer" }}
+                      onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+                      onMouseLeave={e => e.currentTarget.style.background = C.navy}>
+                      Activate &amp; Publish
+                    </button>
+                  </div>
+                )}
+                {REQUIRE_APPROVAL && (
+                  <button onClick={() => handleConfirmActivate(false)}
+                    style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 22px", fontSize:13, fontWeight:700, fontFamily:F, cursor:"pointer" }}
+                    onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+                    onMouseLeave={e => e.currentTarget.style.background = C.navy}>
+                    Submit for approval
+                  </button>
+                )}
               </div>
             </div>
           </div>
         );
       })()}
+
+      {/* ── Status change modals ── */}
+      {statusModal === "deactivate" && (
+        <StatusConfirmModal
+          title="Deactivate this template?"
+          body="Audits already in progress won't be affected, but no new audits can be created from this template until it's reactivated."
+          confirmLabel="Deactivate"
+          onConfirm={handleStatusModalConfirm}
+          onCancel={() => setStatusModal(null)}
+        />
+      )}
+      {statusModal === "reactivate" && (
+        <StatusConfirmModal
+          title="Reactivate this template?"
+          body="This template will become available again and new audits can be created from it."
+          confirmLabel="Reactivate"
+          onConfirm={handleStatusModalConfirm}
+          onCancel={() => setStatusModal(null)}
+        />
+      )}
+      {statusModal === "unpublish" && (
+        <StatusConfirmModal
+          title="Unpublish this template?"
+          body="This template will be removed from the marketplace catalog. It will remain in your template library and can be republished at any time."
+          confirmLabel="Unpublish"
+          danger
+          onConfirm={handleStatusModalConfirm}
+          onCancel={() => setStatusModal(null)}
+        />
+      )}
+      {statusModal === "publish" && (
+        <StatusConfirmModal
+          title="Publish this template?"
+          body="This template will be added to the marketplace catalog and visible to other users in your organization."
+          confirmLabel="Publish"
+          onConfirm={handleStatusModalConfirm}
+          onCancel={() => setStatusModal(null)}
+        />
+      )}
 
       {/* ── Toast notification ── */}
       {toastMsg && <Toast message={toastMsg} />}
