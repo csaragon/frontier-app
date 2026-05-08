@@ -9,7 +9,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { featureFlags } from "./shared.js";
-import QuestionEditor from "./QuestionEditor.jsx";
+import QuestionBuilder from "./QuestionBuilder.jsx";
 import SectionEditor from "./SectionEditor.jsx";
 import BanksPanel from "./BanksPanel.jsx";
 import GridSection from "./GridSection.jsx";
@@ -297,7 +297,7 @@ function Toggle({ checked, onChange }) {
   );
 }
 
-// QuestionEditorModal replaced by QuestionEditor imported from ./QuestionEditor.jsx
+// QuestionEditorModal replaced by QuestionBuilder imported from ./QuestionBuilder.jsx
 
 // ── Fix Math Modal ────────────────────────────────────────────────────────────
 
@@ -1114,100 +1114,6 @@ function Toast({ message, onDismiss }) {
   );
 }
 
-// ── Bank Reuse Modal ──────────────────────────────────────────────────────────
-
-function BankReuseModal({ bankSection, onConfirm, onClose }) {
-  const [selectedQIds, setSelectedQIds] = useState(new Set(bankSection.questions.map(q => q.id)));
-
-  function toggle(id) {
-    setSelectedQIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  }
-  function selectAll() { setSelectedQIds(new Set(bankSection.questions.map(q => q.id))); }
-  function deselectAll() { setSelectedQIds(new Set()); }
-
-  const selectedQuestions = bankSection.questions.filter(q => selectedQIds.has(q.id));
-
-  return (
-    <div
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div style={{ background: C.white, borderRadius: 12, width: 480, maxHeight: "80vh", display: "flex", flexDirection: "column", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
-        {/* Header */}
-        <div style={{ padding: "16px 20px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: C.g6 }}>Add section from bank</div>
-            <div style={{ fontSize: 12, color: C.g4, marginTop: 2 }}>
-              <strong style={{ color: C.g6 }}>{bankSection.name}</strong> — choose which questions to include
-            </div>
-          </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: C.g4, padding: 4, display: "flex", alignItems: "center" }}>
-            <IconClose />
-          </button>
-        </div>
-        {/* Select all / deselect all */}
-        <div style={{ padding: "10px 20px 0", display: "flex", gap: 12, flexShrink: 0 }}>
-          <button onClick={selectAll} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: C.navy, fontFamily: F, fontWeight: 500, padding: 0 }}>Select all</button>
-          <button onClick={deselectAll} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: C.g4, fontFamily: F, fontWeight: 500, padding: 0 }}>Deselect all</button>
-          <span style={{ marginLeft: "auto", fontSize: 12, color: C.g4, fontFamily: F }}>{selectedQIds.size} of {bankSection.questions.length} selected</span>
-        </div>
-        {/* Question list */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "10px 20px" }}>
-          {bankSection.questions.map(q => {
-            const checked = selectedQIds.has(q.id);
-            return (
-              <label key={q.id}
-                style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "9px 0", borderBottom: `1px solid ${C.g1}`, cursor: "pointer" }}
-              >
-                <div
-                  onClick={() => toggle(q.id)}
-                  style={{
-                    width: 15, height: 15, borderRadius: 4, flexShrink: 0, marginTop: 2,
-                    border: `1.5px solid ${checked ? C.navy : C.g3}`,
-                    background: checked ? C.navy : C.white,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    cursor: "pointer",
-                  }}
-                >
-                  {checked && <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>}
-                </div>
-                <div onClick={() => toggle(q.id)} style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px" }}>{q.title}</div>
-                  <div style={{ display: "flex", gap: 6, marginTop: 4, alignItems: "center" }}>
-                    <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: C.g4, background: C.g1, borderRadius: 4, padding: "1px 5px" }}>{q.answerType}</span>
-                    {q.required && <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, color: "#b6143a", background: "#fae5e6", borderRadius: 4, padding: "1px 5px" }}>Required</span>}
-                  </div>
-                </div>
-              </label>
-            );
-          })}
-        </div>
-        {/* Footer */}
-        <div style={{ padding: "12px 20px", borderTop: `1px solid ${C.g2}`, display: "flex", gap: 8, justifyContent: "flex-end", flexShrink: 0 }}>
-          <button onClick={onClose}
-            style={{ background: "none", border: `1px solid ${C.g3}`, borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 500, fontFamily: F, color: C.g5, cursor: "pointer" }}
-          >Cancel</button>
-          <button
-            onClick={() => { if (selectedQuestions.length > 0) onConfirm(selectedQuestions); }}
-            disabled={selectedQuestions.length === 0}
-            style={{
-              background: selectedQuestions.length > 0 ? C.navy : C.g2,
-              color: selectedQuestions.length > 0 ? C.white : C.g4,
-              border: "none", borderRadius: 8, padding: "7px 16px",
-              fontSize: 13, fontWeight: 600, fontFamily: F,
-              cursor: selectedQuestions.length > 0 ? "pointer" : "not-allowed",
-            }}
-            onMouseEnter={e => { if (selectedQuestions.length > 0) e.currentTarget.style.background = C.navy2; }}
-            onMouseLeave={e => { if (selectedQuestions.length > 0) e.currentTarget.style.background = C.navy; }}
-          >
-            Add {selectedQuestions.length} question{selectedQuestions.length !== 1 ? "s" : ""}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Grid Confirm Modal ────────────────────────────────────────────────────────
 
 function GridConfirmModal({ direction, qCount, onConfirm, onCancel }) {
@@ -1248,9 +1154,7 @@ function GridConfirmModal({ direction, qCount, onConfirm, onCancel }) {
   );
 }
 
-// ── Step 3 Main ───────────────────────────────────────────────────────────────
-
-export default function Step3Sections({ formData, onChange, onNext, onBack, methodology }) {
+export default function QuestionList({ formData, onChange, onNext, onBack, methodology }) {
   const isWeighted = methodology === "weighted";
 
   const [sections, setSections]       = useState(() => formData?.sections ?? DEFAULT_SECTIONS);
@@ -1262,7 +1166,6 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   const [addingSection, setAddingSection] = useState(false);
   const [newSectionName, setNewSectionName] = useState("");
   const [toastMsg, setToastMsg]       = useState(null);
-  const [bankReuseModal, setBankReuseModal] = useState(null);
   const [gridConfirmModal, setGridConfirmModal] = useState(null);
   const [bulkMenuOpen, setBulkMenuOpen]         = useState(false);
   const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(null);
@@ -1516,7 +1419,27 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
   // ── Bank handlers ────────────────────────────────────────────────────────────
 
   function handleAddSectionFromBank(bankSection) {
-    setBankReuseModal({ bankSection });
+    const newSec = {
+      id: genId("sec"),
+      name: bankSection.name,
+      weight: 0,
+      collapsed: false,
+      isGrid: false,
+      gridData: null,
+      questions: (bankSection.questions || []).map(q => ({
+        id: genId("q"),
+        title: q.title,
+        answerType: q.answerType,
+        required: q.required ?? false,
+        critical: false, informational: false, instructions: "",
+        typeConfig: {}, inBank: true, scoring: {}, media: {},
+        action: { type: "none" }, escalation: { rules: [] },
+        conditional: { operator: "AND", items: [] },
+      })),
+    };
+    const next = [...sections, newSec];
+    setSections(next); emit(next);
+    showToast(`Added section "${bankSection.name}" with ${newSec.questions.length} question${newSec.questions.length !== 1 ? "s" : ""}`);
   }
 
   function handleAddQuestionFromBank(bankQuestion) {
@@ -1620,31 +1543,6 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
     showToast(`Added ${bankQuestions.length} question${bankQuestions.length === 1 ? "" : "s"} to ${targetSection.name}`);
   }
 
-  function handleBankReuseConfirm(selectedQuestions) {
-    const { bankSection } = bankReuseModal;
-    const newSec = {
-      id: genId("sec"),
-      name: bankSection.name,
-      weight: 0,
-      collapsed: false,
-      isGrid: false,
-      gridData: null,
-      questions: selectedQuestions.map(q => ({
-        id: genId("q"),
-        title: q.title,
-        answerType: q.answerType,
-        required: q.required ?? false,
-        critical: false, informational: false, instructions: "",
-        typeConfig: {}, inBank: true, scoring: {}, media: {},
-        action: { type: "none" }, escalation: { rules: [] },
-        conditional: { operator: "AND", items: [] },
-      })),
-    };
-    const next = [...sections, newSec];
-    setSections(next); emit(next);
-    setBankReuseModal(null);
-    showToast(`Added section "${bankSection.name}" with ${selectedQuestions.length} question${selectedQuestions.length !== 1 ? "s" : ""}`);
-  }
 
   // ── Grid handlers ────────────────────────────────────────────────────────────
 
@@ -1757,7 +1655,7 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
           const followQuestions = editingQ.isNew ? [] : allQuestionsFlat.slice(currentIdx + 1);
           const sectionName = sections.find(s => s.id === editingQ.sectionId)?.name ?? "";
           return (
-            <QuestionEditor
+            <QuestionBuilder
               question={editingQ.q}
               isNew={editingQ.isNew}
               methodology={methodology}
@@ -2064,13 +1962,6 @@ export default function Step3Sections({ formData, onChange, onNext, onBack, meth
       )}
       {aiModal && (
         <AIGenerateModal sections={sections} onInsert={handleAIInsert} onClose={() => setAiModal(false)} />
-      )}
-      {bankReuseModal && (
-        <BankReuseModal
-          bankSection={bankReuseModal.bankSection}
-          onConfirm={handleBankReuseConfirm}
-          onClose={() => setBankReuseModal(null)}
-        />
       )}
       {gridConfirmModal && (
         <GridConfirmModal

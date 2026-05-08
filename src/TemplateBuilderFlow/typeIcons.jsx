@@ -100,7 +100,7 @@ export function AnsTypeIcon({ type, size = 16 }) {
   }
 }
 
-// Small feature indicator icons — matches Step3Sections's QuestionIndicatorIcons
+// Small feature indicator icons — matches QuestionList's QuestionIndicatorIcons
 // but as standalone SVG components for use in catalog previews.
 
 export function IconAction({ size = 12 }) {

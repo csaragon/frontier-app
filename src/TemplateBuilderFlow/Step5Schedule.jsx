@@ -677,9 +677,7 @@ function TypeChangeModal({ onConfirm, onCancel }) {
   );
 }
 
-// ── Step 4 ────────────────────────────────────────────────────────────────────
-
-export default function Step4Schedule({ formData, onChange, onNext, onBack }) {
+export default function Step5Schedule({ formData, onChange, onNext, onBack }) {
   const d = formData || {};
   const [pendingType, setPendingType] = useState(null);
   const [touched, setTouched] = useState({});

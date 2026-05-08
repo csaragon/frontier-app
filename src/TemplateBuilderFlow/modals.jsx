@@ -501,49 +501,6 @@ function CategoryPill({ cat }) {
   );
 }
 
-// ─── MissingLangModal ────────────────────────────────────────────────────────
-
-export function MissingLangModal({ template, missingLangs = [], onAutoTranslate, onContinueWithout, onClose }) {
-  const handleAutoTranslate = () => {
-    console.log("MissingLangModal choice: auto-translate", { templateId: template.id, missingLangs });
-    onContinueWithout();
-  };
-  const handleContinueWithout = () => {
-    console.log("MissingLangModal choice: continue without", { templateId: template.id, missingLangs });
-    onContinueWithout();
-  };
-  const handleCancel = () => {
-    console.log("MissingLangModal choice: cancel", { templateId: template.id, missingLangs });
-    onContinueWithout();
-  };
-
-  return (
-    <OverlayBase onClose={onClose}>
-      <ModalPanel width={480}>
-        <div style={{ padding: "24px 24px 20px", fontFamily: F }}>
-          <h3 style={{ margin: "0 0 10px", fontSize: 16, fontWeight: 700, color: C.g6 }}>
-            This template doesn't support all your languages
-          </h3>
-          <p style={{ margin: "0 0 20px", fontSize: 13, color: C.g5, lineHeight: "20px" }}>
-            Missing: {missingLangs.join(", ")}. We can auto-translate it for you, or you can add translations later in the Translation Wizard.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <BtnPrimary onClick={handleAutoTranslate} style={{ width: "100%", textAlign: "center" }}>
-              Auto-translate with AI
-            </BtnPrimary>
-            <BtnSecondary onClick={handleContinueWithout} style={{ width: "100%", textAlign: "center" }}>
-              Continue without
-            </BtnSecondary>
-            <BtnGhost onClick={handleCancel} style={{ width: "100%", textAlign: "center" }}>
-              Cancel
-            </BtnGhost>
-          </div>
-        </div>
-      </ModalPanel>
-    </OverlayBase>
-  );
-}
-
 // ─── SwitchRouteModal ────────────────────────────────────────────────────────
 
 export function SwitchRouteModal({ onSave, onDiscard, onCancel }) {

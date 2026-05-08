@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { T, F } from "../aegis-tokens.js";
-import Step2Scoring from "./Step2Scoring.jsx";
+import ScoringMethodology from "./ScoringMethodology.jsx";
 import { LogicIcons } from "./typeIcons.jsx";
 
 const C = {
@@ -492,7 +492,7 @@ export default function Step3Scoring({
 
         {/* ── Scoring Setup sub-tab ── */}
         {activeTab === "setup" && (
-          <Step2Scoring
+          <ScoringMethodology
             formData={formData}
             onChange={onChange}
             hasQuestions={sections.length > 0}

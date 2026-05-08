@@ -1373,28 +1373,62 @@ const TRIGGER_COLORS = {
 };
 
 const COND_OP_OPTS = [
-  { v: "and",  l: "AND",  title: "All conditions must match",       color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
-  { v: "or",   l: "OR",   title: "Any condition can match",         color: "#065f46", bg: "#ccfbf1", border: "#6ee7b7" },
-  { v: "none", l: "NONE", title: "No condition may match (NOT)",    color: "#9a3412", bg: "#fff7ed", border: "#fdba74" },
+  { v: "and",  l: "ALL",  word: "all",  desc: "every condition must match", color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
+  { v: "or",   l: "ANY",  word: "any",  desc: "at least one must match",    color: "#065f46", bg: "#ccfbf1", border: "#6ee7b7" },
+  { v: "none", l: "NONE", word: "none", desc: "no condition may match",     color: "#9a3412", bg: "#fff7ed", border: "#fdba74" },
 ];
 
-function CondOpChip({ value, onChange }) {
+function InlineOpSelector({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const meta = COND_OP_OPTS.find(o => o.v === value) ?? COND_OP_OPTS[0];
+
   return (
-    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-      {COND_OP_OPTS.map(o => {
-        const active = value === o.v;
-        return (
-          <button key={o.v} onClick={() => onChange(o.v)} title={o.title}
-            style={{
-              padding: "2px 9px", fontSize: 10, fontWeight: 700, fontFamily: F, letterSpacing: "0.05em",
-              borderRadius: 5, cursor: "pointer",
-              background: active ? o.bg : "transparent",
-              border: active ? `1.5px solid ${o.border}` : `1.5px solid ${C.g2}`,
-              color: active ? o.color : C.g4,
-            }}
-          >{o.l}</button>
-        );
-      })}
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: "inline-flex", alignItems: "center", gap: 3,
+          padding: "2px 7px 2px 8px", borderRadius: 5, cursor: "pointer",
+          background: meta.bg, border: `1.5px solid ${meta.border}`,
+          color: meta.color, fontSize: 11, fontWeight: 700, fontFamily: F,
+          letterSpacing: "0.03em",
+        }}
+      >
+        {meta.word}
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      {open && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 999 }} onClick={() => setOpen(false)} />
+          <div style={{
+            position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 1000,
+            background: C.white, border: `1px solid ${C.g2}`, borderRadius: 9,
+            boxShadow: "0 6px 20px rgba(0,0,0,0.13)", minWidth: 210, overflow: "hidden",
+          }}>
+            {COND_OP_OPTS.map(o => (
+              <button key={o.v} onClick={() => { onChange(o.v); setOpen(false); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
+                  padding: "9px 13px", background: value === o.v ? o.bg : "transparent",
+                  border: "none", borderBottom: `1px solid ${C.g1}`, cursor: "pointer", fontFamily: F,
+                }}
+                onMouseEnter={e => { if (value !== o.v) e.currentTarget.style.background = C.g1; }}
+                onMouseLeave={e => { e.currentTarget.style.background = value === o.v ? o.bg : "transparent"; }}
+              >
+                <span style={{
+                  fontSize: 11, fontWeight: 700, color: o.color,
+                  background: o.bg, border: `1px solid ${o.border}`,
+                  borderRadius: 4, padding: "1px 7px", flexShrink: 0, minWidth: 38, textAlign: "center",
+                }}>{o.word}</span>
+                <span style={{ fontSize: 11, color: C.g5, lineHeight: 1.4 }}>{o.desc}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1461,15 +1495,19 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
         </div>
       ) : (
         <div style={{ marginBottom: 10 }}>
-          {/* Header row: operator chips + delete rule */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <span style={{ fontSize: 11, color: C.g4, fontFamily: F, fontWeight: 600, letterSpacing: "0.03em" }}>
-              {isFirst ? "WHEN" : "AND WHEN"}
+          {/* Header row: sentence-format operator selector */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 11, color: C.g4, fontFamily: F, fontWeight: 600, letterSpacing: "0.03em", flexShrink: 0 }}>
+              {isFirst ? "Show when" : "And when"}
             </span>
-            {conditions.length > 1 && (
-              <CondOpChip value={condOp} onChange={setCondOp} />
+            {conditions.length > 1 ? (
+              <InlineOpSelector value={condOp} onChange={setCondOp} />
+            ) : (
+              <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>this</span>
             )}
-            <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>of these conditions match:</span>
+            <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>
+              {conditions.length > 1 ? "of these conditions match:" : "condition matches:"}
+            </span>
             <button onClick={onDelete} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: C.g3, display: "flex", padding: 4, borderRadius: 4 }}
               onMouseEnter={e => e.currentTarget.style.color = C.red} onMouseLeave={e => e.currentTarget.style.color = C.g3}
             ><IconTrash /></button>
@@ -1482,11 +1520,11 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
                 {/* Connector label between rows */}
                 {ci > 0 && (
                   <span style={{
-                    fontSize: 10, fontWeight: 700, fontFamily: F, letterSpacing: "0.05em",
-                    padding: "1px 6px", borderRadius: 4,
+                    fontSize: 10, fontWeight: 700, fontFamily: F, letterSpacing: "0.03em",
+                    padding: "1px 7px", borderRadius: 4,
                     background: condOpMeta.bg, color: condOpMeta.color, border: `1px solid ${condOpMeta.border}`,
-                    flexShrink: 0,
-                  }}>{condOpMeta.l}</span>
+                    flexShrink: 0, textTransform: "uppercase",
+                  }}>{condOp === "none" ? "nor" : condOpMeta.word}</span>
                 )}
                 <span style={{ fontSize: 12, color: C.g5, fontFamily: F, flexShrink: 0 }}>
                   {ci === 0 ? "Answer" : "answer"}
@@ -1511,16 +1549,13 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
             ))}
           </div>
 
-          {/* Add condition + operator selector (shown after first condition) */}
+          {/* Add condition */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
             <button onClick={addCond}
               style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: 600, fontFamily: F, color: C.g4, cursor: "pointer" }}
               onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
               onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
             ><IconPlus size={10} /> Add condition</button>
-            {conditions.length > 1 && (
-              <span style={{ fontSize: 11, color: C.g3, fontFamily: F }}>matching operator: <strong style={{ color: condOpMeta.color }}>{condOpMeta.l}</strong></span>
-            )}
           </div>
         </div>
       )}
@@ -1691,9 +1726,7 @@ function LogicPanel({ logic, answerType, onChange }) {
   );
 }
 
-// ── Main QuestionEditor ───────────────────────────────────────────────────────
-
-export default function QuestionEditor({ question, isNew, methodology, sectionName, onSave, onClose }) {
+export default function QuestionBuilder({ question, isNew, methodology, sectionName, onSave, onClose }) {
   // Panel 1 state (merged). New questions start with empty answer type so the
   // dropdown shows a placeholder rather than a pre-selected default.
   const [panel1, setPanel1] = useState({

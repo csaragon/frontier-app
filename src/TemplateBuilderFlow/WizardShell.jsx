@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import Step1Details from "./Step1Details.jsx";
-import Step3Sections from "./Step3Sections.jsx";
+import QuestionList from "./QuestionList.jsx";
 import Step3Scoring from "./Step3Scoring.jsx";
 import Step4Translations from "./Step4Translations.jsx";
-import Step5Schedule from "./Step4Schedule.jsx";
+import Step5Schedule from "./Step5Schedule.jsx";
 import Step6Escalation from "./Step6Escalation.jsx";
 import { DiscardModal } from "./modals.jsx";
 import { T, F } from "../aegis-tokens.js";
@@ -950,7 +950,7 @@ export default function WizardShell({
           />
         )}
         {step === 2 && (
-          <Step3Sections
+          <QuestionList
             formData={formData[2]}
             onChange={(patch) => handleStepDataChange(2, patch)}
             methodology={formData[3]?.methodology}

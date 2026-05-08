@@ -111,31 +111,10 @@ const TAGS_FILTER = ["retail", "safety", "compliance", "monthly", "weekly", "cri
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
 
-function IconSidebar() {
-  return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>;
-}
 function IconFunnel() {
   return (
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-    </svg>
-  );
-}
-function IconSection() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/><rect x="3" y="17" width="18" height="5" rx="1"/></svg>;
-}
-function IconQuestion() {
-  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
-}
-function IconGrip() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-      <circle cx="9"  cy="6"  r="1.4" fill="currentColor"/>
-      <circle cx="9"  cy="12" r="1.4" fill="currentColor"/>
-      <circle cx="9"  cy="18" r="1.4" fill="currentColor"/>
-      <circle cx="15" cy="6"  r="1.4" fill="currentColor"/>
-      <circle cx="15" cy="12" r="1.4" fill="currentColor"/>
-      <circle cx="15" cy="18" r="1.4" fill="currentColor"/>
     </svg>
   );
 }
@@ -230,11 +209,12 @@ function FilterDropdown({ tab, selectedCategories, setSelectedCategories, select
   );
 }
 
-// ── Section Preview Modal ──────────────────────────────────────────────────────
+// ── Section Bank Card ──────────────────────────────────────────────────────────
 
-function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) {
+function SectionPreviewModal({ section, onClose, onAdd, onAddPickedAsSection }) {
   const [pickedIds, setPickedIds] = useState(new Set(section.questions?.map(q => q.id) ?? []));
   const catStyle = CAT_COLORS[section.category] ?? { color: C.g5, bg: C.g1 };
+  const totalQs = section.questions?.length ?? 0;
 
   function togglePicked(id) {
     setPickedIds(prev => {
@@ -257,8 +237,6 @@ function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) 
     }
     onClose();
   }
-
-  const totalQs = section.questions?.length ?? 0;
 
   return (
     <div
@@ -307,7 +285,6 @@ function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) 
 
         {/* Question list */}
         <div style={{ flex: 1, overflowY: "auto", padding: "12px 20px" }}>
-          {/* Select all / clear toolbar */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
             <span style={{ fontSize: 12, color: C.g4, flex: 1 }}>
               {pickedIds.size > 0 ? `${pickedIds.size} of ${totalQs} selected` : "Select questions to add"}
@@ -318,7 +295,6 @@ function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) 
               <button onClick={pickAll} style={{ fontSize: 12, color: C.navy, background: "none", border: "none", cursor: "pointer", fontWeight: 500, padding: 0, fontFamily: F }}>Select all</button>
             )}
           </div>
-
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {(section.questions || []).map((q, i) => {
               const at = ansTypeColor(q.answerType);
@@ -337,7 +313,6 @@ function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) 
                   onMouseEnter={e => { if (!checked) { e.currentTarget.style.background = C.g1; e.currentTarget.style.borderColor = C.g3; } }}
                   onMouseLeave={e => { if (!checked) { e.currentTarget.style.background = C.white; e.currentTarget.style.borderColor = C.g2; } }}
                 >
-                  {/* Checkbox */}
                   <div style={{
                     width: 16, height: 16, borderRadius: 4, flexShrink: 0,
                     border: `1.5px solid ${checked ? C.navy : C.g3}`,
@@ -346,9 +321,7 @@ function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) 
                   }}>
                     {checked && <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>}
                   </div>
-                  {/* Number badge */}
                   <span style={{ width: 20, height: 20, borderRadius: 4, background: C.g1, color: C.g5, fontSize: 10, fontWeight: 700, fontFamily: F, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>{i + 1}</span>
-                  {/* Content */}
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "17px", fontWeight: checked ? 600 : 400 }}>{q.title}</div>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5, flexWrap: "wrap" }}>
@@ -394,8 +367,6 @@ function SectionPreviewModal({ section, onAdd, onAddPickedAsSection, onClose }) 
   );
 }
 
-// ── Section Bank Card ──────────────────────────────────────────────────────────
-
 function SectionBankCard({ section, onAdd, onAddPickedAsSection, isSelected, onToggleSelect }) {
   const [hover, setHover] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -403,6 +374,7 @@ function SectionBankCard({ section, onAdd, onAddPickedAsSection, isSelected, onT
 
   return (
     <>
+      {/* Compact card */}
       <div
         draggable="true"
         onDragStart={e => e.dataTransfer.setData("bankItem", JSON.stringify({ type: "bank-section", item: section }))}
@@ -412,15 +384,15 @@ function SectionBankCard({ section, onAdd, onAddPickedAsSection, isSelected, onT
           background: isSelected ? "#f7f9ff" : C.white,
           border: `1px solid ${isSelected ? C.navy : (hover ? C.navy : C.g2)}`,
           borderRadius: 8,
-          padding: "10px 12px",
+          padding: "12px 14px",
           marginBottom: 8,
           cursor: "grab",
           boxShadow: hover ? "0 2px 8px rgba(0,30,118,0.10)" : "none",
           transition: "border-color 0.12s, box-shadow 0.12s, background 0.12s",
-          position: "relative",
         }}
       >
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+        {/* Title row */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 5 }}>
           <div
             onClick={e => { e.stopPropagation(); onToggleSelect(section.id); }}
             style={{
@@ -435,18 +407,21 @@ function SectionBankCard({ section, onAdd, onAddPickedAsSection, isSelected, onT
             {isSelected && <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap", marginBottom: 4 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: C.g6, fontFamily: F, lineHeight: "16px" }}>{section.name}</span>
-              <span style={{ fontSize: 10, fontWeight: 700, color: catStyle.color, background: catStyle.bg, borderRadius: 4, padding: "1px 5px", whiteSpace: "nowrap", flexShrink: 0 }}>{section.category}</span>
-            </div>
-            <div style={{ fontSize: 12, color: C.g4, fontFamily: F, lineHeight: "17px", marginBottom: 6 }}>
-              {section.description}
-            </div>
-            <div style={{ display: "flex", gap: 10, fontSize: 11, color: C.g4, fontFamily: F, flexWrap: "wrap" }}>
-              <span style={{ fontWeight: 600, color: C.g5 }}>{section.questionCount} {section.questionCount === 1 ? "question" : "questions"}</span>
-              {section.version && <span>v{section.version}</span>}
-              <span>Updated {formatDate(section.updatedAt)}</span>
-            </div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.g6, fontFamily: F, lineHeight: "17px", marginBottom: 4 }}>{section.name}</div>
+            <span style={{ fontSize: 10, fontWeight: 700, color: catStyle.color, background: catStyle.bg, borderRadius: 4, padding: "1px 5px", whiteSpace: "nowrap" }}>{section.category}</span>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div style={{ fontSize: 12, color: C.g4, fontFamily: F, lineHeight: "17px", marginBottom: 8, paddingLeft: 22 }}>
+          {section.description}
+        </div>
+
+        {/* Bottom row: metadata + action button */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, fontSize: 11, color: C.g4, fontFamily: F, flex: 1, flexWrap: "wrap" }}>
+            <span style={{ fontWeight: 600, color: C.g5 }}>{section.questionCount} {section.questionCount === 1 ? "question" : "questions"}</span>
+            {section.version && <span>v{section.version}</span>}
           </div>
           <button
             onClick={e => { e.stopPropagation(); setModalOpen(true); }}
@@ -471,9 +446,9 @@ function SectionBankCard({ section, onAdd, onAddPickedAsSection, isSelected, onT
       {modalOpen && (
         <SectionPreviewModal
           section={section}
+          onClose={() => setModalOpen(false)}
           onAdd={onAdd}
           onAddPickedAsSection={onAddPickedAsSection}
-          onClose={() => setModalOpen(false)}
         />
       )}
     </>
@@ -493,7 +468,7 @@ function QuestionBankCard({ question, onAdd, isSelected, onToggleSelect }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        display: "flex", alignItems: "center", gap: 8, padding: "7px 12px",
+        display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 12px",
         background: isSelected ? "#f0f3ff" : hover ? C.g1 : C.white,
         borderBottom: `1px solid ${C.g2}`,
         cursor: "grab",
@@ -507,17 +482,17 @@ function QuestionBankCard({ question, onAdd, isSelected, onToggleSelect }) {
           border: `1.5px solid ${isSelected ? C.navy : C.g3}`,
           background: isSelected ? C.navy : C.white,
           display: "flex", alignItems: "center", justifyContent: "center",
-          cursor: "pointer",
+          cursor: "pointer", marginTop: 2,
         }}
         title={isSelected ? "Deselect" : "Select"}
       >
         {isSelected && <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12, color: C.g6, fontFamily: F, lineHeight: "16px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        <div style={{ fontSize: 12, color: C.g6, fontFamily: F, lineHeight: "17px", marginBottom: 5 }}>
           {question.title}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
           <span style={{ fontSize: 9, fontWeight: 600, fontFamily: F, color: at.color, background: at.bg, borderRadius: 3, padding: "1px 5px", whiteSpace: "nowrap" }}>{question.answerType}</span>
           {question.required && <span style={{ fontSize: 9, fontWeight: 600, fontFamily: F, color: C.red, background: "#fae5e6", borderRadius: 3, padding: "1px 5px" }}>Req</span>}
           <LogicIcons question={question} size={10} />
@@ -529,7 +504,7 @@ function QuestionBankCard({ question, onAdd, isSelected, onToggleSelect }) {
           fontSize: 11, fontWeight: 600, fontFamily: F,
           color: C.navy, background: "none",
           border: `1px solid #c7cff7`, borderRadius: 4, padding: "2px 7px",
-          cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0,
+          cursor: "pointer", whiteSpace: "nowrap", flexShrink: 0, marginTop: 1,
         }}
         onMouseEnter={e => { e.currentTarget.style.background = "#eef1ff"; }}
         onMouseLeave={e => { e.currentTarget.style.background = "none"; }}

@@ -613,9 +613,7 @@ function MethodologyModal({ currentMethod, pendingMethod, onConfirm, onCancel })
   );
 }
 
-// ── Step 2: Scoring ───────────────────────────────────────────────────────────
-
-export default function Step2Scoring({ formData, onChange, onNext, onBack, hasQuestions = false }) {
+export default function ScoringMethodology({ formData, onChange, onNext, onBack, hasQuestions = false }) {
   // Merge user data over defaults — defaults do not trigger onChange on mount
   const d = {
     methodology:      null,

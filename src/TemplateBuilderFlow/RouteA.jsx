@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { STUB_TEMPLATES, CAT_COLORS, ALL_LANGUAGES, SORT_OPTS } from "./shared.js";
-import { PreviewModal, MissingLangModal, SwitchRouteModal } from "./modals.jsx";
+import { PreviewModal, SwitchRouteModal } from "./modals.jsx";
 
 const F = "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif";
 const C = {
@@ -237,7 +237,6 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
   const [sort, setSort] = useState("Alphabetical");
   const [viewMode, setViewMode] = useState("grid");
   const [previewTemplate, setPreviewTemplate] = useState(null);
-  const [missingLangTemplate, setMissingLangTemplate] = useState(null);
   const [showSwitchModal, setShowSwitchModal] = useState(false);
   const debounceRef = useRef(null);
 
@@ -279,13 +278,7 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
   };
 
   const handlePreviewUse = (template) => {
-    const missingLangs = userLangs.filter((l) => !template.langs.includes(l));
-    if (missingLangs.length > 0) {
-      setPreviewTemplate(null);
-      setMissingLangTemplate(template);
-    } else {
-      onUseTemplate(template.id);
-    }
+    onUseTemplate(template.id);
   };
 
   const toggleCat = (cat) => {
@@ -527,22 +520,6 @@ export default function RouteA({ onUseTemplate, onBack, onCancel, hasData = fals
         />
       )}
 
-      {/* MissingLangModal */}
-      {missingLangTemplate && (
-        <MissingLangModal
-          template={missingLangTemplate}
-          missingLangs={userLangs.filter((l) => !missingLangTemplate.langs.includes(l))}
-          onAutoTranslate={() => {
-            console.log("Auto-translate:", missingLangTemplate.id);
-            onUseTemplate(missingLangTemplate.id);
-          }}
-          onContinueWithout={() => {
-            console.log("Continue without:", missingLangTemplate.id);
-            onUseTemplate(missingLangTemplate.id);
-          }}
-          onClose={() => setMissingLangTemplate(null)}
-        />
-      )}
 
       {/* SwitchRouteModal */}
       {showSwitchModal && (
