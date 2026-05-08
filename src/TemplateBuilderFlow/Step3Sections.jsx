@@ -49,29 +49,59 @@ const ANSWER_TYPES = [
   { value: "Photo Required",  bg: "#e0dcf8", color: "#4030a6" },  // indigo
 ];
 
+const Q = (id, title, answerType, opts = {}) => ({
+  id, title, answerType,
+  required: opts.required ?? false,
+  informational: opts.info ?? false,
+  critical: opts.critical ?? false,
+  typeConfig: {}, inBank: false,
+  scoring: opts.scoring ?? {},
+  media: opts.photo ? { requireOnFail: true } : {},
+  action: { type: opts.action ?? "none" },
+  escalation: { rules: opts.esc ? [{ id: `e-${id}`, condition: "fail", notify: "manager" }] : [] },
+  conditional: { operator: "AND", items: opts.cond ? [{ type: "condition", questionId: opts.cond, operator: "eq", value: "No" }] : [] },
+});
+
 const DEFAULT_SECTIONS = [
   {
     id: "sec-1", name: "Fire Safety", weight: 40, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-1", title: "Are all fire extinguishers properly mounted and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "corrective" }, escalation: { rules: [{ id: "e1", condition: "fail", notify: "manager" }] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-2", title: "When was the last fire drill conducted?",                    answerType: "Free Text",   required: false, informational: true,  critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [{ type: "condition", questionId: "q-1", operator: "eq", value: "No" }] } },
-      { id: "q-3", title: "How many exits are marked with illuminated signage?",        answerType: "Number",      required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [{ id: "e2", condition: "below_threshold", notify: "safety_officer" }] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-4", title: "Describe any fire safety concerns observed during this visit.", answerType: "Free Text", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
+      Q("q-1",  "Are all fire extinguishers properly mounted and accessible?",     "Yes/No/NA",    { required: true,  scoring: { value: 10, answerValues: { Yes: 10, No: 0, "N/A": 0 } }, action: "corrective", esc: true }),
+      Q("q-2",  "Are sprinkler heads free of obstructions?",                       "Yes/No",       { required: true,  scoring: { value: 8,  answerValues: { Yes: 8, No: 0 } }, esc: true, critical: true }),
+      Q("q-3",  "Do emergency exit doors open outward without obstruction?",       "Pass/Fail",    { required: true,  scoring: { passValue: 10, failValue: 0 }, photo: true }),
+      Q("q-4",  "Rate the overall fire safety compliance of this area.",           "Rating Scale", { scoring: { value: 10 }, cond: "q-1" }),
+      Q("q-5",  "How many exits are marked with illuminated signage?",             "Number",       { required: true,  scoring: { value: 5 }, esc: true }),
+      Q("q-6",  "Select all fire hazards observed during this visit.",             "Multiple Choice", { scoring: { value: 5 } }),
+      Q("q-7",  "When was the last fire drill conducted?",                         "Free Text",    { info: true }),
+      Q("q-8",  "Describe any fire safety concerns observed during this visit.",   "Free Text",    { scoring: { value: 2 } }),
+      Q("q-9",  "Upload photo of fire extinguisher inspection tags.",              "Photo Required", { required: true, photo: true, scoring: { value: 5 } }),
     ],
   },
   {
-    id: "sec-2", name: "Emergency Exits", weight: 35, collapsed: false, isGrid: false, gridData: null,
+    id: "sec-2", name: "Chemical & PPE", weight: 35, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-5", title: "Are all emergency exits unobstructed and accessible?", answerType: "Yes/No/NA",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "corrective" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-6", title: "Do emergency exit doors open outward?",                answerType: "Pass/Fail",   required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: { requireOnFail: true }, action: { type: "none" }, escalation: { rules: [{ id: "e3", condition: "fail", notify: "manager" }] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-7", title: "Rate the overall emergency exit compliance.",           answerType: "Rating Scale", required: false, informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [{ type: "condition", questionId: "q-5", operator: "eq", value: "No" }] } },
+      Q("q-10", "Are all chemicals stored in approved containers with proper labeling?", "Yes/No/NA", { required: true, scoring: { value: 10, answerValues: { Yes: 10, No: 0, "N/A": 5 } }, action: "corrective", esc: true }),
+      Q("q-11", "Is the MSDS / SDS binder current and accessible to all employees?",    "Yes/No",    { required: true, scoring: { value: 8, answerValues: { Yes: 8, No: 0 } }, photo: true, cond: "q-10" }),
+      Q("q-12", "PPE station is fully stocked and items are in good condition.",         "Pass/Fail", { required: true, scoring: { passValue: 10, failValue: 0 }, action: "corrective" }),
+      Q("q-13", "Rate the overall PPE compliance for this area.",                        "Rating Scale", { scoring: { value: 8 } }),
+      Q("q-14", "How many PPE violations were observed?",                                "Number",    { scoring: { value: 4 }, esc: true }),
+      Q("q-15", "Select all PPE types inspected today.",                                 "Multiple Choice", { info: true }),
+      Q("q-16", "Note any chemical storage concerns for follow-up.",                     "Free Text", { info: true }),
+      Q("q-17", "Scan or identify the asset tag for the PPE storage cabinet.",          "Asset",     { scoring: { value: 3 } }),
     ],
   },
   {
-    id: "sec-3", name: "Chemical Storage", weight: 25, collapsed: false, isGrid: false, gridData: null,
+    id: "sec-3", name: "Facility Condition", weight: 25, collapsed: false, isGrid: false, gridData: null,
     questions: [
-      { id: "q-8", title: "Are all chemicals stored in approved containers with proper labeling?", answerType: "Yes/No/NA", required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: {}, action: { type: "corrective" }, escalation: { rules: [{ id: "e4", condition: "fail", notify: "safety_officer" }] }, conditional: { operator: "AND", items: [] } },
-      { id: "q-9", title: "Is the MSDS / SDS binder current and accessible to all employees?",    answerType: "Yes/No",    required: true,  informational: false, critical: false, typeConfig: {}, inBank: false, scoring: {}, media: { requireOnFail: true }, action: { type: "none" }, escalation: { rules: [] }, conditional: { operator: "AND", items: [{ type: "condition", questionId: "q-8", operator: "eq", value: "No" }] } },
+      Q("q-18", "Are all aisles and walkways free of trip hazards?",               "Yes/No/NA",    { required: true, scoring: { value: 10, answerValues: { Yes: 10, No: 0, "N/A": 0 } }, esc: true }),
+      Q("q-19", "Are emergency lighting fixtures operational?",                    "Yes/No",       { required: true, scoring: { value: 8, answerValues: { Yes: 8, No: 0 } }, action: "corrective" }),
+      Q("q-20", "Inspect floor condition — pass only if no cracks or pooling.",   "Pass/Fail",    { scoring: { passValue: 5, failValue: 0 }, photo: true }),
+      Q("q-21", "Rate the cleanliness and general upkeep of the facility.",       "Rating Scale", { scoring: { value: 5 }, cond: "q-18" }),
+      Q("q-22", "How many maintenance issues were logged today?",                  "Number",       { scoring: { value: 4 }, esc: true }),
+      Q("q-23", "Select all areas included in today's facility walkthrough.",      "Multiple Choice", { info: true }),
+      Q("q-24", "Scan the facility asset tag to confirm the correct location.",   "Asset",        { required: true, scoring: { value: 3 } }),
+      Q("q-25", "Upload a photo of any observed structural damage.",              "Photo Required", { photo: true, scoring: { value: 5 }, cond: "q-20" }),
+      Q("q-26", "Additional notes on facility condition.",                         "Free Text",    { info: true }),
     ],
   },
 ];
