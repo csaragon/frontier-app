@@ -15,6 +15,11 @@ const C = {
   amber:   T.warning1,
   amberBg: T.warningContainer1,
   teal:    "#0f766e",
+  yellow:  "#a16207",
+  yellowBg: "#fefce8",
+  yellowBadge: "#eab308",
+  green:   "#16a34a",
+  greenBg: "#f0fdf4",
 };
 
 const LANG_META = {
@@ -52,7 +57,7 @@ function IconSparkle() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/></svg>;
 }
 function IconCheck() {
-  return <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke={C.teal} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>;
+  return <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>;
 }
 function IconChevLeft() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>;
@@ -72,8 +77,8 @@ function ConfirmButton({ confirmed, hasText, onClick }) {
       title={confirmed ? "Unconfirm" : "Confirm translation"}
       style={{
         width: 28, height: 28, borderRadius: "50%",
-        border: `2px solid ${confirmed ? C.teal : (hover ? C.navy : C.g3)}`,
-        background: confirmed ? C.teal : "transparent",
+        border: `2px solid ${confirmed ? C.green : (hover ? C.navy : C.g3)}`,
+        background: confirmed ? C.green : "transparent",
         cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
         flexShrink: 0, transition: "all 0.15s", padding: 0,
       }}
@@ -155,9 +160,9 @@ export default function Step4Translations({ formData, onChange, languages = ["en
   function getLangStatus(lang) {
     const missing = getMissing(lang);
     const unconf  = getUnconfirmed(lang);
-    if (missing === 0 && unconf === 0) return { label: "complete",             color: C.teal  };
-    if (missing === 0)                 return { label: `${unconf} unconfirmed`, color: C.amber };
-    return                                    { label: `${missing} missing`,    color: C.amber };
+    if (missing === 0 && unconf === 0) return { label: "complete",             color: C.green  };
+    if (missing === 0)                 return { label: `${unconf} unconfirmed`, color: C.yellow };
+    return                                    { label: `${missing} missing`,    color: C.yellow };
   }
 
   const validSectionId  = sections.find(s => s.id === activeSectionId)?.id ?? sections[0]?.id ?? null;
@@ -320,8 +325,8 @@ export default function Step4Translations({ formData, onChange, languages = ["en
             <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Translations</h2>
             <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>
               {nonPrimary.length} target language{nonPrimary.length !== 1 ? "s" : ""}
-              {totalNeedingTranslation > 0 && <> · <span style={{ color: C.amber, fontWeight: 500 }}>{totalNeedingTranslation} strings need translation</span></>}
-              {totalNeedingTranslation === 0 && <> · <span style={{ color: C.teal, fontWeight: 500 }}>all translations complete</span></>}
+              {totalNeedingTranslation > 0 && <> · <span style={{ color: C.yellow, fontWeight: 500 }}>{totalNeedingTranslation} strings need translation</span></>}
+              {totalNeedingTranslation === 0 && <> · <span style={{ color: C.green, fontWeight: 500 }}>all translations complete</span></>}
             </p>
           </div>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
@@ -398,12 +403,12 @@ export default function Step4Translations({ formData, onChange, languages = ["en
               <span style={{ fontSize: 12, color: C.g4, fontFamily: F, whiteSpace: "nowrap" }}>
                 {confirmedCount} confirmed
                 {unconfirmedTxCount > 0 && <> · {unconfirmedTxCount} translated</>}
-                {missingCount > 0 && <> · <span style={{ color: C.amber }}>{missingCount} remaining</span></>}
+                {missingCount > 0 && <> · <span style={{ color: C.yellow }}>{missingCount} remaining</span></>}
               </span>
               <div style={{ flex: 1, height: 4, background: C.g2, borderRadius: 2, maxWidth: 180 }}>
-                <div style={{ width: `${progressPct}%`, height: "100%", background: progressPct === 100 ? C.teal : C.navy, borderRadius: 2, transition: "width 0.25s" }} />
+                <div style={{ width: `${progressPct}%`, height: "100%", background: progressPct === 100 ? C.green : C.navy, borderRadius: 2, transition: "width 0.25s" }} />
               </div>
-              {progressPct === 100 && <span style={{ fontSize: 12, fontFamily: F, color: C.teal, whiteSpace: "nowrap" }}>Complete!</span>}
+              {progressPct === 100 && <span style={{ fontSize: 12, fontFamily: F, color: C.green, whiteSpace: "nowrap" }}>Complete!</span>}
             </div>
             <div style={{ display: "flex", gap: 6, marginLeft: "auto", flexShrink: 0 }}>
               <button onClick={() => handleExport(activeLocale)}
@@ -425,8 +430,8 @@ export default function Step4Translations({ formData, onChange, languages = ["en
               <button
                 onClick={() => !langAllConfirmed && confirmAllLanguage(activeLocale)}
                 disabled={langAllConfirmed}
-                style={{ display: "flex", alignItems: "center", gap: 5, background: langAllConfirmed ? C.g1 : C.white, border: `1px solid ${langAllConfirmed ? C.g2 : C.teal}`, borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 600, fontFamily: F, color: langAllConfirmed ? C.g4 : C.teal, cursor: langAllConfirmed ? "default" : "pointer" }}
-                onMouseEnter={e => { if (!langAllConfirmed) e.currentTarget.style.background = "#f0fdf4"; }}
+                style={{ display: "flex", alignItems: "center", gap: 5, background: langAllConfirmed ? C.g1 : C.white, border: `1px solid ${langAllConfirmed ? C.g2 : C.green}`, borderRadius: 7, padding: "5px 11px", fontSize: 12, fontWeight: 600, fontFamily: F, color: langAllConfirmed ? C.g4 : C.green, cursor: langAllConfirmed ? "default" : "pointer" }}
+                onMouseEnter={e => { if (!langAllConfirmed) e.currentTarget.style.background = C.greenBg; }}
                 onMouseLeave={e => { if (!langAllConfirmed) e.currentTarget.style.background = langAllConfirmed ? C.g1 : C.white; }}>
                 {langAllConfirmed ? <><IconCheck /> All confirmed</> : "Confirm all"}
               </button>
@@ -460,8 +465,8 @@ export default function Step4Translations({ formData, onChange, languages = ["en
                       {sec.name}
                     </span>
                     {badge
-                      ? <span style={{ fontSize: 11, fontWeight: 700, color: C.white, background: C.amber, borderRadius: 10, padding: "1px 7px", flexShrink: 0 }}>{badge}</span>
-                      : <span style={{ flexShrink: 0 }}><IconCheck /></span>}
+                      ? <span style={{ fontSize: 11, fontWeight: 700, color: "#713f12", background: C.yellowBg, border: `1px solid ${C.yellowBadge}`, borderRadius: 10, padding: "1px 7px", flexShrink: 0 }}>{badge}</span>
+                      : <span style={{ flexShrink: 0, color: C.green }}><IconCheck /></span>}
                   </button>
                 );
               })}
@@ -477,16 +482,16 @@ export default function Step4Translations({ formData, onChange, languages = ["en
                   <span style={{ fontSize: 12, color: C.g4, fontFamily: F, marginLeft: 10 }}>
                     {sectionStrings.length} items
                     {sectionMissing > 0
-                      ? <> · <span style={{ color: C.amber }}>{sectionMissing} missing in {activeMeta.locale}</span></>
-                      : <> · <span style={{ color: C.teal }}>translated</span></>}
+                      ? <> · <span style={{ color: C.yellow }}>{sectionMissing} missing in {activeMeta.locale}</span></>
+                      : <> · <span style={{ color: C.green }}>translated</span></>}
                   </span>
                 </div>
                 <div style={{ display: "flex", gap: 4, alignItems: "center", flexShrink: 0 }}>
                   {sectionStringsWithText.length > 0 && (
                     <button
                       onClick={() => confirmSection(validSectionId, activeLocale, !sectionAllConfirmed)}
-                      style={{ fontSize: 12, fontWeight: 600, fontFamily: F, color: sectionAllConfirmed ? C.g4 : C.teal, background: "none", border: `1px solid ${sectionAllConfirmed ? C.g2 : C.teal}`, borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}
-                      onMouseEnter={e => e.currentTarget.style.background = sectionAllConfirmed ? C.g1 : "#f0fdf4"}
+                      style={{ fontSize: 12, fontWeight: 600, fontFamily: F, color: sectionAllConfirmed ? C.g4 : C.green, background: "none", border: `1px solid ${sectionAllConfirmed ? C.g2 : C.green}`, borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}
+                      onMouseEnter={e => e.currentTarget.style.background = sectionAllConfirmed ? C.g1 : C.greenBg}
                       onMouseLeave={e => e.currentTarget.style.background = "none"}>
                       {sectionAllConfirmed ? "Unconfirm all" : "Confirm all"}
                     </button>
@@ -530,7 +535,7 @@ export default function Step4Translations({ formData, onChange, languages = ["en
                     {/* # */}
                     <div style={{ display: "flex", alignItems: "center", paddingTop: 14, paddingBottom: 14 }}>
                       {isSectionTitle
-                        ? <div style={{ width: 7, height: 7, borderRadius: "50%", background: conf ? C.teal : (val ? C.navy : C.g3) }} />
+                        ? <div style={{ width: 7, height: 7, borderRadius: "50%", background: conf ? C.green : (val ? C.navy : C.g3) }} />
                         : <span style={{ fontSize: 11, fontWeight: 600, color: C.g4, fontFamily: F }}>{rowNum}</span>}
                     </div>
 

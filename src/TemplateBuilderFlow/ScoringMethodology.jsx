@@ -41,6 +41,7 @@ const DISPLAY_FORMATS = [
   { key: "colorstatus", label: "Color Status", example: "Green / Yellow / Red" },
 ];
 
+
 const TOOLTIPS = {
   methodology:      "Sets how the score is calculated. Changing this after questions are configured will reset some settings.",
   displayFormat:    "Controls how the final score is shown. You can use any display format with any methodology.",
@@ -181,7 +182,7 @@ function InfoTooltip({ text }) {
           fontFamily: F,
           width: 250,
           whiteSpace: "normal",
-          zIndex: 400,
+          zIndex: 9999,
           pointerEvents: "none",
           boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
         }}>
@@ -208,8 +209,8 @@ function SectionHead({ title, helper, tooltip }) {
 
 function SectionCard({ title, helper, tooltip, extra, children }) {
   return (
-    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12, marginBottom: 20, overflow: "hidden" }}>
-      <div style={{ padding: "14px 20px 12px", borderBottom: `1px solid ${C.g2}` }}>
+    <div style={{ background: C.white, border: `1px solid ${C.g2}`, borderRadius: 12, marginBottom: 20 }}>
+      <div style={{ padding: "14px 20px 12px", borderBottom: `1px solid ${C.g2}`, borderRadius: "12px 12px 0 0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: C.g6, fontFamily: F }}>{title}</span>
           {tooltip && <InfoTooltip text={tooltip} />}
@@ -335,8 +336,10 @@ function CheckboxRow({ checked, onChange, label, helper, tooltip }) {
 
 function MethodCard({ method, selected, onClick }) {
   const [hover, setHover] = useState(false);
+  const [showMath, setShowMath] = useState(false);
   const active = selected === method.key;
   const iconColor = active ? C.navy : C.g4;
+  const mathText = SCORING_MATH[method.key];
 
   return (
     <div
@@ -371,6 +374,31 @@ function MethodCard({ method, selected, onClick }) {
           {method.desc}
         </div>
       </div>
+      {mathText && (
+        <div style={{ display: "flex", justifyContent: "flex-end", position: "relative" }}>
+          <button
+            onClick={e => e.stopPropagation()}
+            onMouseEnter={() => setShowMath(true)}
+            onMouseLeave={() => setShowMath(false)}
+            style={{ background: "none", border: "none", padding: 2, cursor: "pointer", color: C.g4, display: "flex", lineHeight: 1, borderRadius: 4 }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </button>
+          {showMath && (
+            <div style={{
+              position: "absolute", bottom: "calc(100% + 8px)", right: 0,
+              background: C.g6, color: C.white, padding: "9px 13px", borderRadius: 7,
+              fontSize: 12, fontFamily: F, lineHeight: "18px", width: 260,
+              zIndex: 9999, boxShadow: "0 4px 14px rgba(0,0,0,0.22)",
+              whiteSpace: "normal", pointerEvents: "none",
+            }}>
+              {mathText}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -663,7 +691,6 @@ export default function ScoringMethodology({ formData, onChange, onNext, onBack,
           title="Scoring Methodology"
           helper="How the final score is calculated from individual question responses"
           tooltip={TOOLTIPS.methodology}
-          extra={<ScoringMathBox key={d.methodology} methodology={d.methodology} />}
         >
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             {METHODOLOGIES.map((m) => (

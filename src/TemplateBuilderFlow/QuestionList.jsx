@@ -878,6 +878,96 @@ function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDupl
 
 // ── Section Preview Table ─────────────────────────────────────────────────────
 
+const COND_OP_WORDS = {
+  equals: "is", not_equals: "isn't",
+  lt: "is less than", gt: "is more than",
+  lte: "is at most", gte: "is at least",
+  contains: "contains", not_contains: "doesn't contain",
+};
+
+function conditionText(rule) {
+  if ((rule.kind ?? "if") === "else") return "Otherwise";
+  const conds = rule.conditions ?? [];
+  if (!conds.length) return "When triggered";
+  const op = rule.conditionOperator ?? "and";
+  const join = op === "none" ? " nor " : op === "or" ? " or " : " and ";
+  const parts = conds.map(c => `answer ${COND_OP_WORDS[c.operator] ?? c.operator} "${c.value}"`);
+  return "When " + parts.join(join);
+}
+
+function TriggerPreviewRow({ trigger }) {
+  const { type } = trigger;
+
+  if (type === "ask_questions") {
+    const qs = trigger.questions ?? [];
+    return (
+      <div style={{ marginBottom: 5 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: qs.length ? 4 : 0 }}>
+          <span style={{ color: C.purple, display: "flex", flexShrink: 0 }}><IconConditional size={11} /></span>
+          <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+            {qs.length ? `Ask ${qs.length} follow-up question${qs.length !== 1 ? "s" : ""}` : "Ask follow-up questions"}
+          </span>
+        </div>
+        {qs.map(fq => (
+          <div key={fq.id} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3, paddingLeft: 20, justifyContent: "space-between" }}>
+            <span style={{ fontSize: 12, color: C.g5, fontFamily: F, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fq.title}</span>
+            <AnswerBadge value={fq.answerType} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "notify") {
+    const to = trigger.recipientType === "user"
+      ? `${trigger.selectedUsers?.length ?? 0} user(s)`
+      : trigger.recipientValue || "—";
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+        <span style={{ color: "#b6143a", display: "flex", flexShrink: 0 }}><IconEscalation size={11} /></span>
+        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>Notify {to}</span>
+      </div>
+    );
+  }
+
+  if (type === "require_action") {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+        <span style={{ color: "#854d0e", display: "flex", flexShrink: 0 }}><IconAction size={11} /></span>
+        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+          Require action{trigger.actionTitle ? `: ${trigger.actionTitle}` : ""}
+          {trigger.assigneeRole ? ` — ${trigger.assigneeRole}` : ""}
+        </span>
+      </div>
+    );
+  }
+
+  if (type === "require_media") {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+        <span style={{ color: "#1e40af", display: "flex", flexShrink: 0 }}><IconPhoto size={11} /></span>
+        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>Require photo / media</span>
+      </div>
+    );
+  }
+
+  if (type === "require_note") {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 5 }}>
+        <span style={{ color: C.g4, display: "flex", flexShrink: 0 }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </span>
+        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>Require note</span>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 const PREV_COLS = "28px 22px 1fr 130px 58px 80px";
 
 function SectionPreviewTable({ section }) {
@@ -927,12 +1017,16 @@ function SectionPreviewTable({ section }) {
 
       {/* Rows */}
       {questions.map((q, i) => {
-        const hasAction     = q.action?.type && q.action.type !== "none";
-        const hasEscalation = (q.escalation?.rules?.length ?? 0) > 0;
-        const hasPhoto      = !!q.media?.requireOnFail;
-        const dependents    = dependentMap[q.id] ?? [];
-        const hasLogic      = hasAction || hasEscalation || hasPhoto || dependents.length > 0;
-        const trigger       = hasLogic ? triggerText(q) : null;
+        const rules        = q.logic?.rules ?? [];
+        const hasNewLogic  = rules.length > 0;
+        // Old-system fallback fields (questions that predate QuestionBuilder)
+        const hasAction     = !hasNewLogic && q.action?.type && q.action.type !== "none";
+        const hasEscalation = !hasNewLogic && (q.escalation?.rules?.length ?? 0) > 0;
+        const hasPhoto      = !hasNewLogic && !!q.media?.requireOnFail;
+        const dependents    = !hasNewLogic ? (dependentMap[q.id] ?? []) : [];
+        const hasLegacyLogic = hasAction || hasEscalation || hasPhoto || dependents.length > 0;
+        const hasLogic      = hasNewLogic || hasLegacyLogic;
+        const legacyTrigger = hasLegacyLogic ? triggerText(q) : null;
 
         return (
           <div key={q.id} style={{ borderBottom: `1px solid ${C.g1}` }}>
@@ -948,44 +1042,71 @@ function SectionPreviewTable({ section }) {
 
             {/* Logic expansion */}
             {hasLogic && (
-              <div style={{ background: "#f8fafc", paddingLeft: 70, paddingRight: 16, paddingTop: 6, paddingBottom: 8, borderTop: `1px solid ${C.g1}` }}>
-                <div style={{ fontSize: 11, color: C.g4, fontStyle: "italic", fontFamily: F, marginBottom: 6 }}>{trigger}</div>
-
-                {hasAction && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5 }}>
-                    <span style={{ color: "#854d0e", display: "flex", flexShrink: 0 }}><IconAction size={11} /></span>
-                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
-                      {q.action.type === "corrective"
-                        ? "Assign corrective action to document and resolve"
-                        : `${q.action.type.charAt(0).toUpperCase() + q.action.type.slice(1)} action triggered`}
-                    </span>
-                  </div>
-                )}
-
-                {dependents.map(dq => (
-                  <div key={dq.id} style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5, justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 7, flex: 1, minWidth: 0 }}>
-                      <span style={{ color: "#7c3aed", display: "flex", flexShrink: 0 }}><IconConditional size={11} /></span>
-                      <span style={{ fontSize: 12, color: C.g5, fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dq.title}</span>
+              <div style={{ background: "#f8fafc", paddingLeft: 70, paddingRight: 16, paddingTop: 8, paddingBottom: 8, borderTop: `1px solid ${C.g1}` }}>
+                {hasNewLogic ? (
+                  /* New system: logic.rules from QuestionBuilder */
+                  rules.map((rule, ri) => (
+                    <div
+                      key={rule.id ?? ri}
+                      style={{
+                        marginBottom: ri < rules.length - 1 ? 8 : 0,
+                        paddingBottom: ri < rules.length - 1 ? 8 : 0,
+                        borderBottom: ri < rules.length - 1 ? `1px dashed ${C.g2}` : "none",
+                      }}
+                    >
+                      <div style={{ fontSize: 11, color: C.g4, fontStyle: "italic", fontFamily: F, marginBottom: 5 }}>
+                        {conditionText(rule)}
+                      </div>
+                      {(rule.triggers ?? []).map((trigger, ti) => (
+                        <TriggerPreviewRow key={trigger.id ?? ti} trigger={trigger} />
+                      ))}
+                      {!(rule.triggers ?? []).length && (
+                        <div style={{ fontSize: 11, color: C.g3, fontFamily: F }}>No triggers configured</div>
+                      )}
                     </div>
-                    <AnswerBadge value={dq.answerType} />
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  /* Legacy system: flat action/escalation/media/conditional fields */
+                  <>
+                    <div style={{ fontSize: 11, color: C.g4, fontStyle: "italic", fontFamily: F, marginBottom: 6 }}>{legacyTrigger}</div>
 
-                {hasPhoto && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5 }}>
-                    <span style={{ color: "#1e40af", display: "flex", flexShrink: 0 }}><IconPhoto size={11} /></span>
-                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>Photo required on fail</span>
-                  </div>
-                )}
+                    {hasAction && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5 }}>
+                        <span style={{ color: "#854d0e", display: "flex", flexShrink: 0 }}><IconAction size={11} /></span>
+                        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+                          {q.action.type === "corrective"
+                            ? "Assign corrective action to document and resolve"
+                            : `${q.action.type.charAt(0).toUpperCase() + q.action.type.slice(1)} action triggered`}
+                        </span>
+                      </div>
+                    )}
 
-                {hasEscalation && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                    <span style={{ color: "#b6143a", display: "flex", flexShrink: 0 }}><IconEscalation size={11} /></span>
-                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
-                      Action unresolved → Notify: {(q.escalation.rules[0]?.notify ?? "manager") === "manager" ? "District Manager" : "Supervisor"}
-                    </span>
-                  </div>
+                    {dependents.map(dq => (
+                      <div key={dq.id} style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5, justifyContent: "space-between" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 7, flex: 1, minWidth: 0 }}>
+                          <span style={{ color: C.purple, display: "flex", flexShrink: 0 }}><IconConditional size={11} /></span>
+                          <span style={{ fontSize: 12, color: C.g5, fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dq.title}</span>
+                        </div>
+                        <AnswerBadge value={dq.answerType} />
+                      </div>
+                    ))}
+
+                    {hasPhoto && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5 }}>
+                        <span style={{ color: "#1e40af", display: "flex", flexShrink: 0 }}><IconPhoto size={11} /></span>
+                        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>Photo required on fail</span>
+                      </div>
+                    )}
+
+                    {hasEscalation && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                        <span style={{ color: "#b6143a", display: "flex", flexShrink: 0 }}><IconEscalation size={11} /></span>
+                        <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+                          Action unresolved → Notify: {(q.escalation.rules[0]?.notify ?? "manager") === "manager" ? "District Manager" : "Supervisor"}
+                        </span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -1338,7 +1459,7 @@ function GridConfirmModal({ direction, qCount, onConfirm, onCancel }) {
 export default function QuestionList({ formData, onChange, onNext, onBack, methodology }) {
   const isWeighted = methodology === "weighted";
 
-  const [sections, setSections]       = useState(() => formData?.sections ?? DEFAULT_SECTIONS);
+  const [sections, setSections]       = useState(() => formData?.sections ?? []);
   const [selectedQs, setSelectedQs]   = useState(new Set());
   const [editingQ, setEditingQ]       = useState(null); // { q, sectionId, isNew }
   const [editingSection, setEditingSection] = useState(null); // section.id | null

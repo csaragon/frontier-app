@@ -820,31 +820,34 @@ function normalizeRule(rule, answerType) {
 function LogicHelpModal({ onClose }) {
   const SECTIONS = [
     {
-      label: "AND — All conditions must match",
+      label: "All",
+      sublabel: "AND logic — every condition must match",
       color: "#1d4ed8",
       bg: "#eff6ff",
       border: "#bfdbfe",
-      desc: "The rule fires only when every condition in the list is true at the same time.",
-      example: "\"Answer is 'Fail' AND score is less than 3\" — both must be true before any triggers run.",
-      when: "Use AND when you need to be precise about a combination of circumstances.",
+      desc: "The rule fires only when all conditions in the list are true at the same time.",
+      example: "Conditions: \"Answer is 'Fail'\" + \"Score is less than 3\" — both must be true before any triggers run.",
+      when: "Use All when you need a precise combination of circumstances.",
     },
     {
-      label: "OR — Any condition can match",
+      label: "Any",
+      sublabel: "OR logic — at least one condition must match",
       color: "#065f46",
       bg: "#ccfbf1",
       border: "#6ee7b7",
       desc: "The rule fires as soon as at least one condition is true.",
-      example: "\"Answer is 'No' OR answer is 'N/A'\" — either answer will trigger the rule.",
-      when: "Use OR when several different answers should all lead to the same action.",
+      example: "Conditions: \"Answer is 'No'\" + \"Answer is 'N/A'\" — either answer alone will trigger the rule.",
+      when: "Use Any when several different answers should all lead to the same action.",
     },
     {
-      label: "NONE — No condition may match",
+      label: "None",
+      sublabel: "NOR logic — no condition may match",
       color: "#9a3412",
       bg: "#fff7ed",
       border: "#fdba74",
-      desc: "The rule fires only when every condition in the list is false (the logical NOT of OR).",
-      example: "\"None of: answer is 'Yes', answer is 'Pass'\" — triggers only if the answer is something other than Yes or Pass.",
-      when: "Use NONE when you want to catch any answer that isn't on your approved list.",
+      desc: "The rule fires only when every condition in the list is false.",
+      example: "Conditions: \"Answer is 'Yes'\" + \"Answer is 'Pass'\" set to None — triggers only when the answer is anything other than Yes or Pass.",
+      when: "Use None when you want to catch any answer that isn't on your approved list.",
     },
   ];
 
@@ -885,10 +888,13 @@ function LogicHelpModal({ onClose }) {
         <div style={{ overflow: "auto", padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
 
           {/* Operator cards */}
-          <div style={{ fontSize: 12, fontWeight: 700, color: C.g5, fontFamily: F, letterSpacing: "0.04em", marginBottom: 2 }}>LOGICAL OPERATORS</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: C.g5, fontFamily: F, letterSpacing: "0.04em", marginBottom: 2 }}>CONDITION MATCHING</div>
           {SECTIONS.map(s => (
             <div key={s.label} style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 10, padding: "14px 16px" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: s.color, fontFamily: F, marginBottom: 6 }}>{s.label}</div>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 15, fontWeight: 800, color: s.color, fontFamily: F }}>{s.label}</span>
+                <span style={{ fontSize: 11, fontWeight: 500, color: s.color, fontFamily: F, opacity: 0.75 }}>{s.sublabel}</span>
+              </div>
               <div style={{ fontSize: 12, color: C.g6, fontFamily: F, lineHeight: 1.55, marginBottom: 6 }}>{s.desc}</div>
               <div style={{ fontSize: 11, color: C.g5, fontFamily: F, fontStyle: "italic", lineHeight: 1.5, marginBottom: 4 }}>
                 Example: {s.example}

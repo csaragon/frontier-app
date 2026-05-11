@@ -44,15 +44,6 @@ function ansTypeMeta(v) {
   return ANSWER_TYPE_COLORS.find(t => t.value === v) ?? { bg: "#e6e9ed", color: "#48535f" };
 }
 
-function answerOptions(answerType) {
-  switch (answerType) {
-    case "Yes/No/NA": return ["Yes", "No", "N/A"];
-    case "Yes/No":    return ["Yes", "No"];
-    case "Pass/Fail": return ["Pass", "Fail"];
-    default:          return null;
-  }
-}
-
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 function IconTrash() {
@@ -142,6 +133,130 @@ function SmallBtn({ onClick, children, title }) {
   );
 }
 
+// ── Answer scoring cell (per question type) ───────────────────────────────────
+
+function AnswerScoringCell({ question, scoring, methodology, onUpdate }) {
+  const { answerType, typeConfig = {}, informational } = question;
+  const isInfo = !!informational;
+
+  if (isInfo || methodology === "informational" || methodology === "passfail") {
+    return <span style={{ color: C.g3, fontSize: 12, fontFamily: F }}>—</span>;
+  }
+
+  if (answerType === "Yes/No/NA" || answerType === "Yes/No" || answerType === "Pass/Fail") {
+    const opts = answerType === "Yes/No/NA" ? ["Yes","No","N/A"]
+               : answerType === "Yes/No"    ? ["Yes","No"]
+               :                              ["Pass","Fail"];
+    return (
+      <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center", flexWrap:"wrap" }}>
+        {opts.map(opt => (
+          <div key={opt} style={{ display:"flex", alignItems:"center", gap:3 }}>
+            <span style={{ fontSize:11, color:C.g5, fontFamily:F, whiteSpace:"nowrap" }}>{opt}</span>
+            <WholeNumberInput
+              value={scoring?.answerValues?.[opt] ?? (opt==="Yes"||opt==="Pass" ? (scoring?.value ?? 1) : 0)}
+              onChange={v => onUpdate({ scoring:{ ...scoring, answerValues:{ ...(scoring?.answerValues??{}), [opt]:v } } })}
+              width={40}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (answerType === "Multiple Choice") {
+    const opts = (typeConfig.options ?? []).filter(Boolean);
+    const isMulti = typeConfig.multiSelect ?? false;
+    if (!opts.length) return <span style={{ color:C.g3, fontSize:12, fontFamily:F }}>No options</span>;
+    return (
+      <div>
+        <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center", flexWrap:"wrap" }}>
+          {opts.map(opt => (
+            <div key={opt} style={{ display:"flex", alignItems:"center", gap:3 }}>
+              <span style={{ fontSize:11, color:C.g5, fontFamily:F, whiteSpace:"nowrap", maxWidth:68, overflow:"hidden", textOverflow:"ellipsis" }} title={opt}>{opt}</span>
+              <WholeNumberInput
+                value={scoring?.answerValues?.[opt] ?? 0}
+                onChange={v => onUpdate({ scoring:{ ...scoring, answerValues:{ ...(scoring?.answerValues??{}), [opt]:v } } })}
+                width={40}
+              />
+            </div>
+          ))}
+        </div>
+        {isMulti && <div style={{ fontSize:10, color:C.g4, fontFamily:F, textAlign:"center", marginTop:3 }}>Each selection adds its value</div>}
+      </div>
+    );
+  }
+
+  if (answerType === "Rating Scale") {
+    const steps = typeConfig.steps ?? 5;
+    return (
+      <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center", flexWrap:"wrap" }}>
+        {Array.from({ length: steps }, (_, i) => String(i+1)).map(step => (
+          <div key={step} style={{ display:"flex", alignItems:"center", gap:3 }}>
+            <span style={{ fontSize:11, color:C.g5, fontFamily:F }}>★{step}</span>
+            <WholeNumberInput
+              value={scoring?.stepValues?.[step] ?? 0}
+              onChange={v => onUpdate({ scoring:{ ...scoring, stepValues:{ ...(scoring?.stepValues??{}), [step]:v } } })}
+              width={38}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (answerType === "Number") {
+    const brackets = scoring?.brackets ?? [];
+    const updateBracket = (idx, field, val) => {
+      const next = brackets.map((b, i) => i === idx ? { ...b, [field]: val } : b);
+      onUpdate({ scoring: { ...scoring, brackets: next } });
+    };
+    const addBracket = () => {
+      const lastMax = brackets.length ? (brackets[brackets.length-1].max ?? 0) : -1;
+      onUpdate({ scoring: { ...scoring, brackets: [...brackets, { min: lastMax+1, max: lastMax+10, pts: 0 }] } });
+    };
+    const removeBracket = idx => {
+      onUpdate({ scoring: { ...scoring, brackets: brackets.filter((_,i) => i !== idx) } });
+    };
+    const numInput = (val, cb) => (
+      <input
+        type="number"
+        value={val}
+        onChange={e => cb(Number(e.target.value))}
+        style={{ width:40, border:`1px solid ${C.g2}`, borderRadius:5, padding:"3px 4px", fontSize:11, fontFamily:F, textAlign:"center", background:C.white, color:C.g6, outline:"none" }}
+      />
+    );
+    return (
+      <div style={{ minWidth:160 }}>
+        {!brackets.length && <div style={{ fontSize:11, color:C.g4, fontFamily:F, textAlign:"center", marginBottom:4 }}>No ranges</div>}
+        {brackets.map((b, idx) => (
+          <div key={idx} style={{ display:"flex", gap:3, alignItems:"center", marginBottom:3, justifyContent:"center" }}>
+            {numInput(b.min??0, v => updateBracket(idx,"min",v))}
+            <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>–</span>
+            {numInput(b.max??0, v => updateBracket(idx,"max",v))}
+            <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>→</span>
+            {numInput(b.pts??0, v => updateBracket(idx,"pts",v))}
+            <span style={{ fontSize:10, color:C.g4, fontFamily:F }}>pts</span>
+            <button
+              onClick={() => removeBracket(idx)}
+              style={{ background:"none", border:"none", cursor:"pointer", color:C.g3, display:"flex", padding:"1px 2px", borderRadius:3 }}
+              onMouseEnter={e => e.currentTarget.style.color = C.red}
+              onMouseLeave={e => e.currentTarget.style.color = C.g3}
+            ><IconTrash /></button>
+          </div>
+        ))}
+        <button
+          onClick={addBracket}
+          style={{ fontSize:10, color:C.navy, background:"none", border:`1px dashed ${C.g3}`, borderRadius:4, padding:"2px 8px", cursor:"pointer", fontFamily:F, display:"block", margin:"2px auto 0" }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = C.navy; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = C.g3; }}
+        >+ Add range</button>
+      </div>
+    );
+  }
+
+  return <span style={{ color:C.g3, fontSize:12, fontFamily:F }}>—</span>;
+}
+
 // ── Distribute helpers ────────────────────────────────────────────────────────
 
 function distributeEqually(questions) {
@@ -174,9 +289,7 @@ function autoAdjust(questions) {
 
 function QuestionRow({ num, question, methodology, onUpdate, onDelete }) {
   const { title, answerType, informational, critical, scoring = {} } = question;
-  const opts = answerOptions(answerType);
   const isInfo = !!informational;
-  const showScoring = methodology !== "informational" && !isInfo;
   const typeMeta = ansTypeMeta(answerType);
 
   return (
@@ -249,30 +362,7 @@ function QuestionRow({ num, question, methodology, onUpdate, onDelete }) {
 
       {/* Answers / point values */}
       <td style={{ padding: "8px 12px", textAlign: "center" }}>
-        {showScoring && opts && methodology !== "passfail" ? (
-          <div style={{ display: "flex", gap: 6, alignItems: "center", justifyContent: "center", flexWrap: "wrap" }}>
-            {opts.map(opt => (
-              <div key={opt} style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                <span style={{ fontSize: 11, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>{opt}</span>
-                <WholeNumberInput
-                  value={
-                    scoring.answerValues?.[opt] ??
-                    (opt === "Yes" || opt === "Pass" ? (scoring.value ?? 1) : 0)
-                  }
-                  onChange={v => onUpdate({
-                    scoring: {
-                      ...scoring,
-                      answerValues: { ...(scoring.answerValues ?? {}), [opt]: v },
-                    },
-                  })}
-                  width={42}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <span style={{ color: C.g3, fontSize: 12, fontFamily: F }}>—</span>
-        )}
+        <AnswerScoringCell question={question} scoring={scoring} methodology={methodology} onUpdate={onUpdate} />
       </td>
 
       {/* Logic */}
@@ -282,24 +372,32 @@ function QuestionRow({ num, question, methodology, onUpdate, onDelete }) {
         </div>
       </td>
 
-      {/* Critical */}
+      {/* Fail Action */}
       <td style={{ padding: "8px 12px", textAlign: "center" }}>
         {isInfo ? (
           <span style={{ color: C.g3, fontSize: 12, fontFamily: F }}>—</span>
-        ) : (
-          <select
-            value={critical ? "yes" : "no"}
-            onChange={e => onUpdate({ critical: e.target.value === "yes" })}
-            style={{
-              border: `1px solid ${C.g2}`, borderRadius: 6, padding: "3px 6px",
-              fontSize: 12, fontFamily: F, background: C.white, color: critical ? C.navy : C.g5,
-              fontWeight: critical ? 600 : 400,
-            }}
-          >
-            <option value="no">—</option>
-            <option value="yes">Critical</option>
-          </select>
-        )}
+        ) : (() => {
+          const val = critical === "section" ? "section" : critical === "audit" ? "audit" : (critical === true ? "audit" : "none");
+          const color = val === "audit" ? C.red : val === "section" ? C.amber : C.g5;
+          const weight = val !== "none" ? 600 : 400;
+          return (
+            <select
+              value={val}
+              onChange={e => onUpdate({ critical: e.target.value === "none" ? null : e.target.value })}
+              style={{
+                border: `1px solid ${val !== "none" ? color : C.g2}`,
+                borderRadius: 6, padding: "3px 6px",
+                fontSize: 12, fontFamily: F,
+                background: val === "audit" ? C.redBg : val === "section" ? C.amberBg : C.white,
+                color, fontWeight: weight,
+              }}
+            >
+              <option value="none">—</option>
+              <option value="section">Fails section</option>
+              <option value="audit">Fails audit</option>
+            </select>
+          );
+        })()}
       </td>
 
       {/* Delete */}
@@ -327,7 +425,7 @@ function SectionTable({ section, methodology, onUpdateQuestion, onDeleteQuestion
   return (
     <>
       {/* Section divider row */}
-      <tr style={{ borderTop: isFirst ? "none" : `1px solid ${C.g2}` }}>
+      <tr style={{ borderTop: isFirst ? "none" : `2px solid ${C.g2}` }}>
         <td colSpan={99} style={{
           padding: "10px 16px", background: "#f8f9ff",
           borderBottom: `1px solid ${C.g2}`,
@@ -352,6 +450,24 @@ function SectionTable({ section, methodology, onUpdateQuestion, onDeleteQuestion
             )}
           </div>
         </td>
+      </tr>
+
+      {/* Column headers */}
+      <tr style={{ background: "#fafbff", borderBottom: `1px solid ${C.g2}` }}>
+        <th style={{ ...thStyle(), textAlign: "left", paddingLeft: 12 }}>Question</th>
+        <th style={thStyle(130)}>Type</th>
+        {methodology === "passfail" && (
+          <>
+            <th style={thStyle(80)}>Pass pts</th>
+            <th style={thStyle(80)}>Fail pts</th>
+          </>
+        )}
+        {methodology === "weighted"      && <th style={thStyle(100)}>Weight %</th>}
+        {methodology === "points"        && <th style={thStyle(100)}>Max pts</th>}
+        {methodology !== "informational" && <th style={thStyle(220)}>Answer pts</th>}
+        <th style={thStyle(80)}>Logic</th>
+        <th style={thStyle(110)}>Fail Action</th>
+        <th style={thStyle(36)}></th>
       </tr>
 
       {questions.length === 0 ? (
@@ -397,7 +513,7 @@ export default function Step3Scoring({
   questionsData,     // formData[2] — sections + questions
   onQuestionsChange, // updates formData[2]
 }) {
-  const [activeTab, setActiveTab] = useState("scoring");
+  const [activeTab, setActiveTab] = useState(formData?.methodology ? "scoring" : "setup");
 
   const methodology = formData?.methodology ?? "points";
   const sections = questionsData?.sections ?? [];
@@ -501,94 +617,72 @@ export default function Step3Scoring({
 
         {/* ── Question Scoring sub-tab ── */}
         {activeTab === "scoring" && (
-          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 24px 80px" }}>
-
-            {/* Page title */}
-            <div style={{ marginBottom: 20 }}>
-              <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Question Scoring</h2>
-              <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Set point values and answer weights for each question. Mark critical questions and configure scoring logic.</p>
-            </div>
-
-            {/* No questions placeholder */}
-            {sections.length === 0 && (
-              <div style={{
-                border: `1px dashed ${C.g3}`, borderRadius: 12, padding: "52px 24px", textAlign: "center",
-              }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: C.g5, fontFamily: F, marginBottom: 6 }}>No questions yet</div>
-                <div style={{ fontSize: 12, color: C.g4, fontFamily: F }}>
-                  Add sections and questions in the <strong>Questions</strong> tab, then come back to configure scoring.
+          allQuestions.length === 0 ? (
+            <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: F, padding: "80px 24px" }}>
+              <div style={{ textAlign: "center", maxWidth: 400 }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={C.g3} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ margin: "0 auto 14px", display: "block" }}>
+                  <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+                </svg>
+                <div style={{ fontSize: 16, fontWeight: 700, color: C.g5, marginBottom: 8, fontFamily: F }}>No questions yet</div>
+                <div style={{ fontSize: 13, color: C.g4, lineHeight: "20px", fontFamily: F }}>
+                  Add sections and questions in <strong>Step 2</strong>, then come back here to configure scoring.
                 </div>
               </div>
-            )}
-
-            {/* Template-level score header */}
-            {sections.length > 0 && methodology !== "informational" && (
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                marginBottom: 16, padding: "10px 14px", background: C.g1, borderRadius: 8,
-              }}>
-                <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
-                  Score{methodology === "weighted" ? " (%)" : methodology === "passfail" ? " (pass/fail)" : " (pts)"}:&nbsp;
-                  <strong style={{ color: C.g6 }}>
-                    {methodology === "weighted" ? `${totalPoints}%` : `${totalPoints} pts`}
-                  </strong>
-                  &nbsp;across {allQuestions.length} question{allQuestions.length !== 1 ? "s" : ""}
-                </span>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <SmallBtn onClick={autoAdjustAll} title="Scale all questions proportionally to 100%">
-                    <IconWand /> Auto Adjust All
-                  </SmallBtn>
-                  <SmallBtn onClick={weightEquallyAll} title="Set all questions to equal weight">
-                    <IconEqual /> Weight All Equally
-                  </SmallBtn>
-                </div>
-              </div>
-            )}
-
-            {/* Unified section table */}
-            <div style={{ border: `1px solid ${C.g2}`, borderRadius: 12, overflow: "hidden", background: C.white }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ background: "#fafbff", borderBottom: `1px solid ${C.g2}` }}>
-                    <th style={{ ...thStyle(), textAlign: "left", paddingLeft: 12 }}>Question</th>
-                    <th style={thStyle(130)}>Type</th>
-                    {methodology === "passfail" && (
-                      <>
-                        <th style={thStyle(80)}>Pass pts</th>
-                        <th style={thStyle(80)}>Fail pts</th>
-                      </>
-                    )}
-                    {methodology === "weighted" && (
-                      <th style={thStyle(100)}>Weight %</th>
-                    )}
-                    {methodology === "points" && (
-                      <th style={thStyle(100)}>Max pts</th>
-                    )}
-                    {methodology !== "informational" && (
-                      <th style={thStyle(180)}>Answers / values</th>
-                    )}
-                    <th style={thStyle(80)}>Logic</th>
-                    <th style={thStyle(80)}>Critical</th>
-                    <th style={thStyle(36)}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sections.map((sec, i) => (
-                    <SectionTable
-                      key={sec.id}
-                      section={sec}
-                      isFirst={i === 0}
-                      methodology={methodology}
-                      onUpdateQuestion={(qId, patch) => updateQuestion(sec.id, qId, patch)}
-                      onDeleteQuestion={qId => deleteQuestion(sec.id, qId)}
-                      onWeightEqually={() => weightEquallySection(sec.id)}
-                      onAutoAdjust={() => autoAdjustSection(sec.id)}
-                    />
-                  ))}
-                </tbody>
-              </table>
             </div>
-          </div>
+          ) : (
+            <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 24px 80px" }}>
+
+              {/* Page title */}
+              <div style={{ marginBottom: 20 }}>
+                <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Question Scoring</h2>
+                <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Set point values and answer weights for each question. Mark critical questions and configure scoring logic.</p>
+              </div>
+
+              {/* Unified section table */}
+              <div style={{ border: `1px solid ${C.g2}`, borderRadius: 12, overflow: "hidden", background: C.white }}>
+
+                {/* Table-level score + bulk adjust header */}
+                {methodology !== "informational" && (
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "10px 16px", background: C.g1, borderBottom: `1px solid ${C.g2}`,
+                  }}>
+                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+                      Score{methodology === "weighted" ? " (%)" : methodology === "passfail" ? " (pass/fail)" : " (pts)"}:&nbsp;
+                      <strong style={{ color: C.g6 }}>
+                        {methodology === "weighted" ? `${totalPoints}%` : `${totalPoints} pts`}
+                      </strong>
+                      &nbsp;across {allQuestions.length} question{allQuestions.length !== 1 ? "s" : ""}
+                    </span>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <SmallBtn onClick={autoAdjustAll} title="Scale all questions proportionally to 100%">
+                        <IconWand /> Auto Adjust All
+                      </SmallBtn>
+                      <SmallBtn onClick={weightEquallyAll} title="Set all questions to equal weight">
+                        <IconEqual /> Weight All Equally
+                      </SmallBtn>
+                    </div>
+                  </div>
+                )}
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <tbody>
+                    {sections.map((sec, i) => (
+                      <SectionTable
+                        key={sec.id}
+                        section={sec}
+                        isFirst={i === 0}
+                        methodology={methodology}
+                        onUpdateQuestion={(qId, patch) => updateQuestion(sec.id, qId, patch)}
+                        onDeleteQuestion={qId => deleteQuestion(sec.id, qId)}
+                        onWeightEqually={() => weightEquallySection(sec.id)}
+                        onAutoAdjust={() => autoAdjustSection(sec.id)}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )
         )}
 
       </div>

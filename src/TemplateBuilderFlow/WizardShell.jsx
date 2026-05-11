@@ -266,7 +266,7 @@ function StepHelpTip({ text }) {
   );
 }
 
-function ProgressStepNode({ stepDef, status, onClick, warningTip }) {
+function ProgressStepNode({ stepDef, status, onClick, warningTip, isFirst, isLast }) {
   const [hover, setHover] = useState(false);
   const isCurrent = status === "current";
   const isComplete = status === "complete";
@@ -349,8 +349,9 @@ function ProgressStepNode({ stepDef, status, onClick, warningTip }) {
         <div style={{
           position: "absolute",
           top: "calc(100% + 6px)",
-          left: "50%",
-          transform: "translateX(-50%)",
+          ...(isFirst  ? { left: 0 } :
+              isLast   ? { right: 0 } :
+                         { left: "50%", transform: "translateX(-50%)" }),
           background: "#fef3c7",
           border: "1px solid #fcd34d",
           color: "#92400e",
@@ -396,6 +397,8 @@ function ProgressBar({ steps, getStatus, onStepClick, getWarningTip }) {
               status={status}
               onClick={() => onStepClick(s.num)}
               warningTip={status === "warning" ? getWarningTip(s.num) : null}
+              isFirst={i === 0}
+              isLast={i === steps.length - 1}
             />
             {i < steps.length - 1 && (
               <div style={{
