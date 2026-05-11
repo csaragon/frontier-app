@@ -1483,7 +1483,7 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
   const condOpMeta = COND_OP_OPTS.find(o => o.v === condOp) ?? COND_OP_OPTS[0];
 
   return (
-    <div style={{ background: C.g1, border: `1px solid ${C.g2}`, borderRadius: 8, padding: "12px 14px", marginBottom: 10 }}>
+    <div style={{ background: C.white, border: `1.5px solid ${C.g2}`, borderRadius: 10, padding: "16px 18px", boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
 
       {/* Condition area */}
       {isElse ? (
@@ -1497,7 +1497,7 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
         <div style={{ marginBottom: 10 }}>
           {/* Header row: sentence-format operator selector */}
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
-            <span style={{ fontSize: 11, color: C.g4, fontFamily: F, fontWeight: 600, letterSpacing: "0.03em", flexShrink: 0 }}>
+            <span style={{ fontSize: 12, color: C.g5, fontFamily: F, fontWeight: 700, letterSpacing: "0.03em", flexShrink: 0 }}>
               {isFirst ? "Show when" : "And when"}
             </span>
             {conditions.length > 1 ? (
@@ -1631,7 +1631,6 @@ function ruleTabLabel(rule, idx, answerType) {
 
 function LogicPanel({ logic, answerType, onChange }) {
   const rules = logic?.rules ?? [];
-  const [activeIdx, setActiveIdx] = useState(0);
   const hasElse = rules.some(r => (r.kind ?? "else_if") === "else");
 
   function addRule() {
@@ -1641,12 +1640,10 @@ function LogicPanel({ logic, answerType, onChange }) {
       ? [...rules.slice(0, elseIdx), newRule, ...rules.slice(elseIdx)]
       : [...rules, newRule];
     onChange({ ...logic, rules: newRules });
-    setActiveIdx(elseIdx >= 0 ? elseIdx : rules.length);
   }
 
   function addElse() {
     onChange({ ...logic, rules: [...rules, emptyLogicRule(answerType, "else")] });
-    setActiveIdx(rules.length);
   }
 
   function updateRule(idx, patch) {
@@ -1659,7 +1656,6 @@ function LogicPanel({ logic, answerType, onChange }) {
       next = [{ ...next[0], kind: "if" }, ...next.slice(1)];
     }
     onChange({ ...logic, rules: next });
-    setActiveIdx(i => Math.min(i, Math.max(next.length - 1, 0)));
   }
 
   if (rules.length === 0) {
@@ -1677,51 +1673,37 @@ function LogicPanel({ logic, answerType, onChange }) {
     );
   }
 
-  const active = Math.min(activeIdx, rules.length - 1);
-
   return (
     <div>
-      {/* Tab bar */}
-      <div style={{ display: "flex", alignItems: "center", borderBottom: `1px solid ${C.g2}`, marginBottom: 14, overflowX: "auto" }}>
+      {/* All rules stacked */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {rules.map((rule, idx) => (
-          <button key={rule.id} onClick={() => setActiveIdx(idx)}
-            style={{
-              padding: "7px 13px", fontSize: 12, fontFamily: F, fontWeight: idx === active ? 600 : 400,
-              background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap",
-              color: idx === active ? C.navy : C.g4,
-              borderBottom: idx === active ? `2px solid ${C.navy}` : "2px solid transparent",
-              marginBottom: -1, flexShrink: 0,
-            }}
-          >{ruleTabLabel(rule, idx, answerType)}</button>
+          <LogicRule
+            key={rule.id}
+            rule={rule}
+            answerType={answerType}
+            isFirst={idx === 0}
+            onChange={patch => updateRule(idx, patch)}
+            onDelete={() => deleteRule(idx)}
+          />
         ))}
-        <button onClick={addRule} title="Add another rule"
-          style={{ padding: "7px 10px", color: C.g4, background: "none", border: "none", cursor: "pointer", marginBottom: -1, display: "flex", alignItems: "center", flexShrink: 0 }}
-          onMouseEnter={e => e.currentTarget.style.color = C.navy} onMouseLeave={e => e.currentTarget.style.color = C.g4}
-        ><IconPlus size={11} /></button>
-        {!hasElse && (
-          <button onClick={addElse} title="Handle any answer not already covered"
-            style={{
-              padding: "4px 9px", marginLeft: 2, marginBottom: -1,
-              fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", fontFamily: F,
-              color: C.g4, background: "none",
-              border: `1px dashed ${C.g3}`, borderBottom: "none",
-              borderRadius: "4px 4px 0 0", cursor: "pointer", flexShrink: 0,
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = C.g6; e.currentTarget.style.borderColor = C.g4; }}
-            onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
-          >+ Otherwise</button>
-        )}
       </div>
 
-      {/* Active rule */}
-      <LogicRule
-        key={rules[active].id}
-        rule={rules[active]}
-        answerType={answerType}
-        isFirst={active === 0}
-        onChange={patch => updateRule(active, patch)}
-        onDelete={() => deleteRule(active)}
-      />
+      {/* Add buttons */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+        <button onClick={addRule}
+          style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 600, fontFamily: F, color: C.g4, cursor: "pointer" }}
+          onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
+          onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
+        ><IconPlus size={10} /> Add rule</button>
+        {!hasElse && (
+          <button onClick={addElse}
+            style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 600, fontFamily: F, color: C.g4, cursor: "pointer" }}
+            onMouseEnter={e => { e.currentTarget.style.color = C.g6; e.currentTarget.style.borderColor = C.g4; }}
+            onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
+          ><IconPlus size={10} /> Otherwise</button>
+        )}
+      </div>
     </div>
   );
 }
@@ -1818,12 +1800,12 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
       <div style={{ borderBottom: `1px solid ${C.g2}`, background: C.white, position: "sticky", top: 0, zIndex: 10 }}>
 
         {/* Nav + page title row */}
-        <div style={{ padding: "12px 24px 10px", display: "flex", alignItems: "center" }}>
+        <div style={{ padding: "8px 20px 6px", display: "flex", alignItems: "center" }}>
           {/* Left: back + section name */}
           <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
             <button
               onClick={handleCancelClick}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 32, height: 32, borderRadius: 8, border: `1px solid ${C.g2}`, background: C.white, cursor: "pointer", color: C.g5, flexShrink: 0, transition: "background 0.1s, border-color 0.1s" }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: 6, border: `1px solid ${C.g2}`, background: C.white, cursor: "pointer", color: C.g5, flexShrink: 0, transition: "background 0.1s, border-color 0.1s" }}
               onMouseEnter={e => { e.currentTarget.style.background = C.g1; e.currentTarget.style.borderColor = C.g3; }}
               onMouseLeave={e => { e.currentTarget.style.background = C.white; e.currentTarget.style.borderColor = C.g2; }}
             >
@@ -1862,8 +1844,8 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
         </div>
 
         {/* Question title row */}
-        <div style={{ padding: "0 24px 14px", display: "flex", alignItems: "flex-start", gap: 8 }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.g4} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 5 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <div style={{ padding: "0 20px 10px", display: "flex", alignItems: "flex-start", gap: 8 }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.navy} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 5 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <textarea
             ref={titleRef}
             value={title}
@@ -1962,7 +1944,7 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
 
       {/* Sticky footer */}
       <div style={{
-          padding: "12px 24px",
+          padding: "8px 20px",
           borderTop: `1px solid ${C.g2}`,
           background: C.white,
           display: "flex",
@@ -1980,7 +1962,7 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
               </svg>
             </span>
             <Toggle checked={inBank} onChange={() => { setInBank(b => !b); markDirty(); }} />
-            <span style={{ fontSize: 13, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Add to Catalog</span>
+            <span style={{ fontSize: 12, color: C.g5, fontFamily: F, whiteSpace: "nowrap" }}>Add to Catalog</span>
           </label>
 
           {/* Spacer */}
@@ -1992,9 +1974,9 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
             style={{
               background: "none",
               border: `1px solid ${C.g3}`,
-              borderRadius: 8,
-              padding: "8px 16px",
-              fontSize: 13,
+              borderRadius: 7,
+              padding: "5px 13px",
+              fontSize: 12,
               fontWeight: 500,
               fontFamily: F,
               color: C.g5,
@@ -2012,9 +1994,9 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
               background: canSave ? C.navy : C.g2,
               color: canSave ? C.white : C.g4,
               border: "none",
-              borderRadius: 8,
-              padding: "8px 18px",
-              fontSize: 13,
+              borderRadius: 7,
+              padding: "5px 14px",
+              fontSize: 12,
               fontWeight: 600,
               fontFamily: F,
               cursor: canSave ? "pointer" : "not-allowed",

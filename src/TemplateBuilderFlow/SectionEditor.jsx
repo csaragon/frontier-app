@@ -482,18 +482,8 @@ export default function SectionEditor({
   const locationRulesIndicator = (locationRules?.type && locationRules.type !== "all_locations") ? true : null;
 
   return (
-    <div
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
-      onClick={handleBackdropClick}
-    >
-      <div style={{
-        background: C.white, borderRadius: 12,
-        width: 860, maxWidth: "calc(100vw - 48px)",
-        maxHeight: "92vh",
-        display: "flex", flexDirection: "column",
-        overflow: "hidden",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-      }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", background: C.white, fontFamily: F }}>
+      <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
 
         {/* Sticky header */}
         <div style={{ padding: "16px 22px 14px", borderBottom: `1px solid ${C.g2}`, flexShrink: 0, background: C.white }}>

@@ -660,7 +660,7 @@ export default function ScoringMethodology({ formData, onChange, onNext, onBack,
 
         {/* ── Section 1: Methodology ── */}
         <SectionCard
-          title="Scoring methodology"
+          title="Scoring Methodology"
           helper="How the final score is calculated from individual question responses"
           tooltip={TOOLTIPS.methodology}
           extra={<ScoringMathBox key={d.methodology} methodology={d.methodology} />}

@@ -15,7 +15,7 @@ import BanksPanel from "./BanksPanel.jsx";
 import GridSection from "./GridSection.jsx";
 
 import { T, F } from "../aegis-tokens.js";
-import { LogicIcons } from "./typeIcons.jsx";
+import { LogicIcons, IconAction, IconConditional, IconEscalation, IconPhoto } from "./typeIcons.jsx";
 
 const C = {
   navy:     T.action1,
@@ -261,6 +261,9 @@ function IconSidebar() {
 }
 function IconClose() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+}
+function IconEye() {
+  return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
 }
 function IconWarn() {
   return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>;
@@ -873,6 +876,130 @@ function QuestionRow({ question, isSelected, onSelect, onClick, onDelete, onDupl
   );
 }
 
+// ── Section Preview Table ─────────────────────────────────────────────────────
+
+const PREV_COLS = "28px 22px 1fr 130px 58px 80px";
+
+function SectionPreviewTable({ section }) {
+  const { questions } = section;
+
+  // Build map: questionId → questions in this section conditional on it
+  const dependentMap = {};
+  for (const q of questions) {
+    for (const item of (q.conditional?.items ?? [])) {
+      if (item.type === "condition" && item.questionId) {
+        if (!dependentMap[item.questionId]) dependentMap[item.questionId] = [];
+        dependentMap[item.questionId].push(q);
+      }
+    }
+  }
+
+  function triggerText(q) {
+    const t = q.answerType;
+    if (t === "Yes/No/NA" || t === "Yes/No") return "If Answer is No";
+    if (t === "Pass/Fail") return "If answer is Fail";
+    if (t === "Rating Scale") return "If Rating is 3 or below";
+    if (t === "Number") return "If count exceeds threshold";
+    return "When flagged";
+  }
+
+  const headerCell = (label) => (
+    <span style={{ fontSize: 10, fontWeight: 700, color: C.g4, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: F }}>{label}</span>
+  );
+
+  const CheckedBox = () => (
+    <div style={{ width: 14, height: 14, borderRadius: 3, background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <svg width="8" height="8" viewBox="0 0 12 12" fill="none" stroke={C.white} strokeWidth="2.5" strokeLinecap="round"><polyline points="2 6 5 9 10 3"/></svg>
+    </div>
+  );
+
+  return (
+    <div style={{ margin: "8px 12px", border: `1px solid ${C.g2}`, borderRadius: 8, overflow: "hidden" }}>
+      {/* Header */}
+      <div style={{ display: "grid", gridTemplateColumns: PREV_COLS, gap: 8, padding: "6px 12px", background: "#f1f5f9", borderBottom: `1px solid ${C.g2}`, alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}><CheckedBox /></div>
+        {headerCell("#")}
+        {headerCell("Question")}
+        {headerCell("Type")}
+        {headerCell("Req'd")}
+        {headerCell("Logic")}
+      </div>
+
+      {/* Rows */}
+      {questions.map((q, i) => {
+        const hasAction     = q.action?.type && q.action.type !== "none";
+        const hasEscalation = (q.escalation?.rules?.length ?? 0) > 0;
+        const hasPhoto      = !!q.media?.requireOnFail;
+        const dependents    = dependentMap[q.id] ?? [];
+        const hasLogic      = hasAction || hasEscalation || hasPhoto || dependents.length > 0;
+        const trigger       = hasLogic ? triggerText(q) : null;
+
+        return (
+          <div key={q.id} style={{ borderBottom: `1px solid ${C.g1}` }}>
+            {/* Question row */}
+            <div style={{ display: "grid", gridTemplateColumns: PREV_COLS, gap: 8, padding: "8px 12px", alignItems: "center", background: C.white }}>
+              <div style={{ display: "flex", justifyContent: "center" }}><CheckedBox /></div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: C.navy, fontFamily: F }}>{i + 1}</span>
+              <span style={{ fontSize: 13, color: C.g6, fontFamily: F, lineHeight: "18px" }}>{q.title}</span>
+              <div><AnswerBadge value={q.answerType} /></div>
+              <div>{q.required && <SmallBadge label="Yes" bg="#fae5e6" color={C.red} />}</div>
+              <div style={{ display: "flex", gap: 3, alignItems: "center" }}><LogicIcons question={q} size={11} /></div>
+            </div>
+
+            {/* Logic expansion */}
+            {hasLogic && (
+              <div style={{ background: "#f8fafc", paddingLeft: 70, paddingRight: 16, paddingTop: 6, paddingBottom: 8, borderTop: `1px solid ${C.g1}` }}>
+                <div style={{ fontSize: 11, color: C.g4, fontStyle: "italic", fontFamily: F, marginBottom: 6 }}>{trigger}</div>
+
+                {hasAction && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5 }}>
+                    <span style={{ color: "#854d0e", display: "flex", flexShrink: 0 }}><IconAction size={11} /></span>
+                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+                      {q.action.type === "corrective"
+                        ? "Assign corrective action to document and resolve"
+                        : `${q.action.type.charAt(0).toUpperCase() + q.action.type.slice(1)} action triggered`}
+                    </span>
+                  </div>
+                )}
+
+                {dependents.map(dq => (
+                  <div key={dq.id} style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5, justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 7, flex: 1, minWidth: 0 }}>
+                      <span style={{ color: "#7c3aed", display: "flex", flexShrink: 0 }}><IconConditional size={11} /></span>
+                      <span style={{ fontSize: 12, color: C.g5, fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{dq.title}</span>
+                    </div>
+                    <AnswerBadge value={dq.answerType} />
+                  </div>
+                ))}
+
+                {hasPhoto && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, paddingBottom: 5 }}>
+                    <span style={{ color: "#1e40af", display: "flex", flexShrink: 0 }}><IconPhoto size={11} /></span>
+                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>Photo required on fail</span>
+                  </div>
+                )}
+
+                {hasEscalation && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ color: "#b6143a", display: "flex", flexShrink: 0 }}><IconEscalation size={11} /></span>
+                    <span style={{ fontSize: 12, color: C.g5, fontFamily: F }}>
+                      Action unresolved → Notify: {(q.escalation.rules[0]?.notify ?? "manager") === "manager" ? "District Manager" : "Supervisor"}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {questions.length === 0 && (
+        <div style={{ padding: 16, fontSize: 12, color: C.g4, fontFamily: F, textAlign: "center" }}>No questions in this section</div>
+      )}
+    </div>
+  );
+}
+
 // ── Section Card ──────────────────────────────────────────────────────────────
 
 function SortableSectionCard(props) {
@@ -897,13 +1024,14 @@ function IconGrid4() {
   );
 }
 
-function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ, onEditQ, onAddQ, onDeleteQ, onDuplicateQ, onToggleCollapse, onWeightChange, onRename, onEditDetails, onDuplicate, onDelete, onToggleGrid, onUpdateGrid, methodology, dragProps = {} }) {
+function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ, onEditQ, onAddQ, onDeleteQ, onDuplicateQ, onToggleCollapse, onWeightChange, onRename, onEditDetails, onDuplicate, onDelete, onToggleGrid, onUpdateGrid, methodology, globalPreview = false, dragProps = {} }) {
   const [showKebab, setShowKebab]       = useState(false);
   const [editingName, setEditingName]   = useState(false);
   const [nameVal, setNameVal]           = useState(section.name);
   const [weightVal, setWeightVal]       = useState(String(section.weight ?? 0));
   const [search, setSearch]             = useState("");
   const [typeFilter, setTypeFilter]     = useState("");
+  const [previewMode, setPreviewMode]   = useState(false);
 
   useEffect(() => { setNameVal(section.name); }, [section.name]);
   useEffect(() => { setWeightVal(String(section.weight ?? 0)); }, [section.weight]);
@@ -935,9 +1063,21 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ
             autoFocus style={{ flex: 1, fontSize: 14, fontWeight: 700, color: C.g6, fontFamily: F, border: `1px solid ${C.navy}`, borderRadius: 4, padding: "3px 7px", outline: "none", background: C.white }}
           />
         ) : (
-          <span onClick={() => setEditingName(true)} title="Click to rename"
-            style={{ fontSize: 14, fontWeight: 700, color: C.g6, fontFamily: F, flex: 1, cursor: "text" }}
-          >{section.name}</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 5, flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: C.g6, fontFamily: F, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{section.name}</span>
+            <button
+              onClick={() => setEditingName(true)}
+              title="Rename section"
+              style={{ background: "none", border: "none", cursor: "pointer", color: C.g3, padding: 2, display: "flex", alignItems: "center", flexShrink: 0, borderRadius: 4 }}
+              onMouseEnter={e => e.currentTarget.style.color = C.navy}
+              onMouseLeave={e => e.currentTarget.style.color = C.g3}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+          </span>
         )}
 
         {/* Question count badge */}
@@ -971,6 +1111,27 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ
           Grid
         </button>
 
+        {/* Preview toggle button */}
+        {!section.isGrid && (
+          <button
+            onClick={() => setPreviewMode(m => !m)}
+            title={previewMode ? "Switch to edit view" : "Preview conditional logic"}
+            style={{
+              display: "flex", alignItems: "center", gap: 4,
+              fontSize: 12, fontWeight: 600, fontFamily: F,
+              color: previewMode ? C.navy : C.g4,
+              background: previewMode ? "#eef1ff" : "none",
+              border: previewMode ? `1px solid #c7cff7` : `1px dashed ${C.g3}`,
+              borderRadius: 4, padding: "2px 8px", cursor: "pointer", flexShrink: 0,
+            }}
+            onMouseEnter={e => { if (!previewMode) { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; } }}
+            onMouseLeave={e => { if (!previewMode) { e.currentTarget.style.borderColor = C.g3; e.currentTarget.style.color = C.g4; } }}
+          >
+            <IconEye />
+            Preview
+          </button>
+        )}
+
         {isWeighted && (
           <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
             <input type="number" value={weightVal} onChange={e => setWeightVal(e.target.value)}
@@ -986,6 +1147,24 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ
             />
             <span style={{ fontSize: 12, color: C.g4, fontFamily: F }}>%</span>
           </div>
+        )}
+
+        {onEditDetails && (
+          <button
+            onClick={onEditDetails}
+            title="Edit section details"
+            style={{ background: "none", border: "none", cursor: "pointer", color: C.g3, display: "flex", alignItems: "center", padding: 4, borderRadius: 4, flexShrink: 0 }}
+            onMouseEnter={e => e.currentTarget.style.color = C.navy}
+            onMouseLeave={e => e.currentTarget.style.color = C.g3}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </button>
         )}
 
         <div style={{ position: "relative", flexShrink: 0 }}>
@@ -1018,6 +1197,8 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ
                 onToggleOff={() => onToggleGrid(section.id)}
               />
             </div>
+          ) : (previewMode || globalPreview) ? (
+            <SectionPreviewTable section={section} />
           ) : (
             <>
               {/* Search + type filter toolbar */}
@@ -1176,6 +1357,7 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
   const [aiModal, setAiModal]                   = useState(false);
   const [globalSearch, setGlobalSearch]         = useState("");
   const [globalTypeFilter, setGlobalTypeFilter] = useState("");
+  const [globalPreview, setGlobalPreview]       = useState(false);
 
   const sectionsRef = useRef(sections);
   useEffect(() => { sectionsRef.current = sections; }, [sections]);
@@ -1667,7 +1849,24 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
             />
           );
         })()}
-        {!editingQ && <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px 80px" }}>
+        {editingSection && (() => {
+          const sec = sections.find(s => s.id === editingSection);
+          if (!sec) return null;
+          const idx = sections.findIndex(s => s.id === editingSection);
+          const hasNextSec = idx >= 0 && idx < sections.length - 1;
+          return (
+            <SectionEditor
+              section={sec}
+              allSections={sections}
+              methodology={methodology}
+              onSave={handleSaveSection}
+              onSaveAndNext={handleSaveAndNextSection}
+              hasNext={hasNextSec}
+              onClose={() => setEditingSection(null)}
+            />
+          );
+        })()}
+        {!editingQ && !editingSection && <div style={{ maxWidth: 860, margin: "0 auto", padding: "28px 24px 80px" }}>
 
           {/* Page title */}
           <div style={{ marginBottom: 20 }}>
@@ -1705,6 +1904,23 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
                 <option key={t} value={t}>{t}</option>
               ))}
             </select>
+            <button
+              onClick={() => setGlobalPreview(p => !p)}
+              title={globalPreview ? "Exit preview mode" : "Preview conditional logic for all sections"}
+              style={{
+                display: "flex", alignItems: "center", gap: 5, flexShrink: 0,
+                fontSize: 13, fontWeight: 600, fontFamily: F,
+                color: globalPreview ? C.navy : C.g5,
+                background: globalPreview ? "#eef1ff" : C.white,
+                border: globalPreview ? `1px solid #c7cff7` : `1px solid ${C.g2}`,
+                borderRadius: 8, padding: "8px 12px", cursor: "pointer",
+              }}
+              onMouseEnter={e => { if (!globalPreview) { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; } }}
+              onMouseLeave={e => { if (!globalPreview) { e.currentTarget.style.borderColor = C.g2; e.currentTarget.style.color = C.g5; } }}
+            >
+              <IconEye />
+              Preview
+            </button>
           </div>
 
           {/* Header controls */}
@@ -1838,6 +2054,7 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
                     onToggleGrid={handleToggleGrid}
                     onUpdateGrid={handleUpdateGrid}
                     methodology={methodology}
+                    globalPreview={globalPreview}
                   />
                 ))}
               </>
@@ -1866,6 +2083,7 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
                     onToggleGrid={handleToggleGrid}
                     onUpdateGrid={handleUpdateGrid}
                     methodology={methodology}
+                    globalPreview={globalPreview}
                   />
                 ))}
               </SortableContext>
@@ -1910,23 +2128,6 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
         onToast={showToast}
       />
 
-      {editingSection && (() => {
-        const sec = sections.find(s => s.id === editingSection);
-        if (!sec) return null;
-        const idx = sections.findIndex(s => s.id === editingSection);
-        const hasNextSec = idx >= 0 && idx < sections.length - 1;
-        return (
-          <SectionEditor
-            section={sec}
-            allSections={sections}
-            methodology={methodology}
-            onSave={handleSaveSection}
-            onSaveAndNext={handleSaveAndNextSection}
-            hasNext={hasNextSec}
-            onClose={() => setEditingSection(null)}
-          />
-        );
-      })()}
       {showFixMath && (
         <FixMathModal sections={sections} onApply={handleAutoBalance} onClose={() => setShowFixMath(false)} />
       )}

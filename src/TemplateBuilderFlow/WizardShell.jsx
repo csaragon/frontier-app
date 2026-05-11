@@ -181,7 +181,7 @@ function ClickableTag({ label, color, icon, action, disabled, disabledTip }) {
 }
 
 // Reusable confirmation modal for status changes
-function StatusConfirmModal({ title, body, confirmLabel, danger, onConfirm, onCancel }) {
+function StatusConfirmModal({ title, body, confirmLabel, cancelLabel = "Cancel", danger, onConfirm, onCancel }) {
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, fontFamily: F }}
       onClick={e => { if (e.target === e.currentTarget) onCancel(); }}>
@@ -193,7 +193,7 @@ function StatusConfirmModal({ title, body, confirmLabel, danger, onConfirm, onCa
         <div style={{ padding: "12px 24px 18px", display: "flex", gap: 8, justifyContent: "flex-end", borderTop: "1px solid #e2e5ea" }}>
           <button onClick={onCancel}
             style={{ background: "none", border: "1px solid #d1d5db", borderRadius: 8, padding: "8px 18px", fontSize: 13, fontWeight: 500, fontFamily: F, color: "#64748b", cursor: "pointer" }}>
-            Cancel
+            {cancelLabel}
           </button>
           <button onClick={onConfirm}
             style={{ background: danger ? "#dc2626" : C.navy, color: "#fff", border: "none", borderRadius: 8, padding: "8px 20px", fontSize: 13, fontWeight: 600, fontFamily: F, cursor: "pointer" }}
@@ -311,8 +311,8 @@ function ProgressStepNode({ stepDef, status, onClick, warningTip }) {
         {/* Circle + label row */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <div style={{
-            width: 26,
-            height: 26,
+            width: 22,
+            height: 22,
             borderRadius: "50%",
             background: circleBg,
             border: `2px solid ${circleBorder}`,
@@ -378,7 +378,7 @@ function ProgressBar({ steps, getStatus, onStepClick, getWarningTip }) {
       alignItems: "center",
       justifyContent: "center",
       gap: 0,
-      padding: "14px 32px",
+      padding: "8px 32px",
       background: C.white,
       borderBottom: `1px solid ${C.g2}`,
       flexShrink: 0,
@@ -560,9 +560,9 @@ function BtnFooterPrev({ onClick, disabled }) {
         background: disabled ? C.g1 : (hover ? C.g1 : C.white),
         color: disabled ? C.g3 : C.g6,
         border: `1px solid ${C.g3}`,
-        borderRadius: 8,
-        padding: "9px 18px",
-        fontSize: 13,
+        borderRadius: 7,
+        padding: "6px 14px",
+        fontSize: 12,
         fontWeight: 500,
         fontFamily: F,
         cursor: disabled ? "not-allowed" : "pointer",
@@ -589,9 +589,9 @@ function BtnFooterNext({ onClick, label = "Next" }) {
         background: hover ? C.navy2 : C.navy,
         color: C.white,
         border: "none",
-        borderRadius: 8,
-        padding: "9px 22px",
-        fontSize: 13,
+        borderRadius: 7,
+        padding: "6px 16px",
+        fontSize: 12,
         fontWeight: 600,
         fontFamily: F,
         cursor: "pointer",
@@ -618,9 +618,9 @@ function BtnFooterActivate({ onClick }) {
         background: hover ? C.navy2 : C.navy,
         color: C.white,
         border: "none",
-        borderRadius: 8,
-        padding: "9px 22px",
-        fontSize: 13,
+        borderRadius: 7,
+        padding: "6px 16px",
+        fontSize: 12,
         fontWeight: 700,
         fontFamily: F,
         cursor: "pointer",
@@ -683,6 +683,7 @@ export default function WizardShell({
   const [cantActivateModal, setCantActivateModal] = useState(null); // null | { issues }
   const [activateConfirmModal, setActivateConfirmModal] = useState(false);
   const [statusModal, setStatusModal] = useState(null); // null | "deactivate" | "reactivate" | "unpublish" | "publish"
+  const [showUnconfirmedWarning, setShowUnconfirmedWarning] = useState(false);
 
   // Approval required stub — set to true to demo the approval flow
   const REQUIRE_APPROVAL = false;
@@ -851,17 +852,16 @@ export default function WizardShell({
         position: "relative",
         background: C.white,
         borderBottom: `1px solid ${C.g2}`,
-        height: 60,
+        height: 46,
         flexShrink: 0,
         display: "flex",
         alignItems: "center",
-        padding: "0 20px",
+        padding: "0 16px",
       }}>
-
 
         {/* Center: Audit Template Builder label + template name */}
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
-          <span style={{ fontSize: 20, fontWeight: 300, color: C.g6, fontFamily: F }}>
+          <span style={{ fontSize: 14, fontWeight: 500, color: C.g5, fontFamily: F, letterSpacing: "-0.1px" }}>
             Audit Template Builder
           </span>
         </div>
@@ -971,6 +971,7 @@ export default function WizardShell({
             formData={formData[4]}
             onChange={(patch) => handleStepDataChange(4, patch)}
             languages={formData[1]?.languages}
+            sections={formData[2]?.sections}
           />
         )}
         {step === 5 && (
@@ -993,7 +994,7 @@ export default function WizardShell({
       <div style={{
         background: C.white,
         borderTop: `1px solid ${C.g2}`,
-        padding: "12px 24px",
+        padding: "8px 16px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -1023,7 +1024,13 @@ export default function WizardShell({
           />
           {step < 6 ? (
             <BtnFooterNext
-              onClick={() => navigateToStep(step + 1)}
+              onClick={() => {
+                if (step === 4 && formData[4]?.hasUnconfirmed) {
+                  setShowUnconfirmedWarning(true);
+                } else {
+                  navigateToStep(step + 1);
+                }
+              }}
               label={
                 step === 1 ? "Next: Questions"
                 : step === 2 ? "Next: Scoring"
@@ -1191,6 +1198,18 @@ export default function WizardShell({
           confirmLabel="Publish"
           onConfirm={handleStatusModalConfirm}
           onCancel={() => setStatusModal(null)}
+        />
+      )}
+
+      {/* ── Unconfirmed translations warning ── */}
+      {showUnconfirmedWarning && (
+        <StatusConfirmModal
+          title="Some translations are unconfirmed"
+          body="You have translations that haven't been confirmed yet. You can still proceed — just come back to review them before activating."
+          confirmLabel="Proceed anyway"
+          cancelLabel="Review now"
+          onConfirm={() => { setShowUnconfirmedWarning(false); navigateToStep(step + 1); }}
+          onCancel={() => setShowUnconfirmedWarning(false)}
         />
       )}
 

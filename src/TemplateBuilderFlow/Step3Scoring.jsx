@@ -503,9 +503,10 @@ export default function Step3Scoring({
         {activeTab === "scoring" && (
           <div style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 24px 80px" }}>
 
-            {/* Section title */}
-            <div style={{ marginBottom: 16 }}>
-              <span style={{ fontSize: 16, fontWeight: 700, color: C.g6, fontFamily: F }}>Question Scoring</span>
+            {/* Page title */}
+            <div style={{ marginBottom: 20 }}>
+              <h2 style={{ margin: "0 0 5px", fontSize: 20, fontWeight: 700, color: C.g6, fontFamily: F }}>Question Scoring</h2>
+              <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Set point values and answer weights for each question. Mark critical questions and configure scoring logic.</p>
             </div>
 
             {/* No questions placeholder */}
