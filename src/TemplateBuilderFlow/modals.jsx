@@ -788,80 +788,34 @@ export function CancelProcessingModal({ onConfirm, onCancel }) {
 // ─── DiscardModal ────────────────────────────────────────────────────────────
 
 export function DiscardModal({ onSaveAndExit, onExitWithout, onCancel }) {
-  const [discardHov, setDiscardHov] = useState(false);
   return (
-    <div style={{
-      position: "fixed",
-      bottom: 28,
-      left: "50%",
-      transform: "translateX(-50%)",
-      zIndex: 9999,
-      background: C.g6,
-      borderRadius: 12,
-      boxShadow: "0 8px 32px rgba(0,0,0,0.28)",
-      padding: "14px 20px",
-      display: "flex",
-      alignItems: "center",
-      gap: 16,
-      fontFamily: F,
-      whiteSpace: "nowrap",
-    }}>
-      <span style={{ fontSize: 13, color: C.white, fontWeight: 500 }}>
-        Discard unsaved changes?
-      </span>
-      <div style={{ display: "flex", gap: 8 }}>
-        <button
-          onClick={onCancel}
-          style={{
-            background: "rgba(255,255,255,0.12)",
-            color: C.white,
-            border: "1px solid rgba(255,255,255,0.20)",
-            borderRadius: 7,
-            padding: "6px 14px",
-            fontSize: 12,
-            fontWeight: 600,
-            fontFamily: F,
-            cursor: "pointer",
-          }}
-        >
-          Keep editing
-        </button>
-        <button
-          onClick={onSaveAndExit}
-          style={{
-            background: C.white,
-            color: C.g6,
-            border: "none",
-            borderRadius: 7,
-            padding: "6px 14px",
-            fontSize: 12,
-            fontWeight: 600,
-            fontFamily: F,
-            cursor: "pointer",
-          }}
-        >
-          Save draft
-        </button>
-        <button
-          onClick={onExitWithout}
-          onMouseEnter={() => setDiscardHov(true)}
-          onMouseLeave={() => setDiscardHov(false)}
-          style={{
-            background: discardHov ? "#fae5e6" : C.red2,
-            color: C.red,
-            border: "none",
-            borderRadius: 7,
-            padding: "6px 14px",
-            fontSize: 12,
-            fontWeight: 600,
-            fontFamily: F,
-            cursor: "pointer",
-            transition: "background 0.12s",
-          }}
-        >
-          Discard
-        </button>
-      </div>
-    </div>
+    <OverlayBase onClose={onCancel}>
+      <ModalPanel width={420}>
+        <div style={{ padding: "22px 24px 8px", fontFamily: F }}>
+          <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700, color: C.g6 }}>
+            Discard unsaved changes?
+          </h3>
+          <p style={{ margin: "0 0 20px", fontSize: 13, color: C.g5, lineHeight: "20px" }}>
+            Your progress will be lost unless you save a draft first.
+          </p>
+        </div>
+        <div style={{ padding: "0 24px 20px", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <BtnPrimary onClick={onSaveAndExit}>Save draft</BtnPrimary>
+          <button
+            onClick={onExitWithout}
+            style={{
+              background: "none", border: "none",
+              color: C.red, fontSize: 13, fontWeight: 500,
+              fontFamily: F, cursor: "pointer",
+              padding: "8px 4px", textDecoration: "underline",
+            }}
+          >
+            Discard anyway
+          </button>
+          <div style={{ flex: 1 }} />
+          <BtnSecondary onClick={onCancel}>Keep editing</BtnSecondary>
+        </div>
+      </ModalPanel>
+    </OverlayBase>
   );
 }

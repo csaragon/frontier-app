@@ -16,8 +16,9 @@ const C = {
   g6:    T.onSurface2,
 };
 
-// Icon: stacked rectangles with lines (template/document grid)
-function TemplateIcon() {
+const DRAFTS_CAP = 5;
+
+function CatalogIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="18" height="6" rx="1" />
@@ -28,18 +29,14 @@ function TemplateIcon() {
   );
 }
 
-// Icon: arrow pointing up out of a tray
-function UploadIcon() {
+function AiIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" y1="3" x2="12" y2="15" />
+      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
     </svg>
   );
 }
 
-// Icon: pencil/edit
 function ScratchIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -49,8 +46,20 @@ function ScratchIcon() {
   );
 }
 
-function RouteCard({ routeKey, icon, title, description, estTime, disabled, disabledText, onPickRoute }) {
+function RouteCard({ routeKey, icon, title, description, pill, pillColor, featured, disabled, disabledText, onPickRoute }) {
   const [hover, setHover] = useState(false);
+
+  const borderColor = featured
+    ? (hover ? C.navy : "#4f6bed")
+    : (hover ? C.navy : C.g2);
+
+  const bg = featured
+    ? (hover ? "#f0f3ff" : "#f5f7ff")
+    : C.white;
+
+  const iconBg = featured ? C.navy : C.g1;
+  const iconColor = featured ? C.white : C.navy;
+
   return (
     <div
       onClick={() => !disabled && onPickRoute(routeKey)}
@@ -59,28 +68,35 @@ function RouteCard({ routeKey, icon, title, description, estTime, disabled, disa
       style={{
         flex: 1,
         minWidth: 200,
-        padding: 24,
+        padding: featured ? "26px 24px" : 24,
         borderRadius: 12,
-        border: `1px solid ${hover ? C.navy : C.g2}`,
-        background: C.white,
+        border: `${featured ? "2px" : "1px"} solid ${borderColor}`,
+        background: bg,
         cursor: disabled ? "not-allowed" : "pointer",
         transition: "all 0.15s",
-        boxShadow: hover ? "0 4px 16px rgba(0,0,0,0.09)" : "none",
+        boxShadow: hover
+          ? featured
+            ? "0 6px 24px rgba(0,30,118,0.16)"
+            : "0 4px 16px rgba(0,0,0,0.09)"
+          : featured
+            ? "0 2px 10px rgba(0,30,118,0.10)"
+            : "none",
         opacity: disabled ? 0.5 : 1,
         display: "flex",
         flexDirection: "column",
         fontFamily: F,
+        position: "relative",
       }}
     >
       <div style={{
         width: 40,
         height: 40,
         borderRadius: 12,
-        background: C.g1,
+        background: iconBg,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: C.navy,
+        color: iconColor,
         flexShrink: 0,
       }}>
         {icon}
@@ -90,24 +106,26 @@ function RouteCard({ routeKey, icon, title, description, estTime, disabled, disa
       {disabled && disabledText && (
         <div style={{ fontSize: 12, color: C.g4, marginTop: 6, fontStyle: "italic" }}>{disabledText}</div>
       )}
-      <div style={{
-        marginTop: 16,
-        display: "inline-block",
-        padding: "3px 8px",
-        borderRadius: 999,
-        background: C.navy3,
-        color: C.navy,
-        fontSize: 10,
-        fontWeight: 600,
-        alignSelf: "flex-start",
-      }}>
-        {estTime}
-      </div>
+      {pill && (
+        <div style={{
+          marginTop: 16,
+          display: "inline-block",
+          padding: "3px 9px",
+          borderRadius: 999,
+          background: pillColor?.bg ?? C.navy3,
+          color: pillColor?.text ?? C.navy,
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          alignSelf: "flex-start",
+        }}>
+          {pill}
+        </div>
+      )}
     </div>
   );
 }
 
-// Module category color map for the draft row icons
 const MODULE_META = {
   "Fire Safety":     { color: "#b6143a", bg: "#fae5e6" },
   "Health & Safety": { color: "#854d0e", bg: "#fef9c3" },
@@ -136,7 +154,6 @@ function DraftRow({ t, onResume }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
     >
-      {/* Module pip */}
       <div style={{
         width: 36, height: 36, borderRadius: 8,
         background: mod.bg,
@@ -149,7 +166,6 @@ function DraftRow({ t, onResume }) {
         </span>
       </div>
 
-      {/* Name + meta */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 12, fontWeight: 600, color: C.g6, fontFamily: F, marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.name}</div>
         <div style={{ fontSize: 12, color: C.g4, fontFamily: F }}>
@@ -157,7 +173,6 @@ function DraftRow({ t, onResume }) {
         </div>
       </div>
 
-      {/* Draft pill */}
       <div style={{
         padding: "3px 8px", borderRadius: 999,
         background: "#fef9c3", border: "1px solid #854d0e30",
@@ -186,11 +201,14 @@ function DraftRow({ t, onResume }) {
   );
 }
 
-export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog", templates = [], onResumeDraft }) {
+export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog", templates = [], onResumeDraft, onViewAllDrafts }) {
   const catalogIsEmpty = STUB_TEMPLATES.length === 0;
-  const drafts = templates
+  const allDrafts = templates
     .filter(t => t.state === "draft")
     .sort((a, b) => new Date(b.updated) - new Date(a.updated));
+
+  const visibleDrafts = allDrafts.slice(0, DRAFTS_CAP);
+  const hasMore = allDrafts.length > DRAFTS_CAP;
 
   return (
     <div style={{
@@ -250,58 +268,25 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
           Choose how you want to start.
         </p>
 
-        {/* TODO: [assumption-7] Feature-flagged; hidden by default */}
-        {featureFlags.aiTemplateSearch && (
-          <div style={{ marginBottom: 32, position: "relative" }}>
-            <input
-              disabled
-              placeholder="Describe your audit and we'll get you started (coming soon)"
-              style={{
-                width: "100%",
-                boxSizing: "border-box",
-                padding: "10px 50px 10px 14px",
-                borderRadius: 8,
-                border: `1px solid ${C.g3}`,
-                fontSize: 13,
-                fontFamily: F,
-                color: C.g4,
-                background: C.g1,
-                cursor: "not-allowed",
-              }}
-            />
-            <span style={{
-              position: "absolute",
-              right: 12,
-              top: "50%",
-              transform: "translateY(-50%)",
-              background: C.ocean,
-              color: C.white,
-              fontSize: 10,
-              fontWeight: 700,
-              padding: "2px 5px",
-              borderRadius: 4,
-            }}>AI</span>
-          </div>
-        )}
-
-        {/* Route cards */}
+        {/* Route cards — order: Catalog, AI, Scratch */}
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
           <RouteCard
             routeKey="template"
-            icon={<TemplateIcon />}
-            title="Start from a template"
-            description="Browse pre-built templates and customize."
-            estTime="~2 min"
+            icon={<CatalogIcon />}
+            title="Choose from the catalog"
+            description="Browse pre-built templates and customize for your needs."
             disabled={catalogIsEmpty}
             disabledText={catalogIsEmpty ? "No templates available yet." : undefined}
             onPickRoute={onPickRoute}
           />
           <RouteCard
-            routeKey="upload"
-            icon={<UploadIcon />}
-            title="Upload a document"
-            description="Turn an existing checklist or document into an audit."
-            estTime="Under a minute"
+            routeKey="ai"
+            icon={<AiIcon />}
+            title="AI Audit Builder"
+            description="Upload an Excel file or describe what you need — we'll build it for you."
+            pill="Fastest"
+            pillColor={{ bg: C.navy, text: C.white }}
+            featured
             onPickRoute={onPickRoute}
           />
           <RouteCard
@@ -309,13 +294,12 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
             icon={<ScratchIcon />}
             title="Build from scratch"
             description="Start with a blank canvas and build your way."
-            estTime="~10 min"
             onPickRoute={onPickRoute}
           />
         </div>
 
         {/* Continue where you left off */}
-        {drafts.length > 0 && onResumeDraft && (
+        {visibleDrafts.length > 0 && onResumeDraft && (
           <div style={{
             marginTop: 40,
             background: C.white,
@@ -323,19 +307,39 @@ export default function PickAPath({ onPickRoute, onCancel, entryPoint = "catalog
             borderRadius: 12,
             padding: "18px 20px",
           }}>
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: C.g6, fontFamily: F }}>
-                Continue where you left off
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: C.g6, fontFamily: F }}>
+                  Continue where you left off
+                </div>
+                <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 2 }}>
+                  {allDrafts.length} draft{allDrafts.length !== 1 ? "s" : ""} waiting to be published
+                </div>
               </div>
-              <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 2 }}>
-                {drafts.length} draft{drafts.length !== 1 ? "s" : ""} waiting to be published
-              </div>
+              {hasMore && onViewAllDrafts && (
+                <button
+                  onClick={onViewAllDrafts}
+                  style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    color: C.ocean, fontSize: 12, fontWeight: 600,
+                    fontFamily: F, padding: "4px 0", textDecoration: "underline",
+                    flexShrink: 0,
+                  }}
+                >
+                  View all drafts
+                </button>
+              )}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {drafts.map(t => (
+              {visibleDrafts.map(t => (
                 <DraftRow key={t.id} t={t} onResume={onResumeDraft} />
               ))}
             </div>
+            {hasMore && !onViewAllDrafts && (
+              <div style={{ marginTop: 10, fontSize: 12, color: C.g4, fontFamily: F, textAlign: "center" }}>
+                +{allDrafts.length - DRAFTS_CAP} more drafts
+              </div>
+            )}
           </div>
         )}
 

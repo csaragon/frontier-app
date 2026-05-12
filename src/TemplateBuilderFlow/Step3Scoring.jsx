@@ -418,7 +418,7 @@ function QuestionRow({ num, question, methodology, onUpdate, onDelete }) {
 // ── Section table ─────────────────────────────────────────────────────────────
 
 function SectionTable({ section, methodology, onUpdateQuestion, onDeleteQuestion, onWeightEqually, onAutoAdjust, isFirst }) {
-  const { name, description, questions = [] } = section;
+  const { name, description, questions = [], weight } = section;
   const showPts = methodology !== "informational";
   const sectionTotal = questions.reduce((s, q) => s + (Number(q.scoring?.value) || 0), 0);
 
@@ -431,9 +431,18 @@ function SectionTable({ section, methodology, onUpdateQuestion, onDeleteQuestion
           borderBottom: `1px solid ${C.g2}`,
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <span style={{ fontSize: 13, fontWeight: 700, color: C.g6, fontFamily: F }}>{name || "Untitled section"}</span>
-              {description && <span style={{ fontSize: 11, color: C.g4, fontFamily: F, marginLeft: 8 }}>{description}</span>}
+              {methodology === "weighted" && weight != null && (
+                <span style={{
+                  fontSize: 11, fontWeight: 700, fontFamily: F,
+                  background: C.navyBg, color: C.navy,
+                  borderRadius: 5, padding: "2px 7px", whiteSpace: "nowrap",
+                }}>
+                  {weight}% of total
+                </span>
+              )}
+              {description && <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>{description}</span>}
             </div>
             {showPts && questions.length > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>

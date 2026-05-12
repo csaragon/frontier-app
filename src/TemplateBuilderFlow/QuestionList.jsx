@@ -771,6 +771,83 @@ function AIGenerateModal({ sections, onInsert, onClose }) {
   return null;
 }
 
+// ── AI Prompt Bar ─────────────────────────────────────────────────────────────
+
+function AiPromptBar({ sections, onAiResult }) {
+  const [prompt, setPrompt] = useState("");
+  const [focused, setFocused] = useState(false);
+
+  function handleSubmit() {
+    const val = prompt.trim();
+    setPrompt("");
+    onAiResult(val);
+  }
+
+  return (
+    <div style={{
+      marginBottom: 18,
+      background: focused ? "#f0f3ff" : "#eef1ff",
+      border: `2px solid ${focused ? "#4f6bed" : "#c7cff7"}`,
+      borderRadius: 12,
+      padding: "12px 14px",
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      transition: "border-color 0.15s, background 0.15s",
+    }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: 8,
+        background: "#001e76",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexShrink: 0,
+      }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/>
+        </svg>
+      </div>
+      <input
+        value={prompt}
+        onChange={e => setPrompt(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onKeyDown={e => { if (e.key === "Enter" && prompt.trim()) handleSubmit(); }}
+        placeholder='Ask AI to generate sections or questions — e.g. "Add a fire safety section with Yes/No questions"'
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          fontSize: 13,
+          fontFamily: F,
+          color: C.g6,
+        }}
+      />
+      <button
+        onClick={handleSubmit}
+        disabled={!prompt.trim()}
+        style={{
+          background: prompt.trim() ? C.navy : "#c7cff7",
+          color: prompt.trim() ? "#fff" : "#8692a2",
+          border: "none",
+          borderRadius: 8,
+          padding: "7px 16px",
+          fontSize: 12,
+          fontWeight: 700,
+          fontFamily: F,
+          cursor: prompt.trim() ? "pointer" : "not-allowed",
+          flexShrink: 0,
+          transition: "background 0.12s",
+          letterSpacing: "0.01em",
+        }}
+        onMouseEnter={e => { if (prompt.trim()) e.currentTarget.style.background = "#001356"; }}
+        onMouseLeave={e => { if (prompt.trim()) e.currentTarget.style.background = C.navy; }}
+      >
+        Generate
+      </button>
+    </div>
+  );
+}
+
 // ── Question Kebab Menu ───────────────────────────────────────────────────────
 
 function QuestionKebabMenu({ onEdit, onDuplicate, onDelete, onClose }) {
@@ -1702,6 +1779,10 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
     showToast(`Applied config to ${qIds.size} question${qIds.size !== 1 ? "s" : ""}`);
   }
 
+  function handleAiResult(_promptText) {
+    setAiModal(true);
+  }
+
   function handleAIInsert(result) {
     let next = sections;
     if (result.type === "section") {
@@ -1995,54 +2076,9 @@ export default function QuestionList({ formData, onChange, onNext, onBack, metho
             <p style={{ margin: 0, fontSize: 13, color: C.g5, fontFamily: F }}>Add sections to group related questions, then add questions to each section. Drag to reorder.</p>
           </div>
 
-          {/* Global search + type filter */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 14, alignItems: "center" }}>
-            <div style={{ position: "relative", flex: 1 }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.g4} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-              <input
-                value={globalSearch}
-                onChange={e => setGlobalSearch(e.target.value)}
-                placeholder="Search sections and questions…"
-                style={{ width: "100%", boxSizing: "border-box", paddingLeft: 32, paddingRight: globalSearch ? 30 : 12, paddingTop: 8, paddingBottom: 8,
-                  fontSize: 13, fontFamily: F, color: C.g6, background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8, outline: "none" }}
-                onFocus={e => e.target.style.borderColor = C.navy}
-                onBlur={e => e.target.style.borderColor = C.g2}
-              />
-              {globalSearch && (
-                <button onClick={() => setGlobalSearch("")}
-                  style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: C.g4, display: "flex", padding: 2 }}>
-                  <IconClose />
-                </button>
-              )}
-            </div>
-            <select value={globalTypeFilter} onChange={e => setGlobalTypeFilter(e.target.value)}
-              style={{ padding: "8px 10px", fontSize: 13, fontFamily: F, border: `1px solid ${C.g2}`, borderRadius: 8, color: globalTypeFilter ? C.g6 : C.g4, background: C.white, cursor: "pointer", outline: "none", flexShrink: 0 }}>
-              <option value="">All types</option>
-              {[...new Set(sections.flatMap(s => s.questions.map(q => q.answerType)))].sort().map(t => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-            <button
-              onClick={() => setGlobalPreview(p => !p)}
-              title={globalPreview ? "Exit preview mode" : "Preview conditional logic for all sections"}
-              style={{
-                display: "flex", alignItems: "center", gap: 5, flexShrink: 0,
-                fontSize: 13, fontWeight: 600, fontFamily: F,
-                color: globalPreview ? C.navy : C.g5,
-                background: globalPreview ? "#eef1ff" : C.white,
-                border: globalPreview ? `1px solid #c7cff7` : `1px solid ${C.g2}`,
-                borderRadius: 8, padding: "8px 12px", cursor: "pointer",
-              }}
-              onMouseEnter={e => { if (!globalPreview) { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.color = C.navy; } }}
-              onMouseLeave={e => { if (!globalPreview) { e.currentTarget.style.borderColor = C.g2; e.currentTarget.style.color = C.g5; } }}
-            >
-              <IconEye />
-              Preview
-            </button>
-          </div>
+          {/* AI Audit Builder prompt bar */}
+          <AiPromptBar sections={sections} onAiResult={handleAiResult} />
+
 
           {/* Header controls */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>

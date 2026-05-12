@@ -360,30 +360,32 @@ export default function Step4Translations({ formData, onChange, languages = ["en
         )}
 
         {/* Language tabs */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 0, marginBottom: 20, borderBottom: `1px solid ${C.g2}`, overflowX: "auto" }}>
           {nonPrimary.map(lang => {
             const meta   = LANG_META[lang] ?? { label: lang, locale: lang.toUpperCase(), code: lang.toUpperCase().slice(0, 2) };
             const status = getLangStatus(lang);
             const active = activeLocale === lang;
             return (
               <button key={lang} onClick={() => setActiveLocale(lang)} style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 14px", borderRadius: 10, cursor: "pointer",
-                background: active ? "#eef1ff" : C.white,
-                border: `1.5px solid ${active ? C.navy : C.g2}`,
-                boxShadow: active ? `0 0 0 3px rgba(0,30,118,0.07)` : "none",
-                minWidth: 170,
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "9px 16px", cursor: "pointer",
+                background: "none", border: "none",
+                borderBottom: `2px solid ${active ? C.navy : "transparent"}`,
+                marginBottom: -1,
+                whiteSpace: "nowrap",
+                flexShrink: 0,
               }}>
-                <div style={{ width: 34, height: 34, borderRadius: 7, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, background: active ? C.navy : C.g2, color: active ? C.white : C.g5 }}>
-                  {meta.code}
-                </div>
-                <div style={{ textAlign: "left" }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: active ? C.navy : C.g6, fontFamily: F }}>{meta.label}</div>
-                  <div style={{ fontSize: 11, fontFamily: F, marginTop: 2 }}>
-                    <span style={{ color: C.g4 }}>{meta.locale}</span>
-                    <span style={{ color: status.color, fontWeight: 600 }}> · {status.label}</span>
-                  </div>
-                </div>
+                <span style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? C.navy : C.g5, fontFamily: F }}>
+                  {meta.label}
+                </span>
+                <span style={{
+                  fontSize: 10, fontWeight: 700, fontFamily: F,
+                  color: status.color === C.green ? C.green : C.yellow,
+                  background: status.color === C.green ? C.greenBg : C.yellowBg,
+                  borderRadius: 999, padding: "2px 6px",
+                }}>
+                  {status.label}
+                </span>
               </button>
             );
           })}

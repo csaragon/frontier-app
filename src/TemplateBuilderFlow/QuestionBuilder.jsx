@@ -373,11 +373,11 @@ function GridConfig({ config, onChange }) {
 
       <div style={{ display: "flex", gap: 10 }}>
         <div style={{ flex: 1 }}>
-          <Label helper="What auditors call each group they add (e.g. Merchandise, Location, Department)">Group label</Label>
+          <Label helper="What auditors call each group they add (e.g. Merchandise, Location, Department)">Grid name</Label>
           <FocusInput value={groupLabel} onChange={e => set({ groupLabel: e.target.value })} placeholder="e.g. Merchandise" />
         </div>
         <div style={{ flex: 1 }}>
-          <Label helper="What each row within a group is called (e.g. Item, Register, Unit)">Row label</Label>
+          <Label helper="What each row within a group is called (e.g. Item, Register, Unit)">Row name</Label>
           <FocusInput value={rowLabel} onChange={e => set({ rowLabel: e.target.value })} placeholder="e.g. Item" />
         </div>
       </div>
@@ -573,7 +573,7 @@ function TypeConfig({ answerType, config, onChange }) {
 // ── Panel 1 body ──────────────────────────────────────────────────────────────
 
 function Panel1Body({ state, onChange }) {
-  const { answerType, required, critical, informational, allowAttachment, instructions, typeConfig } = state;
+  const { answerType, required, critical, informational, allowAttachment, requireNote, requireMedia, instructions, typeConfig } = state;
 
   function setField(field, val) { onChange({ ...state, [field]: val }); }
 
@@ -626,7 +626,27 @@ function Panel1Body({ state, onChange }) {
             Allow photo / media attachment
           </label>
           <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
-            Auditors can attach evidence. To require it on a specific answer, add a Require media trigger in Logic.
+            Auditors can attach evidence on any answer.
+          </div>
+        </div>
+
+        <div>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: C.g5, fontFamily: F }}>
+            <Checkbox checked={!!requireNote} onChange={() => setField("requireNote", !requireNote)} />
+            Require note
+          </label>
+          <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
+            Auditors must leave a note when answering this question.
+          </div>
+        </div>
+
+        <div>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 13, color: C.g5, fontFamily: F }}>
+            <Checkbox checked={!!requireMedia} onChange={() => setField("requireMedia", !requireMedia)} />
+            Require photo / media
+          </label>
+          <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginTop: 3, marginLeft: 23, lineHeight: "15px" }}>
+            Auditors must attach evidence before submitting this question.
           </div>
         </div>
       </div>
@@ -738,24 +758,20 @@ const GROUP_OPTIONS = ["All Store Managers — Southeast", "Regional LP Team", "
 
 const BANK_QUESTION_LOGIC = {
   "bq-1": { rules: [{ id: "rbl1", operator: "not_equals", value: "Yes", triggers: [
-    { id: "tbl1", type: "notify", recipientType: "role", recipientValue: "Store Manager", channels: { email: true, inApp: true }, message: "", selectedUsers: [] },
-    { id: "tbl2", type: "require_media" },
+    { id: "tbl1", type: "escalation", recipientType: "role", recipientValue: "Store Manager", channels: { email: true, inApp: true }, message: "", selectedUsers: [] },
   ]}]},
   "bq-3": { rules: [{ id: "rbl2", operator: "equals", value: "Fail", triggers: [
     { id: "tbl3", type: "require_action", actionTitle: "PPE compliance review", description: "Ensure all employees have required PPE.", assigneeRole: "Store Manager", dueDays: 1 },
   ]}]},
   "bq-7": { rules: [{ id: "rbl3", operator: "equals", value: "No", triggers: [
-    { id: "tbl4", type: "notify", recipientType: "role", recipientValue: "Asset Protection Lead", channels: { email: true, inApp: true }, message: "Safe found unsecured.", selectedUsers: [] },
-    { id: "tbl5", type: "require_note" },
+    { id: "tbl4", type: "escalation", recipientType: "role", recipientValue: "Asset Protection Lead", channels: { email: true, inApp: true }, message: "Safe found unsecured.", selectedUsers: [] },
   ]}]},
 };
 
 const TRIGGER_MENU = [
   { type: "ask_questions",  label: "Ask questions",  group: "flow" },
-  { type: "notify",         label: "Notify",          group: "flow" },
-  { type: "require_action", label: "Require action",  group: "flow" },
-  { type: "require_note",   label: "Require note",    group: "require" },
-  { type: "require_media",  label: "Require media",   group: "require" },
+  { type: "escalation",     label: "Escalation",     group: "flow" },
+  { type: "require_action", label: "Require action", group: "flow" },
 ];
 
 function ruleConditionOps(answerType) {
@@ -922,25 +938,33 @@ function emptyTrigger(type) {
   const base = { id: genId("trg"), type };
   switch (type) {
     case "ask_questions":  return { ...base, questions: [] };
-    case "notify":         return { ...base, recipientType: "role", recipientValue: ROLE_OPTIONS[0], channels: { email: true, inApp: true }, message: "", selectedUsers: [] };
+    case "escalation":     return { ...base, recipientType: "role", recipientValue: ROLE_OPTIONS[0], channels: { email: true, inApp: true }, message: "", selectedUsers: [] };
     case "require_action": return { ...base, actionTitle: "", description: "", assigneeRole: "", dueDays: 7 };
     default:               return base;
   }
 }
 
-function triggerSummary(trigger) {
+function triggerInlineSummary(trigger) {
   switch (trigger.type) {
     case "ask_questions": {
       const n = trigger.questions?.length ?? 0;
-      return n === 0 ? "none selected" : `${n} question${n !== 1 ? "s" : ""}`;
+      if (n === 0) return "No follow-up questions added yet";
+      if (n === 1) { const t = trigger.questions[0].title; return t.length > 52 ? t.slice(0, 52) + "…" : t; }
+      return `${n} follow-up questions`;
     }
-    case "notify": {
-      const r = trigger.recipientType === "user"
-        ? `${trigger.selectedUsers?.length ?? 0} user(s)`
+    case "escalation": {
+      const recipient = trigger.recipientType === "user"
+        ? `${(trigger.selectedUsers ?? []).length} user(s)`
         : trigger.recipientValue || "—";
-      return `→ ${r}`;
+      const chs = [trigger.channels?.email && "Email", trigger.channels?.inApp && "In-app"].filter(Boolean).join(" · ");
+      return `${recipient}${chs ? ` — ${chs}` : ""}`;
     }
-    case "require_action": return trigger.actionTitle ? `— ${trigger.actionTitle.slice(0, 22)}` : "";
+    case "require_action": {
+      const title = trigger.actionTitle?.trim() || "Untitled action";
+      const role  = trigger.assigneeRole || "Unassigned";
+      const days  = trigger.dueDays ?? 7;
+      return `${title} — ${role} · ${days}d`;
+    }
     default: return "";
   }
 }
@@ -949,11 +973,9 @@ function triggerSummary(trigger) {
 
 function TriggerIcon({ type, size = 13 }) {
   const s = { width: size, height: size, flexShrink: 0 };
-  if (type === "ask_questions") return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
-  if (type === "notify")        return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>;
-  if (type === "require_action")return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>;
-  if (type === "require_note")  return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
-  if (type === "require_media") return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>;
+  if (type === "ask_questions")  return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+  if (type === "escalation")     return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>;
+  if (type === "require_action") return <svg style={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>;
   return null;
 }
 
@@ -1008,11 +1030,9 @@ function BankPickerModal({ selected, onChange, onClose }) {
   }
 
   const TRIGGER_LABELS = {
-    ask_questions: "Conditional questions",
-    notify: "Notification",
+    ask_questions:  "Conditional questions",
+    escalation:     "Escalation",
     require_action: "Required action",
-    require_note: "Required note",
-    require_media: "Required media",
   };
 
   const ansTypeMeta2 = v => ANSWER_TYPES.find(t => t.value === v) ?? { bg: C.g1, color: C.g5 };
@@ -1209,12 +1229,12 @@ function AskQuestionsEditor({ trigger, onChange }) {
   );
 }
 
-function NotifyEditor({ trigger, onChange }) {
+function EscalationEditor({ trigger, onChange }) {
   function set(f, v) { onChange({ ...trigger, [f]: v }); }
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <div>
-        <Label>Recipient</Label>
+        <Label>Escalate to</Label>
         <div style={{ display: "flex", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
           {[["Specific user", "user"], ["Role", "role"], ["Group", "group"]].map(([lbl, val]) => (
             <button key={val} onClick={() => set("recipientType", val)}
@@ -1298,84 +1318,42 @@ function RequireActionEditor({ trigger, onChange }) {
   );
 }
 
-// ── Add-trigger dropdown menu ─────────────────────────────────────────────────
+// ── Logic data helpers ────────────────────────────────────────────────────────
 
-function AddTriggerMenu({ onSelect, existingTypes }) {
-  const [open, setOpen] = useState(false);
-  const menuRef  = useRef(null);
-  const btnRef   = useRef(null);
+function EMPTY_LOGIC() {
+  return { conditionalQs: { rules: [] }, escalation: { rules: [] }, action: { rules: [] } };
+}
 
-  useEffect(() => {
-    if (!open) return;
-    function outside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target) &&
-          btnRef.current  && !btnRef.current.contains(e.target)) setOpen(false);
-    }
-    document.addEventListener("mousedown", outside);
-    return () => document.removeEventListener("mousedown", outside);
-  }, [open]);
-
-  const singleUse = ["require_note", "require_media"];
-
-  return (
-    <div style={{ position: "relative", display: "inline-block" }}>
-      <button ref={btnRef} onClick={() => setOpen(o => !o)}
-        style={{
-          display: "flex", alignItems: "center", gap: 5, background: "none",
-          border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "4px 10px",
-          fontSize: 12, color: C.g4, fontFamily: F, cursor: "pointer",
-        }}
-        onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
-        onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
-      >
-        <IconPlus size={11} /> trigger
-      </button>
-
-      {open && (
-        <div ref={menuRef} style={{
-          position: "absolute", top: "calc(100% + 4px)", left: 0, zIndex: 300,
-          background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8,
-          boxShadow: "0 6px 20px rgba(0,0,0,0.12)", minWidth: 190, overflow: "hidden",
-        }}>
-          {TRIGGER_MENU.map((item, i) => {
-            const disabled = singleUse.includes(item.type) && existingTypes.includes(item.type);
-            const showDiv  = i > 0 && item.group !== TRIGGER_MENU[i - 1].group;
-            return (
-              <div key={item.type}>
-                {showDiv && <div style={{ height: 1, background: C.g2, margin: "3px 0" }} />}
-                <button
-                  onClick={() => { if (!disabled) { onSelect(item.type); setOpen(false); } }}
-                  disabled={disabled}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8, width: "100%",
-                    padding: "9px 14px", background: "none", border: "none",
-                    fontSize: 13, fontFamily: F, color: disabled ? C.g3 : C.g6,
-                    cursor: disabled ? "default" : "pointer", textAlign: "left",
-                  }}
-                  onMouseEnter={e => { if (!disabled) e.currentTarget.style.background = C.g1; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "none"; }}
-                >
-                  <TriggerIcon type={item.type} />
-                  {item.label}
-                  {disabled && <span style={{ fontSize: 11, color: C.g3, marginLeft: "auto" }}>added</span>}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
+function migrateLogic(logic) {
+  if (!logic) return EMPTY_LOGIC();
+  if ("conditionalQs" in logic || "escalation" in logic || "action" in logic) {
+    return {
+      conditionalQs: logic.conditionalQs ?? { rules: [] },
+      escalation:    logic.escalation    ?? { rules: [] },
+      action:        logic.action        ?? { rules: [] },
+    };
+  }
+  // Old { rules: [...] } format — split into tabs by trigger type
+  const out = EMPTY_LOGIC();
+  for (const rule of (logic.rules ?? [])) {
+    const triggers = rule.triggers ?? [];
+    const base = { id: rule.id, kind: rule.kind, conditions: rule.conditions, conditionOperator: rule.conditionOperator };
+    const aq = triggers.filter(t => t.type === "ask_questions");
+    const nt = triggers.filter(t => t.type === "notify" || t.type === "escalation");
+    const ra = triggers.filter(t => t.type === "require_action");
+    if (aq.length) out.conditionalQs.rules.push({ ...base, triggers: aq });
+    if (nt.length) out.escalation.rules.push({ ...base, triggers: nt.map(t => ({ ...t, type: "escalation" })) });
+    if (ra.length) out.action.rules.push({ ...base, triggers: ra });
+  }
+  return out;
 }
 
 // ── Single logic rule card ────────────────────────────────────────────────────
 
 const TRIGGER_COLORS = {
   ask_questions:  { bg: "#d4e2ff", color: "#001e76", border: "#c7ccff" },
-  notify:         { bg: "#fef9c3", color: "#854d0e", border: "#fde68a" },
+  escalation:     { bg: "#fef9c3", color: "#854d0e", border: "#fde68a" },
   require_action: { bg: "#ccfbf1", color: "#115e59", border: "#99f6e4" },
-  require_note:   { bg: C.g1,     color: C.g5,      border: C.g2      },
-  require_media:  { bg: C.g1,     color: C.g5,      border: C.g2      },
 };
 
 const COND_OP_OPTS = [
@@ -1439,78 +1417,105 @@ function InlineOpSelector({ value, onChange }) {
   );
 }
 
-function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
-  const [expandedTrigger, setExpandedTrigger] = useState(null);
-  // Normalize to multi-condition format on first render.
-  const rule   = normalizeRule(rawRule, answerType);
-  const kind   = rule.kind ?? (isFirst ? "if" : "else_if");
-  const isElse = kind === "else";
+// ── Inline trigger list item ──────────────────────────────────────────────────
 
-  const ops   = ruleConditionOps(answerType);
-  const vals  = ruleConditionValues(answerType);
-  const isNum = answerType === "Rating Scale" || answerType === "Number";
-  const existingTypes = rule.triggers.map(t => t.type);
+function TriggerListItem({ trigger, triggerType, expanded, onToggle, onDelete, onChange }) {
+  const col = TRIGGER_COLORS[triggerType] ?? { bg: C.g1, color: C.g5, border: C.g2 };
+  const summary = triggerInlineSummary(trigger);
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <span style={{ fontSize: 11, color: C.g3, fontFamily: F, flexShrink: 0, userSelect: "none", paddingLeft: 4 }}>↳</span>
+        <button onClick={onToggle} style={{
+          flex: 1, display: "flex", alignItems: "center", gap: 6, textAlign: "left",
+          background: expanded ? col.bg : "transparent",
+          border: `1px solid ${expanded ? col.border : "transparent"}`,
+          borderRadius: 6, padding: "4px 8px",
+          color: expanded ? col.color : C.g5, fontSize: 12, fontFamily: F, cursor: "pointer",
+          transition: "background 0.1s, border-color 0.1s",
+        }}
+          onMouseEnter={e => { if (!expanded) { e.currentTarget.style.background = C.g1; e.currentTarget.style.borderColor = C.g2; } }}
+          onMouseLeave={e => { if (!expanded) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "transparent"; } }}
+        >
+          <span style={{ flex: 1, lineHeight: "16px" }}>{summary}</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            {expanded ? <polyline points="18 15 12 9 6 15"/> : <polyline points="6 9 12 15 18 9"/>}
+          </svg>
+        </button>
+        <button onClick={onDelete} style={{ background: "none", border: "none", cursor: "pointer", color: C.g3, display: "flex", padding: 2, borderRadius: 4, flexShrink: 0 }}
+          onMouseEnter={e => e.currentTarget.style.color = C.red} onMouseLeave={e => e.currentTarget.style.color = C.g3}
+        ><IconTrash /></button>
+      </div>
+      {expanded && (
+        <div style={{ marginTop: 6, marginLeft: 22, padding: "12px 14px", background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8 }}>
+          {triggerType === "ask_questions"  && <AskQuestionsEditor  trigger={trigger} onChange={onChange} />}
+          {triggerType === "escalation"     && <EscalationEditor    trigger={trigger} onChange={onChange} />}
+          {triggerType === "require_action" && <RequireActionEditor trigger={trigger} onChange={onChange} />}
+        </div>
+      )}
+    </div>
+  );
+}
 
-  function set(f, v) { onChange({ ...rule, [f]: v }); }
+// ── Logic rule card (per-tab version) ────────────────────────────────────────
+
+function LogicRuleV2({ rule: rawRule, triggerType, addLabel, answerType, isFirst, onChange, onDelete }) {
+  const [expandedTriggerId, setExpandedTriggerId] = useState(null);
+  const rule     = normalizeRule(rawRule, answerType);
+  const kind     = rule.kind ?? (isFirst ? "if" : "else_if");
+  const isElse   = kind === "else";
+  const ops      = ruleConditionOps(answerType);
+  const vals     = ruleConditionValues(answerType);
+  const isNum    = answerType === "Rating Scale" || answerType === "Number";
+  const condOp   = rule.conditionOperator ?? "and";
+  const conditions = rule.conditions ?? [];
+  const triggers   = rule.triggers ?? [];
+  const condOpMeta = COND_OP_OPTS.find(o => o.v === condOp) ?? COND_OP_OPTS[0];
 
   function setCondOp(v) { onChange({ ...rule, conditionOperator: v }); }
-
   function updateCond(id, patch) {
     onChange({ ...rule, conditions: rule.conditions.map(c => c.id === id ? { ...c, ...patch } : c) });
   }
-
   function addCond() {
     onChange({ ...rule, conditions: [...rule.conditions, emptyCondition(answerType)] });
   }
-
   function deleteCond(id) {
     if (rule.conditions.length <= 1) return;
     onChange({ ...rule, conditions: rule.conditions.filter(c => c.id !== id) });
   }
-
-  function addTrigger(type) {
-    const t = emptyTrigger(type);
-    onChange({ ...rule, triggers: [...rule.triggers, t] });
-    const hasEditor = type !== "require_note" && type !== "require_media";
-    if (hasEditor) setExpandedTrigger(t.id);
+  function addTrigger() {
+    const t = emptyTrigger(triggerType);
+    onChange({ ...rule, triggers: [...triggers, t] });
+    setExpandedTriggerId(t.id);
   }
-
   function updateTrigger(id, patch) {
-    onChange({ ...rule, triggers: rule.triggers.map(t => t.id === id ? { ...t, ...patch } : t) });
+    onChange({ ...rule, triggers: triggers.map(t => t.id === id ? { ...t, ...patch } : t) });
   }
-
   function deleteTrigger(id) {
-    onChange({ ...rule, triggers: rule.triggers.filter(t => t.id !== id) });
-    if (expandedTrigger === id) setExpandedTrigger(null);
+    onChange({ ...rule, triggers: triggers.filter(t => t.id !== id) });
+    if (expandedTriggerId === id) setExpandedTriggerId(null);
   }
-
-  const condOp     = rule.conditionOperator ?? "and";
-  const conditions = rule.conditions ?? [];
-  const condOpMeta = COND_OP_OPTS.find(o => o.v === condOp) ?? COND_OP_OPTS[0];
 
   return (
     <div style={{ background: C.white, border: `1.5px solid ${C.g2}`, borderRadius: 10, padding: "16px 18px", boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
 
       {/* Condition area */}
       {isElse ? (
-        <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: triggers.length > 0 ? 12 : 0 }}>
           <span style={{ fontSize: 12, color: C.g4, fontFamily: F, fontStyle: "italic", flex: 1 }}>For anything else</span>
           <button onClick={onDelete} style={{ background: "none", border: "none", cursor: "pointer", color: C.g3, display: "flex", padding: 4, borderRadius: 4 }}
             onMouseEnter={e => e.currentTarget.style.color = C.red} onMouseLeave={e => e.currentTarget.style.color = C.g3}
           ><IconTrash /></button>
         </div>
       ) : (
-        <div style={{ marginBottom: 10 }}>
-          {/* Header row: sentence-format operator selector */}
+        <div style={{ marginBottom: 12 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
             <span style={{ fontSize: 12, color: C.g5, fontFamily: F, fontWeight: 700, letterSpacing: "0.03em", flexShrink: 0 }}>
-              {isFirst ? "Show when" : "And when"}
+              {isFirst ? "When" : "Or when"}
             </span>
-            {conditions.length > 1 ? (
-              <InlineOpSelector value={condOp} onChange={setCondOp} />
-            ) : (
-              <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>this</span>
-            )}
+            {conditions.length > 1
+              ? <InlineOpSelector value={condOp} onChange={setCondOp} />
+              : <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>this</span>}
             <span style={{ fontSize: 11, color: C.g4, fontFamily: F }}>
               {conditions.length > 1 ? "of these conditions match:" : "condition matches:"}
             </span>
@@ -1519,22 +1524,15 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
             ><IconTrash /></button>
           </div>
 
-          {/* Condition rows */}
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {conditions.map((cond, ci) => (
               <div key={cond.id} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                {/* Connector label between rows */}
                 {ci > 0 && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, fontFamily: F, letterSpacing: "0.03em",
-                    padding: "1px 7px", borderRadius: 4,
-                    background: condOpMeta.bg, color: condOpMeta.color, border: `1px solid ${condOpMeta.border}`,
-                    flexShrink: 0, textTransform: "uppercase",
-                  }}>{condOp === "none" ? "nor" : condOpMeta.word}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: F, letterSpacing: "0.03em", padding: "1px 7px", borderRadius: 4, background: condOpMeta.bg, color: condOpMeta.color, border: `1px solid ${condOpMeta.border}`, flexShrink: 0, textTransform: "uppercase" }}>
+                    {condOp === "none" ? "nor" : condOpMeta.word}
+                  </span>
                 )}
-                <span style={{ fontSize: 12, color: C.g5, fontFamily: F, flexShrink: 0 }}>
-                  {ci === 0 ? "Answer" : "answer"}
-                </span>
+                <span style={{ fontSize: 12, color: C.g5, fontFamily: F, flexShrink: 0 }}>{ci === 0 ? "Answer" : "answer"}</span>
                 <select value={cond.operator} onChange={e => updateCond(cond.id, { operator: e.target.value })} style={{ ...selectStyle(), width: "auto" }}>
                   {ops.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
                 </select>
@@ -1555,8 +1553,7 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
             ))}
           </div>
 
-          {/* Add condition */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+          <div style={{ marginTop: 8 }}>
             <button onClick={addCond}
               style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "3px 10px", fontSize: 11, fontWeight: 600, fontFamily: F, color: C.g4, cursor: "pointer" }}
               onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
@@ -1566,112 +1563,71 @@ function LogicRule({ rule: rawRule, answerType, onChange, onDelete, isFirst }) {
         </div>
       )}
 
-      {/* Triggers */}
-      {rule.triggers.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 10, paddingLeft: 2 }}>
-          {rule.triggers.map(trigger => {
-            const col = TRIGGER_COLORS[trigger.type] ?? { bg: C.g1, color: C.g5, border: C.g2 };
-            const isExpanded = expandedTrigger === trigger.id;
-            const hasEditor  = trigger.type !== "require_note" && trigger.type !== "require_media";
-            const summary    = triggerSummary(trigger);
-            return (
-              <div key={trigger.id}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <button
-                    onClick={() => hasEditor && setExpandedTrigger(isExpanded ? null : trigger.id)}
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: 6,
-                      padding: "4px 10px", borderRadius: 6,
-                      background: col.bg, border: `1px solid ${col.border}`,
-                      color: col.color, fontSize: 12, fontFamily: F, fontWeight: 500,
-                      cursor: hasEditor ? "pointer" : "default",
-                    }}
-                  >
-                    <TriggerIcon type={trigger.type} size={12} />
-                    {TRIGGER_MENU.find(m => m.type === trigger.type)?.label}
-                    {summary && <span style={{ opacity: 0.7 }}>{summary}</span>}
-                    {hasEditor && (
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        {isExpanded ? <polyline points="18 15 12 9 6 15"/> : <polyline points="6 9 12 15 18 9"/>}
-                      </svg>
-                    )}
-                  </button>
-                  <button onClick={() => deleteTrigger(trigger.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: C.g3, display: "flex", padding: 2, borderRadius: 4 }}
-                    onMouseEnter={e => e.currentTarget.style.color = C.red} onMouseLeave={e => e.currentTarget.style.color = C.g3}
-                  ><IconTrash /></button>
-                </div>
-
-                {isExpanded && hasEditor && (
-                  <div style={{ marginTop: 6, marginLeft: 8, padding: "12px 14px", background: C.white, border: `1px solid ${C.g2}`, borderRadius: 8 }}>
-                    {trigger.type === "ask_questions"  && <AskQuestionsEditor  trigger={trigger} onChange={p => updateTrigger(trigger.id, p)} />}
-                    {trigger.type === "notify"          && <NotifyEditor        trigger={trigger} onChange={p => updateTrigger(trigger.id, p)} />}
-                    {trigger.type === "require_action"  && <RequireActionEditor trigger={trigger} onChange={p => updateTrigger(trigger.id, p)} />}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+      {/* Inline trigger list */}
+      {triggers.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 10 }}>
+          {triggers.map(trigger => (
+            <TriggerListItem
+              key={trigger.id}
+              trigger={trigger}
+              triggerType={triggerType}
+              expanded={expandedTriggerId === trigger.id}
+              onToggle={() => setExpandedTriggerId(expandedTriggerId === trigger.id ? null : trigger.id)}
+              onDelete={() => deleteTrigger(trigger.id)}
+              onChange={patch => updateTrigger(trigger.id, patch)}
+            />
+          ))}
         </div>
       )}
 
-      <AddTriggerMenu onSelect={addTrigger} existingTypes={existingTypes} />
+      {/* Add trigger */}
+      <button onClick={addTrigger}
+        style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 600, fontFamily: F, color: C.g4, cursor: "pointer" }}
+        onMouseEnter={e => { e.currentTarget.style.color = C.navy; e.currentTarget.style.borderColor = C.navy; }}
+        onMouseLeave={e => { e.currentTarget.style.color = C.g4; e.currentTarget.style.borderColor = C.g3; }}
+      ><IconPlus size={10} /> {addLabel}</button>
     </div>
   );
 }
 
-// ── Logic panel (tab per rule) ────────────────────────────────────────────────
+// ── Logic tab content ─────────────────────────────────────────────────────────
 
-function ruleTabLabel(rule, idx, answerType) {
-  const kind = rule.kind ?? (idx === 0 ? "if" : "else_if");
-  if (kind === "else") return "Otherwise";
-  const ops    = ruleConditionOps(answerType);
-  // Support both old (operator/value) and new (conditions[]) formats.
-  const firstCond = rule.conditions?.[0] ?? { operator: rule.operator, value: rule.value };
-  const op     = ops.find(o => o.v === firstCond.operator);
-  const val    = firstCond.value ? ` ${firstCond.value}` : "";
-  const prefix = idx === 0 ? "When" : "Or when";
-  const extra  = (rule.conditions?.length ?? 1) > 1 ? ` +${rule.conditions.length - 1}` : "";
-  return `${prefix} ${op?.l ?? "answer"}${val}${extra}`;
-}
+const LOGIC_TABS = [
+  { key: "conditionalQs", label: "Conditional Questions", type: "ask_questions",  addLabel: "Add follow-up questions" },
+  { key: "escalation",    label: "Escalation",            type: "escalation",     addLabel: "Add escalation"          },
+  { key: "action",        label: "Action",                type: "require_action", addLabel: "Add action"              },
+];
 
-function LogicPanel({ logic, answerType, onChange }) {
-  const rules = logic?.rules ?? [];
+function LogicTabContent({ rules, triggerType, addLabel, answerType, onChange }) {
   const hasElse = rules.some(r => (r.kind ?? "else_if") === "else");
 
   function addRule() {
-    const newRule = emptyLogicRule(answerType, "else_if");
-    const elseIdx = rules.findIndex(existing => (existing.kind ?? "else_if") === "else");
-    const newRules = elseIdx >= 0
+    const newRule = emptyLogicRule(answerType, rules.length === 0 ? "if" : "else_if");
+    const elseIdx = rules.findIndex(r => (r.kind ?? "else_if") === "else");
+    const next = elseIdx >= 0
       ? [...rules.slice(0, elseIdx), newRule, ...rules.slice(elseIdx)]
       : [...rules, newRule];
-    onChange({ ...logic, rules: newRules });
+    onChange(next);
   }
-
-  function addElse() {
-    onChange({ ...logic, rules: [...rules, emptyLogicRule(answerType, "else")] });
-  }
-
-  function updateRule(idx, patch) {
-    onChange({ ...logic, rules: rules.map((r, i) => i === idx ? { ...r, ...patch } : r) });
-  }
-
+  function addElse() { onChange([...rules, emptyLogicRule(answerType, "else")]); }
+  function updateRule(idx, patch) { onChange(rules.map((r, i) => i === idx ? { ...r, ...patch } : r)); }
   function deleteRule(idx) {
     let next = rules.filter((_, i) => i !== idx);
-    if (idx === 0 && next.length > 0) {
-      next = [{ ...next[0], kind: "if" }, ...next.slice(1)];
-    }
-    onChange({ ...logic, rules: next });
+    if (idx === 0 && next.length > 0) next = [{ ...next[0], kind: "if" }, ...next.slice(1)];
+    onChange(next);
   }
+
+  const EMPTY_HINTS = {
+    ask_questions:  "Add a rule to show follow-up questions based on the answer.",
+    escalation:     "Add a rule to escalate when a specific answer is given.",
+    require_action: "Add a rule to create an action item when a specific answer is given.",
+  };
 
   if (rules.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "28px 0" }}>
-        <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginBottom: 12 }}>
-          No logic configured. Add a rule to trigger actions based on this question's answer.
-        </div>
-        <button
-          onClick={() => onChange({ ...logic, rules: [emptyLogicRule(answerType, "if")] })}
+        <div style={{ fontSize: 12, color: C.g4, fontFamily: F, marginBottom: 12 }}>{EMPTY_HINTS[triggerType]}</div>
+        <button onClick={addRule}
           style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.navy, color: C.white, border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 12, fontWeight: 600, fontFamily: F, cursor: "pointer" }}
           onMouseEnter={e => e.currentTarget.style.background = C.navy2} onMouseLeave={e => e.currentTarget.style.background = C.navy}
         ><IconPlus size={12} /> Add rule</button>
@@ -1681,12 +1637,13 @@ function LogicPanel({ logic, answerType, onChange }) {
 
   return (
     <div>
-      {/* All rules stacked */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {rules.map((rule, idx) => (
-          <LogicRule
+          <LogicRuleV2
             key={rule.id}
             rule={rule}
+            triggerType={triggerType}
+            addLabel={addLabel}
             answerType={answerType}
             isFirst={idx === 0}
             onChange={patch => updateRule(idx, patch)}
@@ -1694,8 +1651,6 @@ function LogicPanel({ logic, answerType, onChange }) {
           />
         ))}
       </div>
-
-      {/* Add buttons */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
         <button onClick={addRule}
           style={{ display: "inline-flex", alignItems: "center", gap: 4, background: "none", border: `1px dashed ${C.g3}`, borderRadius: 6, padding: "4px 12px", fontSize: 11, fontWeight: 600, fontFamily: F, color: C.g4, cursor: "pointer" }}
@@ -1714,6 +1669,56 @@ function LogicPanel({ logic, answerType, onChange }) {
   );
 }
 
+// ── Logic panel — 3 top-level tabs ────────────────────────────────────────────
+
+function LogicPanel({ logic, answerType, onChange }) {
+  const [tab, setTab] = useState("conditionalQs");
+  const l       = migrateLogic(logic);
+  const tabMeta = LOGIC_TABS.find(t => t.key === tab);
+
+  return (
+    <div>
+      {/* Tab row */}
+      <div style={{ display: "flex", borderBottom: `1px solid ${C.g2}`, marginBottom: 16 }}>
+        {LOGIC_TABS.map(t => {
+          const active = t.key === tab;
+          const count  = (l[t.key]?.rules ?? []).length;
+          return (
+            <button key={t.key} onClick={() => setTab(t.key)} style={{
+              fontSize: 12, fontWeight: active ? 600 : 400, fontFamily: F,
+              color: active ? C.navy : C.g4,
+              background: "none", border: "none",
+              borderBottom: active ? `2px solid ${C.navy}` : "2px solid transparent",
+              padding: "8px 14px", marginBottom: -1,
+              cursor: "pointer", display: "flex", alignItems: "center", gap: 5,
+              transition: "color 0.1s",
+            }}
+              onMouseEnter={e => { if (!active) e.currentTarget.style.color = C.g5; }}
+              onMouseLeave={e => { if (!active) e.currentTarget.style.color = C.g4; }}
+            >
+              {t.label}
+              {count > 0 && (
+                <span style={{ fontSize: 10, fontWeight: 600, fontFamily: F, background: active ? C.navy : C.g2, color: active ? C.white : C.g4, borderRadius: 10, padding: "0 5px", lineHeight: "16px" }}>
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Active tab content */}
+      <LogicTabContent
+        rules={l[tab]?.rules ?? []}
+        triggerType={tabMeta.type}
+        addLabel={tabMeta.addLabel}
+        answerType={answerType}
+        onChange={rules => onChange({ ...l, [tab]: { rules } })}
+      />
+    </div>
+  );
+}
+
 export default function QuestionBuilder({ question, isNew, methodology, sectionName, onSave, onClose }) {
   // Panel 1 state (merged). New questions start with empty answer type so the
   // dropdown shows a placeholder rather than a pre-selected default.
@@ -1723,13 +1728,15 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
     critical:        question.critical               ?? false,
     informational:   question.informational          ?? false,
     allowAttachment: question.media?.allowAttachment ?? false,
+    requireNote:     question.requireNote            ?? false,
+    requireMedia:    question.requireMedia           ?? false,
     instructions:    question.instructions           ?? "",
     typeConfig:      question.typeConfig             ?? {},
   });
 
   const [title, setTitle]   = useState(question.title ?? "");
   const [inBank, setInBank] = useState(question.inBank ?? false);
-  const [logic, setLogic]   = useState(question.logic ?? { rules: [] });
+  const [logic, setLogic]   = useState(() => migrateLogic(question.logic));
 
   const [titleError, setTitleError] = useState(false);
   const [isDirty, setIsDirty]       = useState(false);
@@ -1779,7 +1786,9 @@ export default function QuestionBuilder({ question, isNew, methodology, sectionN
       instructions:  panel1.instructions,
       typeConfig:    panel1.typeConfig,
       inBank,
-      media: { allowAttachment: panel1.allowAttachment },
+      media:         { allowAttachment: panel1.allowAttachment },
+      requireNote:   panel1.requireNote,
+      requireMedia:  panel1.requireMedia,
       logic,
       critical:      panel1.critical,
       informational: panel1.informational,

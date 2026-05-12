@@ -24,7 +24,7 @@ const C = {
 
 // TODO: [assumption-1] File size limit: 25MB
 const MAX_FILE_SIZE = 26_214_400;
-const ALLOWED_EXTS = [".docx", ".pdf", ".xlsx"];
+const ALLOWED_EXTS = [".xlsx"];
 
 // TODO: [assumption-2] AI processing simulation: 5 steps × 2s intervals
 const PROCESSING_STEPS = [
@@ -51,8 +51,8 @@ function validateFile(file) {
 function ErrorBanner({ errorType, onRetry, onBack }) {
   const messages = {
     "file-too-large": "File exceeds 25MB. Try a smaller file or split it.",
-    "unsupported-format": "We support .docx, .pdf, and .xlsx.",
-    "extraction-failed": "We couldn't read this document well enough to extract questions. Try Build from scratch, or upload a clearer version.",
+    "unsupported-format": "We support .xlsx files only.",
+    "extraction-failed": "We couldn't read this file well enough to extract questions. Try Build from scratch, or upload a clearer version.",
     "network-error": "Upload failed. Try again.",
   };
   return (
@@ -94,7 +94,7 @@ function ErrorBanner({ errorType, onRetry, onBack }) {
   );
 }
 
-export default function RouteB({ onComplete, onBack, onCancel }) {
+export default function RouteB({ onComplete, onBack, onCancel, onProcessingStarted }) {
   const [uploadState, setUploadState] = useState("idle"); // idle | uploading | processing | success | error
   const [file, setFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -136,7 +136,8 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
         uploadIntervalRef.current = null;
         setUploadState("processing");
         setProcessingStep(0);
-        startProcessingSimulation();
+        // Advance user to wizard immediately so they can fill in Details while extraction runs
+        onProcessingStarted?.();
       }
     }, 200);
   }, []);
@@ -342,7 +343,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".docx,.pdf,.xlsx"
+                  accept=".xlsx"
                   style={{ display: "none" }}
                   onChange={(e) => {
                     const f = e.target.files?.[0];
@@ -352,7 +353,7 @@ export default function RouteB({ onComplete, onBack, onCancel }) {
                 />
               </div>
               <div style={{ marginTop: 12, fontSize: 12, color: C.g4 }}>
-                Supports .docx, .pdf, .xlsx · Max 25MB
+                Supports .xlsx · Max 25MB
               </div>
             </>
           )}

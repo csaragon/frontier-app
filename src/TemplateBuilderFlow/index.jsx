@@ -6,6 +6,7 @@ import RouteB from "./RouteB.jsx";
 import WizardShell from "./WizardShell.jsx";
 import { DiscardModal } from "./modals.jsx";
 import AppSidebar from "../AppSidebar.jsx";
+import DraftsPage from "../DraftsPage.jsx";
 
 function formatRelativeTime(date) {
   if (!date) return null;
@@ -18,11 +19,13 @@ function formatRelativeTime(date) {
 }
 
 export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTemplateId = null, onExit, onNav, templates = [], categories = [] }) {
-  const [screen, setScreen] = useState(initialTemplateId ? "wizard" : "pick"); // 'pick' | 'routeA' | 'routeB' | 'wizard'
-  const [routeOrigin, setRouteOrigin] = useState(initialTemplateId ? "template" : null); // 'template' | 'upload' | 'scratch' | null
+  const [screen, setScreen] = useState(initialTemplateId ? "wizard" : "pick"); // 'pick' | 'routeA' | 'routeB' | 'wizard' | 'drafts'
+  const [routeOrigin, setRouteOrigin] = useState(initialTemplateId ? "template" : null); // 'template' | 'upload' | 'scratch' | 'ai' | null
   const [selectedTemplateId, setSelectedTemplateId] = useState(initialTemplateId);
   const [hasRouteData, setHasRouteData] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
+  const [extractionPending, setExtractionPending] = useState(false);
+  const extractionTimerRef = useRef(null);
 
   // Auto-save state
   const [lastSaved, setLastSaved] = useState(null);
@@ -74,9 +77,9 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
     if (route === "template") {
       setScreen("routeA");
       setRouteOrigin("template");
-    } else if (route === "upload") {
+    } else if (route === "upload" || route === "ai") {
       setScreen("routeB");
-      setRouteOrigin("upload");
+      setRouteOrigin(route);
     } else if (route === "scratch") {
       setScreen("wizard");
       setRouteOrigin("scratch");
@@ -96,9 +99,25 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
     setIsDirty(true);
   };
 
+  const handleProcessingStarted = () => {
+    setScreen("wizard");
+    setIsDirty(true);
+    setExtractionPending(true);
+    if (extractionTimerRef.current) clearTimeout(extractionTimerRef.current);
+    // Simulate extraction completing after 10 seconds
+    extractionTimerRef.current = setTimeout(() => {
+      setExtractionPending(false);
+    }, 10000);
+  };
+
   const handleBackToPick = () => {
     setScreen("pick");
     setHasRouteData(false);
+    if (extractionTimerRef.current) {
+      clearTimeout(extractionTimerRef.current);
+      extractionTimerRef.current = null;
+    }
+    setExtractionPending(false);
   };
 
   const handleSaveAndExit = () => {
@@ -117,6 +136,14 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
             entryPoint={entryPoint}
             templates={templates}
             onResumeDraft={handleUseTemplate}
+            onViewAllDrafts={() => setScreen("drafts")}
+          />
+        )}
+        {screen === "drafts" && (
+          <DraftsPage
+            templates={templates}
+            onResume={handleUseTemplate}
+            onBack={() => setScreen("pick")}
           />
         )}
         {screen === "routeA" && (
@@ -133,6 +160,7 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
             onComplete={handleUploadComplete}
             onBack={handleBackToPick}
             onCancel={onExit}
+            onProcessingStarted={handleProcessingStarted}
           />
         )}
         {screen === "wizard" && (
@@ -144,6 +172,8 @@ export default function TemplateBuilderFlow({ entryPoint = "catalog", initialTem
             onExit={onExit}
             categories={categories}
             templates={templates}
+            extractionPending={extractionPending}
+            onExtractionDone={() => setExtractionPending(false)}
           />
         )}
         {showDiscardModal && (

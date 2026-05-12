@@ -662,6 +662,8 @@ export default function WizardShell({
   onExit,
   categories = [],
   templates = [],
+  extractionPending = false,
+  onExtractionDone,
 }) {
   const [step, setStep] = useState(1);
   // Tracks whether the user entered any field value on each step (during this visit to that step)
@@ -685,6 +687,7 @@ export default function WizardShell({
   const [showDiscard, setShowDiscard] = useState(false);
   const [cantActivateModal, setCantActivateModal] = useState(null); // null | { issues }
   const [activateConfirmModal, setActivateConfirmModal] = useState(false);
+  const [showActivatePreview, setShowActivatePreview] = useState(false);
   const [statusModal, setStatusModal] = useState(null); // null | "deactivate" | "reactivate" | "unpublish" | "publish"
   const [showUnconfirmedWarning, setShowUnconfirmedWarning] = useState(false);
 
@@ -721,6 +724,18 @@ export default function WizardShell({
     return () => clearInterval(labelTimer.current);
   }, [lastSaved]);
 
+  // When extraction finishes, navigate to Questions and show a toast
+  const prevExtractionPendingRef = useRef(extractionPending);
+  useEffect(() => {
+    if (prevExtractionPendingRef.current && !extractionPending) {
+      showToast("Questions extracted — review them here");
+      navigateToStep(2);
+    }
+    prevExtractionPendingRef.current = extractionPending;
+  // navigateToStep and showToast are defined below — safe to reference via closure
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [extractionPending]);
+
   function doSave() {
     const now = new Date();
     setLastSaved(now);
@@ -749,6 +764,12 @@ export default function WizardShell({
   }
 
   function handleActivateClick() {
+    // Show preview first, then validate + confirm on proceed
+    setShowActivatePreview(true);
+  }
+
+  function handleActivateAfterPreview() {
+    setShowActivatePreview(false);
     const issues = [];
     const s1 = formData[1]; const s2 = formData[2]; const s3 = formData[3]; const s5 = formData[5];
     if (!isStep1Complete(s1)) issues.push({ step: 1, label: "Details", reason: "Template name, category, and at least one language are required." });
@@ -865,7 +886,7 @@ export default function WizardShell({
         {/* Center: Audit Template Builder label + template name */}
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", pointerEvents: "none" }}>
           <span style={{ fontSize: 14, fontWeight: 500, color: C.g5, fontFamily: F, letterSpacing: "-0.1px" }}>
-            Audit Template Builder
+            Audit Builder
           </span>
         </div>
 
@@ -940,6 +961,31 @@ export default function WizardShell({
         onStepClick={navigateToStep}
         getWarningTip={(num) => getStepWarningTip(num, formData)}
       />
+
+      {/* ── Extraction in progress banner ── */}
+      {extractionPending && (
+        <div style={{
+          background: "#eef1ff",
+          borderBottom: `1px solid #c7cff7`,
+          padding: "9px 20px",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          flexShrink: 0,
+          fontFamily: F,
+        }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.navy} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, animation: "spin 1.2s linear infinite" }}>
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          </svg>
+          <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+          <span style={{ fontSize: 12, fontWeight: 600, color: C.navy }}>
+            Extracting questions from your file…
+          </span>
+          <span style={{ fontSize: 12, color: C.g5 }}>
+            Fill in the details below while we work. You'll be taken to the Questions step automatically when it's ready.
+          </span>
+        </div>
+      )}
 
       {/* ── Step content ── */}
       <div style={{ flex: 1, overflowY: "auto" }}>
@@ -1048,6 +1094,69 @@ export default function WizardShell({
           )}
         </div>
       </div>
+
+      {/* ── Activate preview modal ── */}
+      {showActivatePreview && (() => {
+        const secs = formData[2]?.sections ?? [];
+        const totalQs = secs.reduce((n, s) => n + (s.questions || []).length, 0);
+        return (
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, fontFamily:F }}
+            onClick={e => { if (e.target === e.currentTarget) setShowActivatePreview(false); }}>
+            <div style={{ background:C.white, borderRadius:14, width:560, maxHeight:"82vh", display:"flex", flexDirection:"column", boxShadow:"0 8px 40px rgba(0,0,0,0.20)" }}>
+              <div style={{ padding:"18px 24px 14px", borderBottom:`1px solid ${C.g2}`, flexShrink:0 }}>
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:C.navy, textTransform:"uppercase", letterSpacing:"0.07em" }}>Template Preview</span>
+                  <button onClick={() => setShowActivatePreview(false)} style={{ background:"none", border:"none", cursor:"pointer", color:C.g4, padding:4, display:"flex" }}
+                    onMouseEnter={e => e.currentTarget.style.color = C.g6} onMouseLeave={e => e.currentTarget.style.color = C.g4}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div style={{ fontSize:16, fontWeight:700, color:C.g6 }}>{templateName}</div>
+                <div style={{ fontSize:12, color:C.g4, marginTop:4 }}>
+                  {secs.length} section{secs.length !== 1 ? "s" : ""} · {totalQs} question{totalQs !== 1 ? "s" : ""}
+                </div>
+              </div>
+              <div style={{ flex:1, overflowY:"auto", padding:"14px 24px" }}>
+                {secs.length === 0 ? (
+                  <div style={{ textAlign:"center", padding:"40px 0", color:C.g4 }}>No questions added yet.</div>
+                ) : (
+                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    {secs.map((sec, si) => (
+                      <div key={sec.id} style={{ border:`1px solid ${C.g2}`, borderRadius:8, overflow:"hidden" }}>
+                        <div style={{ padding:"9px 14px", background:C.g1, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                          <span style={{ fontSize:13, fontWeight:600, color:C.g6 }}>{sec.name || `Section ${si + 1}`}</span>
+                          <span style={{ fontSize:12, color:C.g4 }}>{(sec.questions||[]).length} questions</span>
+                        </div>
+                        <div style={{ padding:"4px 0" }}>
+                          {(sec.questions||[]).map((q, qi) => (
+                            <div key={q.id} style={{ display:"flex", alignItems:"flex-start", gap:10, padding:"7px 14px", borderTop: qi > 0 ? `1px solid ${C.g1}` : "none" }}>
+                              <span style={{ fontSize:11, color:C.g4, fontWeight:600, flexShrink:0, minWidth:16 }}>{qi+1}</span>
+                              <span style={{ fontSize:12, color:C.g6, lineHeight:"17px", flex:1 }}>{q.title}</span>
+                              <span style={{ fontSize:10, fontWeight:600, color:"#2b4b94", background:"#d9e5f5", borderRadius:4, padding:"2px 6px", whiteSpace:"nowrap", flexShrink:0 }}>{q.answerType}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div style={{ padding:"14px 24px", borderTop:`1px solid ${C.g2}`, display:"flex", gap:10, alignItems:"center", flexShrink:0 }}>
+                <button onClick={handleActivateAfterPreview}
+                  style={{ background:C.navy, color:C.white, border:"none", borderRadius:8, padding:"9px 22px", fontSize:13, fontWeight:700, fontFamily:F, cursor:"pointer" }}
+                  onMouseEnter={e => e.currentTarget.style.background = C.navy2}
+                  onMouseLeave={e => e.currentTarget.style.background = C.navy}>
+                  Continue to activate
+                </button>
+                <button onClick={() => setShowActivatePreview(false)}
+                  style={{ background:"none", border:`1px solid ${C.g3}`, borderRadius:8, padding:"9px 18px", fontSize:13, fontWeight:500, fontFamily:F, color:C.g5, cursor:"pointer" }}>
+                  Keep editing
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Discard confirmation modal ── */}
       {showDiscard && (
