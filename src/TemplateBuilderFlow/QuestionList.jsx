@@ -784,66 +784,69 @@ function AiPromptBar({ sections, onAiResult }) {
   }
 
   return (
-    <div style={{
-      marginBottom: 18,
-      background: focused ? "#f0f3ff" : "#eef1ff",
-      border: `2px solid ${focused ? "#4f6bed" : "#c7cff7"}`,
-      borderRadius: 12,
-      padding: "12px 14px",
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      transition: "border-color 0.15s, background 0.15s",
-    }}>
-      <div style={{
-        width: 32, height: 32, borderRadius: 8,
-        background: "#001e76",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexShrink: 0,
-      }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/>
-        </svg>
+    <div style={{ marginBottom: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6 }}>
+        <div style={{ width: 20, height: 20, borderRadius: 5, background: C.navy, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3l1.8 5.4L19 10l-5.2 1.6L12 17l-1.8-5.4L5 10l5.2-1.6z"/>
+          </svg>
+        </div>
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.navy, fontFamily: F, letterSpacing: "0.02em" }}>
+          AI Audit Builder
+        </span>
+        <span style={{ fontSize: 12, color: C.g4, fontFamily: F }}>— generate sections or questions from a prompt</span>
       </div>
-      <input
-        value={prompt}
-        onChange={e => setPrompt(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        onKeyDown={e => { if (e.key === "Enter" && prompt.trim()) handleSubmit(); }}
-        placeholder='Ask AI to generate sections or questions — e.g. "Add a fire safety section with Yes/No questions"'
-        style={{
-          flex: 1,
-          background: "transparent",
-          border: "none",
-          outline: "none",
-          fontSize: 13,
-          fontFamily: F,
-          color: C.g6,
-        }}
-      />
-      <button
-        onClick={handleSubmit}
-        disabled={!prompt.trim()}
-        style={{
-          background: prompt.trim() ? C.navy : "#c7cff7",
-          color: prompt.trim() ? "#fff" : "#8692a2",
-          border: "none",
-          borderRadius: 8,
-          padding: "7px 16px",
-          fontSize: 12,
-          fontWeight: 700,
-          fontFamily: F,
-          cursor: prompt.trim() ? "pointer" : "not-allowed",
-          flexShrink: 0,
-          transition: "background 0.12s",
-          letterSpacing: "0.01em",
-        }}
-        onMouseEnter={e => { if (prompt.trim()) e.currentTarget.style.background = "#001356"; }}
-        onMouseLeave={e => { if (prompt.trim()) e.currentTarget.style.background = C.navy; }}
-      >
-        Generate
-      </button>
+      <div style={{
+        background: focused ? "#f0f3ff" : C.white,
+        border: `2px solid ${focused ? "#4f6bed" : C.navy}`,
+        borderRadius: 10,
+        padding: "10px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        transition: "border-color 0.15s, background 0.15s",
+        boxShadow: focused ? "0 0 0 3px rgba(79,107,237,0.15)" : "0 1px 4px rgba(0,30,118,0.08)",
+      }}>
+        <input
+          value={prompt}
+          onChange={e => setPrompt(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={e => { if (e.key === "Enter" && prompt.trim()) handleSubmit(); }}
+          placeholder='e.g. "Add a fire safety section with Yes/No questions and scoring"'
+          style={{
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            fontSize: 13,
+            fontFamily: F,
+            color: C.g6,
+          }}
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={!prompt.trim()}
+          style={{
+            background: prompt.trim() ? C.navy : C.g2,
+            color: prompt.trim() ? "#fff" : C.g4,
+            border: "none",
+            borderRadius: 7,
+            padding: "7px 16px",
+            fontSize: 12,
+            fontWeight: 700,
+            fontFamily: F,
+            cursor: prompt.trim() ? "pointer" : "not-allowed",
+            flexShrink: 0,
+            transition: "background 0.12s",
+            letterSpacing: "0.01em",
+          }}
+          onMouseEnter={e => { if (prompt.trim()) e.currentTarget.style.background = "#001356"; }}
+          onMouseLeave={e => { if (prompt.trim()) e.currentTarget.style.background = C.navy; }}
+        >
+          Generate
+        </button>
+      </div>
     </div>
   );
 }
@@ -1227,8 +1230,6 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ
   const [editingName, setEditingName]   = useState(false);
   const [nameVal, setNameVal]           = useState(section.name);
   const [weightVal, setWeightVal]       = useState(String(section.weight ?? 0));
-  const [search, setSearch]             = useState("");
-  const [typeFilter, setTypeFilter]     = useState("");
   const [previewMode, setPreviewMode]   = useState(false);
 
   useEffect(() => { setNameVal(section.name); }, [section.name]);
@@ -1399,26 +1400,9 @@ function SectionCard({ section, isWeighted, selectedQs, onSelectQ, onBulkSelectQ
             <SectionPreviewTable section={section} />
           ) : (
             <>
-              {/* Search + type filter toolbar */}
-              <div style={{ display: "flex", gap: 8, padding: "8px 12px", borderBottom: `1px solid ${C.g2}`, alignItems: "center" }}>
-                <div style={{ position: "relative", flex: 1 }}>
-                  <svg style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: C.g4, pointerEvents: "none" }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search questions…"
-                    style={{ width: "100%", boxSizing: "border-box", paddingLeft: 26, paddingRight: 8, paddingTop: 5, paddingBottom: 5, fontSize: 12, fontFamily: F, border: `1px solid ${C.g2}`, borderRadius: 6, outline: "none", color: C.g6, background: C.white }} />
-                </div>
-                <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)}
-                  style={{ padding: "5px 8px", fontSize: 12, fontFamily: F, border: `1px solid ${C.g2}`, borderRadius: 6, color: typeFilter ? C.g6 : C.g4, background: C.white, cursor: "pointer", outline: "none" }}>
-                  <option value="">All types</option>
-                  {[...new Set(section.questions.map(q => q.answerType))].sort().map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
-              </div>
-
               {/* Column headers */}
               {section.questions.length > 0 && (() => {
-                const filteredQs = section.questions.filter(q =>
-                  (!search || q.title.toLowerCase().includes(search.toLowerCase())) &&
-                  (!typeFilter || q.answerType === typeFilter)
-                );
+                const filteredQs = section.questions;
                 const allSel = filteredQs.length > 0 && filteredQs.every(q => selectedQs.has(q.id));
                 return (
                   <>

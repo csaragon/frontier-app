@@ -287,9 +287,9 @@ export default function Step4Translations({ formData, onChange, languages = ["en
             <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
           </svg>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.g5, marginBottom: 8 }}>No additional languages</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: C.g5, marginBottom: 8 }}>Translations not needed</div>
           <div style={{ fontSize: 13, color: C.g4, lineHeight: "20px" }}>
-            Go to <strong>Details</strong> and add languages to this template to configure translations here.
+            This template only has one language selected, so there's nothing to translate. Go to <strong>Details</strong> and add a second language to configure translations here.
           </div>
         </div>
       </div>

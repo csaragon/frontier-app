@@ -468,18 +468,6 @@ export default function Step1Details({ formData, onChange, onNext, onBackToPick,
             {showCatError && <FieldError msg="Category is required." />}
           </div>
 
-          {/* Tags */}
-          <div style={{ marginBottom: 24 }}>
-            <FieldLabel>Tags</FieldLabel>
-            {/* Tag colors are admin-configurable in settings — auto-assigned by category for V1 */}
-            <TagsInput
-              tags={d.tags || []}
-              catName={d.category || ""}
-              onChange={(tags) => { onChange({ tags }); touch("tags"); }}
-              getCatStyle={getCatStyle}
-            />
-          </div>
-
           {/* Languages */}
           <div>
             <FieldLabel required>Languages</FieldLabel>
